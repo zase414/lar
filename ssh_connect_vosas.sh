@@ -1,4 +1,4 @@
-ssh -X -t cvut-username@192.168.65.32 "mount /local 2>/dev/null; singularity shell /local/robolab_noetic_amd64.simg"
+ssh -X -t vosahond@192.168.65.32 "mount /local 2>/dev/null; singularity shell /local/robolab_noetic_amd64.simg"
 
 # next:
 # source /opt/ros/lar/setup.bash
