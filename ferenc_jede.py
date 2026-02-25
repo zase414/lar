@@ -26,12 +26,12 @@ def main():
     t = get_time()
 
     rate = Rate(10)
-    while (not turtle.is_shutting_down()) and (get_time() - t < 10):
+    while (not turtle.is_shutting_down()) and (get_time() - t < 0):
         turtle.cmd_velocity(0.1)
         rate.sleep()
 
-    while (not turtle.is_shutting_down()) and (get_time() - t < 20):
-        turtle.cmd_velocity(0, 0.1)
+    while (not turtle.is_shutting_down()) and (get_time() - t < (2*3.14)/0.6):
+        turtle.cmd_velocity(-0.005, 0.6)
         rate.sleep()
 
 if __name__ == "__main__":
