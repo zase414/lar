@@ -15,6 +15,7 @@ linear_vel = 0.2
 angular_vel = 0.3
 
 WINDOW = 'obstacles'
+# testicles
 
 running = True
 active = True
