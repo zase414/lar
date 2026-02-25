@@ -1,3 +1,4 @@
+#!/bin/bash
 ssh -X -t kecekjak@192.168.65.32 "mount /local 2>/dev/null; singularity shell /local/robolab_noetic_amd64.simg"
 
 # next:
