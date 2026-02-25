@@ -7,32 +7,31 @@ from robolab_turtlebot import Turtlebot, Rate, get_time
 bumper_names = ['LEFT', 'CENTER', 'RIGHT']
 state_names = ['RELEASED', 'PRESSED']
 
+class Ferenc:
+    def __init__(self):
+        self.turtle = Turtlebot()
+        self.stop = False
 
-def bumper_cb(msg):
-    """Bumber callback."""
-    # msg.bumper stores the id of bumper 0:LEFT, 1:CENTER, 2:RIGHT
-    bumper = bumper_names[msg.bumper]
 
-    # msg.state stores the event 0:RELEASED, 1:PRESSED
-    state = state_names[msg.state]
+    def bumper_cb(self, msg):
+        """Bumber callback."""
+        self.turtle.cmd_velocity(0, 0)
+        self.stop = True
 
-    # Print the event
-    print('{} bumper {}'.format(bumper, state))
+    def main(self):
+        turtle = self.turtle
+        turtle.register_bumper_event_cb(Ferenc.bumper_cb)
 
-def main():
-    turtle = Turtlebot()
-    turtle.register_bumper_event_cb(bumper_cb)
+        t = get_time()
 
-    t = get_time()
+        rate = Rate(10)
+        while (not turtle.is_shutting_down() or self.stop) and (get_time() - t < 0):
+            turtle.cmd_velocity(0.1)
+            rate.sleep()
 
-    rate = Rate(10)
-    while (not turtle.is_shutting_down()) and (get_time() - t < 0):
-        turtle.cmd_velocity(0.1)
-        rate.sleep()
-
-    while (not turtle.is_shutting_down()) and (get_time() - t < (2*3.14)/0.6):
-        turtle.cmd_velocity(-0.005, 0.6)
-        rate.sleep()
+        while (not turtle.is_shutting_down() or self.stop) and (get_time() - t < (2*3.14)/0.6):
+            turtle.cmd_velocity(0.2, 0.4)
+            rate.sleep()
 
 if __name__ == "__main__":
-    main()
+    Ferenc.main()
