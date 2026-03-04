@@ -4,23 +4,35 @@ from __future__ import print_function
 
 from robolab_turtlebot import Turtlebot, Rate, get_time
 
-bumper_names = ['LEFT', 'CENTER', 'RIGHT']
-state_names = ['RELEASED', 'PRESSED']
+class BumperState(Enum):
+    PRESSED = 1
+    RELEASAED = 0
+
+class Bumper(Enum):
+    LEFT = 0
+    RIGHT = 1
+    CENTER = 2
 
 class Ferenc:
     def __init__(self):
         self.turtle = Turtlebot()
         self.stop = False
 
-
-    def bumper_cb(self, msg):
+    def _bumper_cb(self, msg):
         """Bumber callback."""
-        self.turtle.cmd_velocity(0, 0)
-        self.stop = True
+        
+        if (msg.state == BumperState.PRESSED):
+            self.turtle.cmd_velocity(0, 0)
+            self.stop = True
+
+        bumperstate = msg.state
+        bumper = msg.bumper
+
+        print('{} bumper {}'.format(bumper, bumperstate))
 
     def main(self):
         turtle = self.turtle
-        turtle.register_bumper_event_cb(Ferenc.bumper_cb)
+        turtle.register_bumper_event_cb(self._bumper_cb)
 
         t = get_time()
 
@@ -34,4 +46,5 @@ class Ferenc:
             rate.sleep()
 
 if __name__ == "__main__":
-    Ferenc.main()
+    ferenc = Ferenc()
+    ferenc.main()
