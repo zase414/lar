@@ -1,7 +1,7 @@
 # Ferenc je robot
 
 from __future__ import print_function
-
+from enum import Enum
 from robolab_turtlebot import Turtlebot, Rate, get_time
 
 class Button(Enum):
