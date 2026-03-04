@@ -6,7 +6,6 @@ from robolab_turtlebot import Turtlebot, Rate, get_time
 
 import cv2
 
-
 class Button(Enum):
     BUTTON0 = 0
     BUTTON1 = 1
