@@ -62,6 +62,9 @@ class Ferenc:
 
         while (not turtle.is_shutting_down() or self.stop) and (get_time() - t < (2*3.14)/0.6):
             turtle.cmd_velocity(0.2, 0.4)
+            while self.stop:
+                rate.sleep()
+
             rate.sleep()
 
 if __name__ == "__main__":
