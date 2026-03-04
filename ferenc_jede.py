@@ -4,6 +4,9 @@ from __future__ import print_function
 from enum import Enum
 from robolab_turtlebot import Turtlebot, Rate, get_time
 
+import cv2
+
+
 class Button(Enum):
     BUTTON0 = 0
     BUTTON1 = 1
@@ -20,7 +23,7 @@ class Bumper(Enum):
 
 class Ferenc:
     def __init__(self):
-        self.turtle = Turtlebot()
+        self.turtle = Turtlebot(rgb=True)
         self.stop = False
 
     def _button_cb(self, msg):
@@ -45,10 +48,40 @@ class Ferenc:
 
         print('{} bumper {}'.format(bumper, bumper_state))
 
+    def detect_balls(self):
+        turtle = self.turtle
+        HUE_SIZE = 179
+        HUE_REF = 125 #random green from color picker
+        HUE_MAX = 0.9
+        SAT_MIN = 0.1
+        VALUE_MIN = 0.1
+
+        while True:    
+            im = turtle.get_rgb_image()
+            hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+                    
+            h = hsv[:, :, 0]
+            s = hsv[:, :, 1]
+            v = hsv[:, :, 2]
+
+            mask = (
+                (np.minimum(np.abs(h - HUE_REF), 180 - np.abs(h - HUE_REF)) < HUE_MAX) &
+                (s > SAT_MIN) &
+                (v > VALUE_MIN))
+
+            filtered = im.copy()
+            filtered[~mask] = 0
+
+            cv2.imshow("HSV_FILTER", im_color)
+            cv2.waitKey(1)
+
+
     def main(self):
         turtle = self.turtle
         turtle.register_bumper_event_cb(self._bumper_cb)
         turtle.register_button_event_cb(self._button_cb)
+
+        self.detect_balls()
 
         t = get_time()
 
