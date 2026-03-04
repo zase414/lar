@@ -4,23 +4,19 @@ from __future__ import print_function
 
 from robolab_turtlebot import Turtlebot, Rate, get_time
 
-class ButtonState(Enum):
-    PRESSED = 1
-    RELEASED = 0
-
 class Button(Enum):
     BUTTON0 = 0
     BUTTON1 = 1
     BUTTON2 = 2
 
-class BumperState(Enum):
+class State(Enum):
     PRESSED = 1
     RELEASED = 0
 
 class Bumper(Enum):
     LEFT = 0
-    RIGHT = 1
-    CENTER = 2
+    CENTER = 1
+    RIGHT = 2
 
 class Ferenc:
     def __init__(self):
@@ -30,7 +26,7 @@ class Ferenc:
     def _button_cb(self, msg):
         """Button event"""
 
-        if (msg.state == ButtonState.PRESSED) and (msg.event == Button.BUTTON0):
+        if (msg.state == State.PRESSED) and (msg.event == Button.BUTTON0):
             self.stop = False
 
         button_state = msg.state
@@ -40,7 +36,7 @@ class Ferenc:
     def _bumper_cb(self, msg):
         """Bumber callback."""
         
-        if msg.state == BumperState.PRESSED:
+        if msg.state == State.PRESSED:
             self.turtle.cmd_velocity(0, 0)
             self.stop = True
 
