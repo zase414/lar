@@ -35,6 +35,7 @@ class Ferenc:
         button_state = msg.state
         button = msg.button
         print('{} button {}'.format(button, button_state))
+        print('Stopped? ', self.stop)
 
     def _bumper_cb(self, msg):
         """Bumber callback."""
@@ -47,6 +48,8 @@ class Ferenc:
         bumper = msg.bumper
 
         print('{} bumper {}'.format(bumper, bumper_state))
+        print('Stopped? ', self.stop)
+
 
     def detect_balls(self):
         turtle = self.turtle
