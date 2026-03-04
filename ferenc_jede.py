@@ -33,6 +33,10 @@ class Ferenc:
         if (msg.state == ButtonState.PRESSED) and (msg.event == Button.BUTTON0):
             self.stop = False
 
+        button_state = msg.state
+        button = msg.button
+        print('{} button {}'.format(button, button_state))
+
     def _bumper_cb(self, msg):
         """Bumber callback."""
         
