@@ -1,4 +1,4 @@
-# Ferenc
+# Ferenc je robot
 
 from __future__ import print_function
 
