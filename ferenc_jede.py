@@ -80,6 +80,7 @@ class Ferenc:
 
     def main(self):
         turtle = self.turtle
+        
         turtle.register_bumper_event_cb(self._bumper_cb)
         turtle.register_button_event_cb(self._button_cb)
 
