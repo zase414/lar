@@ -50,37 +50,6 @@ class Ferenc:
         print('{} bumper {}'.format(bumper, bumper_state))
         print('Stopped? ', self.stop)
 
-
-    def detect_balls(self):
-        turtle = self.turtle  # asi ne
-        HUE_SIZE = 179
-        HUE_REF = 125 #random green from color picker
-        HUE_MAX = 0.9
-        SAT_MIN = 25
-        VALUE_MIN = 25
-
-        while True:    
-            im = turtle.get_rgb_image()
-            # if im is None:
-            #    return
-            hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
-                    
-            h = hsv[:, :, 0]
-            s = hsv[:, :, 1]
-            v = hsv[:, :, 2]
-
-            mask = (
-                (np.minimum(np.abs(h - HUE_REF), 180 - np.abs(h - HUE_REF)) < HUE_MAX) &
-                (s > SAT_MIN) &
-                (v > VALUE_MIN))
-
-            filtered = im.copy()
-            filtered[~mask] = 0
-
-            cv2.imshow("HSV_FILTER", im_color)
-            cv2.waitKey(1)
-
-
     def main(self):
         turtle = self.turtle
         
@@ -95,17 +64,16 @@ class Ferenc:
         while (not turtle.is_shutting_down()) and (get_time() - t < 3):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
-                turtle.play_sound(1)
             else:
-                turtle.cmd_velocity(0.1)
+                turtle.cmd_velocity(0.5)
             rate.sleep()
 
-        while (not turtle.is_shutting_down()) and (get_time() - t < 100):
+        while (not turtle.is_shutting_down()) and (get_time() - t < 2):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(1)
             else:
-                turtle.cmd_velocity(0.1, 0.3)
+                turtle.cmd_velocity(0.2, 0.4)
             rate.sleep()
 
 if __name__ == "__main__":
