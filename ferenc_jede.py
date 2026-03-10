@@ -54,6 +54,9 @@ class Ferenc:
         while (get_time() - second_edge_time) < go_middle_interval:
             turtle.cmd_velocity(0.002, 1)
 
+
+        stop_edgin_time = get_time()
+
         while (not turtle.is_shutting_down()) and (get_time() - stop_edgin_time < 5):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
