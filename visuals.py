@@ -9,6 +9,10 @@ def main():
     turtle = Turtlebot(rgb=True)
     while True:
         detect_balls(turtle=turtle)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+        
+    cv2.destroyAllWindows()
 
 def detect_balls(turtle):
         HUE_SIZE = 179
