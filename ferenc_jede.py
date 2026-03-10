@@ -87,7 +87,7 @@ class Ferenc:
         turtle.register_bumper_event_cb(self._bumper_cb)
         turtle.register_button_event_cb(self._button_cb)
 
-        self.detect_balls()
+        #self.detect_balls()
 
         t = get_time()
 
