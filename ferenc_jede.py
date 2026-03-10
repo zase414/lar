@@ -52,15 +52,17 @@ class Ferenc:
 
 
     def detect_balls(self):
-        turtle = self.turtle
+        turtle = self.turtle  # asi ne
         HUE_SIZE = 179
         HUE_REF = 125 #random green from color picker
         HUE_MAX = 0.9
-        SAT_MIN = 0.1
-        VALUE_MIN = 0.1
+        SAT_MIN = 25
+        VALUE_MIN = 25
 
         while True:    
             im = turtle.get_rgb_image()
+            # if im is None:
+            #    return
             hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
                     
             h = hsv[:, :, 0]
@@ -90,12 +92,19 @@ class Ferenc:
         t = get_time()
 
         rate = Rate(10)
-        while (not turtle.is_shutting_down()) and (get_time() - t < 5):
-            turtle.cmd_velocity(0.2)
-            while self.stop:
+        while (not turtle.is_shutting_down()) and (get_time() - t < 3):
+            if self.stop:
                 turtle.cmd_velocity(0, 0)
-                rate.sleep()
+            else:
+                turtle.cmd_velocity(0.5)
+            rate.sleep()
 
+        while (not turtle.is_shutting_down()) and (get_time() - t < 2):
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(1)
+            else:
+                turtle.cmd_velocity(0.2, 0.4)
             rate.sleep()
 
 if __name__ == "__main__":
