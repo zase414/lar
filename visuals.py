@@ -38,7 +38,7 @@ def edging(turtle) -> bool:
     data = np.sort(pc[:, :, 2][mask])
 
     if data.size > 50:
-        dist = np.percentile(data, 10)
+        dist = np.percentile(data, 15)
         if dist > 0.6:
             return True
 
