@@ -2,6 +2,7 @@ from __future__ import print_function
 from enum import IntEnum
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
+from scipy.io import savemat
 
 import numpy as np
 
@@ -11,7 +12,7 @@ def main():
     turtle = Turtlebot(rgb=True, pc=True)
 
     #takes picture and saves it on launch
-    save_img(turtle)
+#    save_img(turtle)
     while True:
         detect_balls(turtle=turtle)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -58,11 +59,16 @@ def save_img(turtle):
 
     print('Data saved in {}'.format(filename))
 
+def mouse_callback(event, x, y, flags, param):
+    if event == cv2.EVENT_MOUSEMOVE:
+        hsv = param
+        h, s, v = hsv[y, x]
+        print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
 def detect_balls(turtle):
         HUE_SIZE = 179
-        HUE_REF = 125 #random green from color picker
-        HUE_MAX = 5
+        HUE_REF = 50 #random green from color picker
+        HUE_MAX = 0.9
         SAT_MIN = 25
         VALUE_MIN = 25
   
@@ -86,7 +92,8 @@ def detect_balls(turtle):
         filtered = im.copy()
         filtered[~mask] = 0
 
-        cv2.imshow("HSV_FILTER", filtered)
+        cv2.imshow("HSV_FILTER", hsv)
+        cv2.setMouseCallback("HSV_FILTER", mouse_callback, hsv)
         cv2.waitKey(1)
 
 if __name__ == "__main__":
