@@ -21,7 +21,6 @@ def main():
     cv2.destroyAllWindows()
 
 def edging(turtle) -> bool:
-    turtle.wait_for_point_cloud()
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
