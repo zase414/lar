@@ -95,16 +95,17 @@ class Ferenc:
         while (not turtle.is_shutting_down()) and (get_time() - t < 3):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
+                turtle.play_sound(1)
             else:
-                turtle.cmd_velocity(0.5)
+                turtle.cmd_velocity(0.1)
             rate.sleep()
 
-        while (not turtle.is_shutting_down()) and (get_time() - t < 2):
+        while (not turtle.is_shutting_down()) and (get_time() - t < 100):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(1)
             else:
-                turtle.cmd_velocity(0.2, 0.4)
+                turtle.cmd_velocity(0.1, 0.3)
             rate.sleep()
 
 if __name__ == "__main__":
