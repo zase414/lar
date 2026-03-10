@@ -37,7 +37,7 @@ class Ferenc:
 
         first_edge_time = get_time()
 
-        while (not turtle.is_shutting_down()) and (edgin):
+        while (not turtle.is_shutting_down()) and edgin:
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
