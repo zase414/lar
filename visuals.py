@@ -34,6 +34,7 @@ def edging(turtle) -> bool:
     mask = np.logical_and(mask, pc[:, :, 1] > -0.2)
     data = np.sort(pc[:, :, 2][mask])
 
+    # pokud nejblizsich 12 procent bodů, bude dál, než 0,6 m -> ferenc vpřed!!!
     if data.size > 50:
         dist = np.percentile(data, 12)
         if dist > 0.6:
