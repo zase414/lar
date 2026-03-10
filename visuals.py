@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 
 def main():
-    turtle = Turtlebot(rgb=True)
+    turtle = Turtlebot(rgb=True, depth=True)
 
     #takes picture and saves it on launch
     save_img(turtle)
