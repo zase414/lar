@@ -10,7 +10,7 @@ import cv2
 
 class Ferenc:
     def __init__(self):
-        self.turtle = Turtlebot(rgb=True)
+        self.turtle = Turtlebot(rgb=True, depth=True)
         self.stop = False
 
     def main(self):
