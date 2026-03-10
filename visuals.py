@@ -1,6 +1,6 @@
 from __future__ import print_function
 from enum import IntEnum
-from robolab_turtlebot import Turtlebot, Rate, get_time
+from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 
 import numpy as np
