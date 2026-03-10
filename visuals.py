@@ -21,7 +21,6 @@ def main():
     cv2.destroyAllWindows()
 
 def edging(turtle) -> bool:
-    turtle.wait_for_point_cloud()
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
@@ -31,8 +30,6 @@ def edging(turtle) -> bool:
 
     # mask point too far
     mask = np.logical_and(mask, pc[:, :, 2] < 3.0)
-
-    image = np.zeros(mask.shape)
 
     mask = np.logical_and(mask, pc[:, :, 1] > -0.2)
     data = np.sort(pc[:, :, 2][mask])
