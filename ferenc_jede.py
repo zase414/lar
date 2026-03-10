@@ -25,7 +25,7 @@ class Ferenc:
         while (not turtle.is_shutting_down()) and (get_time() - t < 1000):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
-                turtle.play_sound(2)
+                turtle.play_sound(4)
             else:
                 turtle.cmd_velocity(0.001, 0.1)
             rate.sleep()
