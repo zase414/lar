@@ -1,21 +1,21 @@
 # Ferenc je robot
 
 from __future__ import print_function
-from enum import Enum
+from enum import IntEnum
 from robolab_turtlebot import Turtlebot, Rate, get_time
 
 import cv2
 
-class Button(Enum):
+class Button(IntEnum):
     BUTTON0 = 0
     BUTTON1 = 1
     BUTTON2 = 2
 
-class State(Enum):
+class State(IntEnum):
     PRESSED = 1
     RELEASED = 0
 
-class Bumper(Enum):
+class Bumper(IntEnum):
     LEFT = 0
     CENTER = 1
     RIGHT = 2
@@ -89,16 +89,8 @@ class Ferenc:
         t = get_time()
 
         rate = Rate(10)
-        while (not turtle.is_shutting_down()) and (get_time() - t < 2):
-            turtle.cmd_velocity(0.1)
-            while self.stop:
-                turtle.cmd_velocity(0, 0)
-                rate.sleep()
-
-            rate.sleep()
-
-        while (not turtle.is_shutting_down()) and (get_time() - t < (2*3.14)/0.6):
-            turtle.cmd_velocity(0.2, 0.4)
+        while (not turtle.is_shutting_down()) and (get_time() - t < 5):
+            turtle.cmd_velocity(0.2)
             while self.stop:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
