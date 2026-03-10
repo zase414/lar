@@ -30,7 +30,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 print("rotating")
-                turtle.cmd_velocity(0.002, 0.8)
+                turtle.cmd_velocity(0.002, 0.4)
             print(edgin)
             edgin = edging(turtle=turtle)
             rate.sleep()
