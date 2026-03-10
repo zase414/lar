@@ -8,20 +8,6 @@ from robolab_turtlebot import Turtlebot, Rate, get_time
 import numpy as np
 import cv2
 
-class Button(IntEnum):
-    BUTTON0 = 0
-    BUTTON1 = 1
-    BUTTON2 = 2
-
-class State(IntEnum):
-    PRESSED = 1
-    RELEASED = 0
-
-class Bumper(IntEnum):
-    LEFT = 0
-    CENTER = 1
-    RIGHT = 2
-
 class Ferenc:
     def __init__(self):
         self.turtle = Turtlebot(rgb=True)

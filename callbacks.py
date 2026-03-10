@@ -1,3 +1,5 @@
+from enums import Bumper, Button, State
+
 def callback_button0_resume(ferenc, msg):
     """Button event"""
 
