@@ -29,7 +29,7 @@ class Ferenc:
     def _button_cb(self, msg):
         """Button event"""
 
-        if (msg.state == State.PRESSED) and (msg.event == Button.BUTTON0):
+        if (msg.state == State.PRESSED) and (msg.button == Button.BUTTON0):
             self.stop = False
 
         button_state = msg.state
