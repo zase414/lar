@@ -1,3 +1,5 @@
+from enum import IntEnum
+
 class Button(IntEnum):
     BUTTON0 = 0
     BUTTON1 = 1

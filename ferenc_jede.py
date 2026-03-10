@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
-from enum import IntEnum
+
 from robolab_turtlebot import Turtlebot, Rate, get_time
 
 import numpy as np
