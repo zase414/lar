@@ -19,8 +19,6 @@ class Ferenc:
         turtle.register_bumper_event_cb(lambda msge : callback_bumper_stop(self, msge))
         turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
 
-        #self.detect_balls()
-
         t = get_time()
 
         rate = Rate(10)
