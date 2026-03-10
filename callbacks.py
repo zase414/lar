@@ -9,9 +9,9 @@ def callback_button0_resume(ferenc, msg):
     button_state = msg.state
     button = msg.button
     print('{} button {}'.format(button, button_state))
-    print('Stopped? ', turtle.stop)
+    print('Stopped? ', ferenc.stop)
 
-def callback_bumper_stop(turtle, msg):
+def callback_bumper_stop(ferenc, msg):
     """Bumber callback."""
     
     if msg.state == State.PRESSED:
