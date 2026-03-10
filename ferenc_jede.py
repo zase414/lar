@@ -30,12 +30,14 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 print("rotating")
-                turtle.cmd_velocity(0.001, 0.1)
+                turtle.cmd_velocity(0.001, 0.5)
             print(edgin)
             edgin = edging(turtle=turtle)
             rate.sleep()
 
-        while (not turtle.is_shutting_down()) and (t - get_time() < 5):
+        stop_edgin_time = get_time()
+
+        while (not turtle.is_shutting_down()) and (get_time() - stop_edgin_time < 5):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
