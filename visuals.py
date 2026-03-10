@@ -11,7 +11,7 @@ def main():
     turtle = Turtlebot(rgb=True)
 
     #takes picture and saves it on launch
-    save_img(turtle):
+    save_img(turtle)
     while True:
         detect_balls(turtle=turtle)
         if cv2.waitKey(1) & 0xFF == ord('q'):
