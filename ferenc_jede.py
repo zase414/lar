@@ -35,7 +35,24 @@ class Ferenc:
             edgin = edging(turtle=turtle)
             rate.sleep()
 
-        stop_edgin_time = get_time()
+        first_edge_time = get_time()
+
+        while (not turtle.is_shutting_down()) and (edgin):
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(4)
+            else:
+                print("rotating")
+                turtle.cmd_velocity(0.002, -1)
+            print(edgin)
+            edgin = edging(turtle=turtle)
+            rate.sleep()
+
+        second_edge_time = get_time()
+        go_middle_interval = (second_edge_time - first_edge_time)/2
+
+        while (get_time() - second_edge_time) < go_middle_interval:
+            turtle.cmd_velocity(0.002, 1)
 
         while (not turtle.is_shutting_down()) and (get_time() - stop_edgin_time < 5):
             if self.stop:
