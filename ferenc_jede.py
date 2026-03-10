@@ -1,10 +1,12 @@
 # Ferenc je robot
 
+from callbacks import callback_bumper_stop, callback_button0_resume
+
 from __future__ import print_function
 from enum import IntEnum
 from robolab_turtlebot import Turtlebot, Rate, get_time
-import numpy as np
 
+import numpy as np
 import cv2
 
 class Button(IntEnum):
@@ -26,35 +28,11 @@ class Ferenc:
         self.turtle = Turtlebot(rgb=True)
         self.stop = False
 
-    def _button_cb(self, msg):
-        """Button event"""
-
-        if (msg.state == State.PRESSED) and (msg.button == Button.BUTTON0):
-            self.stop = False
-
-        button_state = msg.state
-        button = msg.button
-        print('{} button {}'.format(button, button_state))
-        print('Stopped? ', self.stop)
-
-    def _bumper_cb(self, msg):
-        """Bumber callback."""
-        
-        if msg.state == State.PRESSED:
-            self.turtle.cmd_velocity(0, 0)
-            self.stop = True
-
-        bumper_state = msg.state
-        bumper = msg.bumper
-
-        print('{} bumper {}'.format(bumper, bumper_state))
-        print('Stopped? ', self.stop)
-
     def main(self):
         turtle = self.turtle
         
-        turtle.register_bumper_event_cb(self._bumper_cb)
-        turtle.register_button_event_cb(self._button_cb)
+        turtle.register_bumper_event_cb(lambda msge : callback_bumper_stop(self, msge))
+        turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
 
         #self.detect_balls()
 
