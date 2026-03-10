@@ -18,8 +18,8 @@ def detect_balls(turtle):
         VALUE_MIN = 25
   
         im = turtle.get_rgb_image()
-        # if im is None:
-        #    return
+        if im is None:
+            return
         hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
                 
         h = hsv[:, :, 0]
@@ -34,7 +34,7 @@ def detect_balls(turtle):
         filtered = im.copy()
         filtered[~mask] = 0
 
-        cv2.imshow("HSV_FILTER", im_color)
+        cv2.imshow("HSV_FILTER", filtered)
         cv2.waitKey(1)
 
 if __name__ == "__main__":
