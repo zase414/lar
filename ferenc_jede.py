@@ -23,12 +23,16 @@ class Ferenc:
 
         rate = Rate(10)
         # dokud ferenc nenajde výjezd z garáže, tak se spiní
-        while (not turtle.is_shutting_down()) and (not edging(turtle=turtle)):
+        edging = edging(turtle=turtle)
+        while (not turtle.is_shutting_down()) and (not edging):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
+                print("rotating")
                 turtle.cmd_velocity(0.001, 0.1)
+            print(edging)
+            edging = edging(turtle=turtle)
             rate.sleep()
 
         while (not turtle.is_shutting_down()) and (t - get_time() < 5):
