@@ -22,6 +22,7 @@ class Ferenc:
         t = get_time()
 
         rate = Rate(10)
+        # dokud ferenc nenajde výjezd z garáže, tak se spiní
         while (not turtle.is_shutting_down()) and (not edging(turtle=turtle)):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
