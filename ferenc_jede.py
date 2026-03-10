@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
-
+from visuals import edging
 from robolab_turtlebot import Turtlebot, Rate, get_time
 
 import numpy as np
@@ -22,12 +22,20 @@ class Ferenc:
         t = get_time()
 
         rate = Rate(10)
-        while (not turtle.is_shutting_down()) and (get_time() - t < 1000):
+        while (not turtle.is_shutting_down()) and (not edging(turtle=turtle)):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
                 turtle.cmd_velocity(0.001, 0.1)
+            rate.sleep()
+
+        while (not turtle.is_shutting_down()) and (t - get_time() < 5):
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(4)
+            else:
+                turtle.cmd_velocity(0.1)
             rate.sleep()
 
 

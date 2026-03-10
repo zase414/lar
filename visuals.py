@@ -32,6 +32,15 @@ def edging(turtle) -> bool:
     mask = np.logical_and(mask, pc[:, :, 2] < 3.0)
 
     image = np.zeros(mask.shape)
+
+    mask = np.logical_and(mask, pc[:, :, 1] > -0.2)
+    data = np.sort(pc[:, :, 2][mask])
+
+    if data.size > 50:
+        dist = np.percentile(data, 10)
+        if dist > 0.6:
+            return True
+
     return False
 
 
