@@ -37,7 +37,7 @@ def edging(turtle) -> bool:
 
 def save_img(turtle):
     sleep(2)
-    turtle.get_rgb_image()
+    im = turtle.get_rgb_image()
     # get K, images, and point cloud
     data = dict()
     data['image_rgb'] = im
