@@ -38,7 +38,7 @@ def save_img(turtle):
 def detect_balls(turtle):
         HUE_SIZE = 179
         HUE_REF = 125 #random green from color picker
-        HUE_MAX = 0.9
+        HUE_MAX = 5
         SAT_MIN = 25
         VALUE_MIN = 25
   
