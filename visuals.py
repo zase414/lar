@@ -92,7 +92,7 @@ def detect_balls(turtle):
         filtered = im.copy()
         filtered[~mask] = 0
 
-        cv2.imshow("HSV_FILTER", hsv)
+        cv2.imshow("HSV_FILTER", filtered)
         cv2.setMouseCallback("HSV_FILTER", mouse_callback, hsv)
         cv2.waitKey(1)
 
