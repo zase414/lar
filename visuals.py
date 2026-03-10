@@ -19,6 +19,21 @@ def main():
 
     cv2.destroyAllWindows()
 
+def edging(turtle) -> bool:
+    turtle.wait_for_point_cloud()
+    pc = turtle.get_point_cloud()
+    if pc is None:
+        print('No point cloud')
+
+    # mask out floor points
+    mask = pc[:, :, 1] < 0.2
+
+    # mask point too far
+    mask = np.logical_and(mask, pc[:, :, 2] < 3.0)
+
+    image = np.zeros(mask.shape)
+    return False
+
 
 def save_img(turtle):
     sleep(2)
