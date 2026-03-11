@@ -25,7 +25,7 @@ class Ferenc:
             turtle.cmd_velocity(0, 0)
             rate.sleep()
 
-        # dokud ferenc nenajde výjezd z garáže, tak se spiní
+        # until robot finds garage exit spin
         space = space_infront(turtle=turtle)
         while (not turtle.is_shutting_down()) and (not space):
             if self.stop:
@@ -38,7 +38,7 @@ class Ferenc:
 
         space_detect_time = get_time()
 
-        # vyjetí z garáže
+        # garage exit
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 5):
             if self.stop:
                 turtle.cmd_velocity(0, 0)

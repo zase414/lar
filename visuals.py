@@ -11,7 +11,7 @@ import cv2
 def main():
     turtle = Turtlebot(rgb=True, pc=True)
 
-    #takes picture and saves it on launch
+    # takes picture and saves it on launch
 #    save_img(turtle)
     while True:
         detect_balls(turtle=turtle)
@@ -34,7 +34,7 @@ def space_infront(turtle) -> bool:
     mask = np.logical_and(mask, pc[:, :, 1] > -0.2)
     data = np.sort(pc[:, :, 2][mask])
 
-    # pokud nejblizsich 12 procent bodů, bude dál, než 0,6 m -> ferenc vpřed!!!
+    # if closest 12 percent of depth data is further than 0,6 meters --> return True
     if data.size > 50:
         dist = np.percentile(data, 12)
         if dist > 0.6:
