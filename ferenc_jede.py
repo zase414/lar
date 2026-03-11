@@ -44,8 +44,10 @@ class Ferenc:
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
+                if get_time() - space_detect_time > 5:
+                    continue
             else:
-                turtle.cmd_velocity(0.4, 0)
+                turtle.cmd_velocity(0.3, 0)
                 rate.sleep()
 
 
