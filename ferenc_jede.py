@@ -39,6 +39,9 @@ class Ferenc:
 
         space_detect_time = get_time()
 
+        # reset parameters
+        turtle.cmd_velocity(0, 0)
+
         # garage exit
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 5):
             if self.stop:
