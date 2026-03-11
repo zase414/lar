@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
-from visuals import edging
+from visuals import space_infront
 from robolab_turtlebot import Turtlebot, Rate, get_time
 
 import numpy as np
@@ -23,16 +23,16 @@ class Ferenc:
 
         rate = Rate(10)
         # dokud ferenc nenajde výjezd z garáže, tak se spiní
-        edgin = edging(turtle=turtle)
-        while (not turtle.is_shutting_down()) and (not edgin):
+        space = space_infront(turtle=turtle)
+        while (not turtle.is_shutting_down()) and (not space):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
                 print("rotating")
                 turtle.cmd_velocity(0.002, 0.4)
-            print(edgin)
-            edgin = edging(turtle=turtle)
+            print(space)
+            space = space_infront(turtle=turtle)
             rate.sleep()
 
         stop_edgin_time = get_time()

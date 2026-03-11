@@ -20,7 +20,7 @@ def main():
 
     cv2.destroyAllWindows()
 
-def edging(turtle) -> bool:
+def space_infront(turtle) -> bool:
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
