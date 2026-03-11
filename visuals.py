@@ -84,7 +84,7 @@ def detect_balls(turtle):
 
         cv2.imshow("CONTOURS", filtered)
         cv2.imshow("IMAGE", im)
-        cv2.setMouseCallback("HSV_FILTER", mouse_callback, hsv)
+        cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
         cv2.waitKey(1)
 
 if __name__ == "__main__":
