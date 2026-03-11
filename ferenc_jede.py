@@ -51,7 +51,7 @@ class Ferenc:
                     continue
             else:
                 # go forward
-                turtle.cmd_velocity(0.3, 0.002)
+                turtle.cmd_velocity(0.3, 0.008)
                 rate.sleep()
 
 
