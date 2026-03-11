@@ -56,6 +56,7 @@ def detect_balls(turtle):
     upper_bound = np.array([HUE_HIGH, 255, 255])
 
     mask = cv2.inRange(hsv, lower_bound, upper_bound)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
     filtered = cv2.bitwise_and(im, im, mask=mask)
 
