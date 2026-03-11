@@ -21,6 +21,7 @@ class Ferenc:
         turtle.wait_for_point_cloud()
         rate = Rate(10)
 
+        # checking bumber status
         while self.stop:
             turtle.cmd_velocity(0, 0)
             rate.sleep()
