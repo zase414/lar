@@ -41,9 +41,9 @@ class Ferenc:
             space = space_infront(turtle=turtle)
             rate.sleep()
 
-        stop_edgin_time = get_time()
+        space_detect_time = get_time()
 
-        while (not turtle.is_shutting_down()) and (get_time() - stop_edgin_time < 5):
+        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 5):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
