@@ -45,7 +45,7 @@ def detect_balls(turtle):
         HUE_REF = 45 #random green from color picker
         HUE_MAX = 20
         SAT_MIN = 37
-        VALUE_MIN = 50
+        VALUE_MIN = 40
   
         im = turtle.get_rgb_image()
         if im is None:
