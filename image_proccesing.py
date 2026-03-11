@@ -36,6 +36,7 @@ def get_depth(turtle, center_x, center_y) -> float:
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
+    # předělat aby vyprůměroval body středu a jeho osmiokolí
     depth = float(pc[center_x, center_y, 2])
 
     print(depth)
