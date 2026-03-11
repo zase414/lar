@@ -31,6 +31,10 @@ def space_infront(turtle) -> bool:
 
     return False
 
+def get_depth(turtle) -> float:
+    depth = float(0)
+    return depth
+
 
 if __name__ == "__main__":
     main()
