@@ -45,7 +45,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(1, 0)
+                turtle.cmd_velocity(0.4, 0)
                 rate.sleep()
 
 
