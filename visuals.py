@@ -64,8 +64,8 @@ def detect_balls(turtle):
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     for cnt in contours:
-        if cv2.contourArea(cnt) > 10:
-
+        area = cv2.contourArea(cnt)
+        if area > 10:
             perimeter = cv2.arcLength(cnt, True)
             circularity = (4 * np.pi * area) / (perimeter**2) if perimeter > 0 else 0
 
