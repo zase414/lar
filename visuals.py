@@ -11,7 +11,7 @@ import cv2
 def main():
     turtle = Turtlebot(rgb=True, pc=True)
 
-    # takes picture and saves it on launch
+    #takes picture and saves it on launch
 #    save_img(turtle)
     while True:
         detect_balls(turtle=turtle)
@@ -19,6 +19,29 @@ def main():
             break
 
     cv2.destroyAllWindows()
+
+def space_infront(turtle) -> bool:
+    pc = turtle.get_point_cloud()
+    if pc is None:
+        print('No point cloud')
+
+    # mask out floor points
+    mask = pc[:, :, 1] < 0.2
+
+    # mask point too far
+    mask = np.logical_and(mask, pc[:, :, 2] < 3.0)
+
+    mask = np.logical_and(mask, pc[:, :, 1] > -0.2)
+    data = np.sort(pc[:, :, 2][mask])
+
+    # pokud nejblizsich 12 procent bodů, bude dál, než 0,6 m -> ferenc vpřed!!!
+    if data.size > 50:
+        dist = np.percentile(data, 12)
+        if dist > 0.6:
+            return True
+
+    return False
+
 
 def save_img(turtle):
     sleep(2)
@@ -43,7 +66,8 @@ def mouse_callback(event, x, y, flags, param):
 def detect_balls(turtle):
         HUE_SIZE = 179
         HUE_REF = 45 #random green from color picker
-        HUE_MAX = 37
+        HUE_MAX = 20
+        SAT_MIN = 37
         VALUE_MIN = 50
   
         im = turtle.get_rgb_image()
