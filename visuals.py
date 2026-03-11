@@ -64,12 +64,27 @@ def detect_balls(turtle):
             (v > VALUE_MIN)
             )
 
-        filtered = np.ones_like(im) * 255
-        filtered[mask] = 0
+        binary_mask = mask.astype(np.uint8) * 255
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        filtered = im.copy()
+        filtered[~mask] = 0
 
-        cv2.imshow("HSV_FILTER", filtered)
-        cv2.imshow("real", im)
-        cv2.setMouseCallback("real", mouse_callback, hsv)
+        for cnt in contours:
+            #pro vetsi kruhy nez 10
+            if cv2.contourArea(cnt) > 10:
+                (x, y), radius = cv2.minEnclosingCircle(cnt)
+                center = (int(x), int(y))
+                radius = int(radius)
+
+                
+                cv2.circle(filtered, center, radius, (0, 255, 0), 2)
+                
+                cv2.circle(filtered, center, 2, (0, 0, 255), 3)
+
+        cv2.imshow("CONTOURS", filtered)
+        cv2.imshow("IMAGE", im)
+        cv2.setMouseCallback("HSV_FILTER", mouse_callback, hsv)
         cv2.waitKey(1)
 
 if __name__ == "__main__":
