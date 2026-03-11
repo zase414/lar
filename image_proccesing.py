@@ -31,19 +31,11 @@ def space_infront(turtle) -> bool:
 
     return False
 
-def get_depth(turtle) -> float:
-    depth = float(0)
+def get_depth(turtle, center_x, center_y) -> float:
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
-
-        # mask out floor points
-    mask = pc[:, :, 1] < 0.25
-
-    # mask point too far
-    mask = np.logical_and(mask, pc[:, :, 2] < 6.0)
-
-    mask = np.logical_and(mask, pc[:, :, 1] > -0.25)
+    depth = float(pc[center_x, center_y, 2])
 
     print(depth)
     return depth
