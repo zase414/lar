@@ -32,7 +32,7 @@ def space_infront(turtle) -> bool:
     return False
 
 def get_depth(turtle, center_x, center_y) -> float:
-    """ gets depth of center of detected object """
+    """Gets depth of center of detected object."""
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
