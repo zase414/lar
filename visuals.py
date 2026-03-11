@@ -66,7 +66,7 @@ def mouse_callback(event, x, y, flags, param):
 def detect_balls(turtle):
         HUE_SIZE = 179
         HUE_REF = 50 #random green from color picker
-        HUE_MAX = 15
+        HUE_MAX = 20
         SAT_MIN = 25
         VALUE_MIN = 25
   
@@ -81,17 +81,18 @@ def detect_balls(turtle):
 
         mask = (
             (np.minimum(np.abs(h - HUE_REF), 180 - np.abs(h - HUE_REF)) < HUE_MAX)
-#            &
-#            (s > SAT_MIN)
-#            &
-#            (v > VALUE_MIN)
+            &
+            (s > SAT_MIN)
+            &
+            (v > VALUE_MIN)
             )
 
-        filtered = im.copy()
-        filtered[~mask] = 0
+        filtered = np.ones_like(im) * 255
+        filtered[mask] = 0
 
         cv2.imshow("HSV_FILTER", filtered)
-        cv2.setMouseCallback("HSV_FILTER", mouse_callback, hsv)
+        cv2.imshow("real", im)
+        cv2.setMouseCallback("real", mouse_callback, hsv)
         cv2.waitKey(1)
 
 if __name__ == "__main__":
