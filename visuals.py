@@ -41,8 +41,8 @@ def mouse_callback(event, x, y, flags, param):
         print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
 def detect_balls(turtle):
-    HUE_REF = 45 
-    HUE_MAX = 20
+    HUE_LOW = 25
+    HUE_HIGH = 65
     SAT_MIN = 37
     VALUE_MIN = 40
 
@@ -51,38 +51,27 @@ def detect_balls(turtle):
         return
         
     hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
-
-    lower_hue = HUE_REF - HUE_MAX
-    upper_hue = HUE_REF + HUE_MAX
-
-    if lower_hue < 0:
-        mask1 = cv2.inRange(hsv, np.array([0, SAT_MIN, VALUE_MIN]), np.array([upper_hue, 255, 255]))
-        mask2 = cv2.inRange(hsv, np.array([180 + lower_hue, SAT_MIN, VALUE_MIN]), np.array([179, 255, 255]))
-        mask = cv2.bitwise_or(mask1, mask2)
-    else:
-        mask = cv2.inRange(hsv, np.array([lower_hue, SAT_MIN, VALUE_MIN]), np.array([upper_hue, 255, 255]))
-
-    #noise handler
-    kernel = np.ones((5, 5), np.uint8)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-
-    #find contours
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    output = im.copy()
-    output[~mask] = 0
+    lower_bound = np.array([HUE_LOW, SAT_MIN, VALUE_MIN])
+    upper_bound = np.array([HUE_HIGH, 255, 255])
+
+    mask = cv2.inRange(hsv, lower_bound, upper_bound)
+
+    filtered = cv2.bitwise_and(im, im, mask=mask)
+
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     for cnt in contours:
-        area = cv2.contourArea(cnt)
-        if area > 10:
-            
+        if cv2.contourArea(cnt) > 10:
             (x, y), radius = cv2.minEnclosingCircle(cnt)
             center = (int(x), int(y))
-            cv2.circle(output, center, int(radius), (0, 255, 0), 2)
-            cv2.circle(output, center, 2, (0, 0, 255), 3)
+            
+            cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
+            cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 
-    cv2.imshow("Detection", output)
-    cv2.setMouseCallback("Detection", mouse_callback, hsv)
+    cv2.imshow("CONTOURS", filtered)
+    cv2.imshow("IMAGE", im)
+    cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
     cv2.waitKey(1)
 
 if __name__ == "__main__":
