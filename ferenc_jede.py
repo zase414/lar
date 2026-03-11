@@ -40,6 +40,7 @@ class Ferenc:
 
         space_detect_time = get_time()
 
+        # vyjetí z garáže
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 5):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
