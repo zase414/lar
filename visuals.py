@@ -55,19 +55,26 @@ def detect_balls(turtle):
     lower_bound = np.array([HUE_LOW, SAT_MIN, VALUE_MIN])
     upper_bound = np.array([HUE_HIGH, 255, 255])
 
+    kernel = np.ones((5, 5), np.uint8)
     mask = cv2.inRange(hsv, lower_bound, upper_bound)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
     filtered = cv2.bitwise_and(im, im, mask=mask)
 
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     for cnt in contours:
-        if cv2.contourArea(cnt) > 10:
-            (x, y), radius = cv2.minEnclosingCircle(cnt)
-            center = (int(x), int(y))
-            
-            cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
-            cv2.circle(filtered, center, 2, (0, 0, 255), 3)
+        area = cv2.contourArea(cnt)
+        if area > 10:
+            perimeter = cv2.arcLength(cnt, True)
+            circularity = (4 * np.pi * area) / (perimeter**2) if perimeter > 0 else 0
+
+            if circularity > 0.7:
+                (x, y), radius = cv2.minEnclosingCircle(cnt)
+                center = (int(x), int(y))
+                
+                cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
+                cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 
     cv2.imshow("CONTOURS", filtered)
     cv2.imshow("IMAGE", im)
