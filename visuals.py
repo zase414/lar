@@ -42,10 +42,9 @@ def mouse_callback(event, x, y, flags, param):
 
 def detect_balls(turtle):
         HUE_SIZE = 179
-        HUE_REF = 50 #random green from color picker
-        HUE_MAX = 20
-        SAT_MIN = 25
-        VALUE_MIN = 25
+        HUE_REF = 45 #random green from color picker
+        HUE_MAX = 37
+        VALUE_MIN = 50
   
         im = turtle.get_rgb_image()
         if im is None:
