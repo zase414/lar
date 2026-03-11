@@ -66,7 +66,7 @@ def mouse_callback(event, x, y, flags, param):
 def detect_balls(turtle):
         HUE_SIZE = 179
         HUE_REF = 50 #random green from color picker
-        HUE_MAX = 0.9
+        HUE_MAX = 15
         SAT_MIN = 25
         VALUE_MIN = 25
   
