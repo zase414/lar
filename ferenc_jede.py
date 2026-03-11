@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
-from visuals import space_infront
+from image_proccesing import space_infront
 from robolab_turtlebot import Turtlebot, Rate, get_time
 
 import numpy as np
