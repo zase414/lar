@@ -55,6 +55,7 @@ def detect_balls(turtle):
     lower_bound = np.array([HUE_LOW, SAT_MIN, VALUE_MIN])
     upper_bound = np.array([HUE_HIGH, 255, 255])
 
+    kernel = np.ones((5, 5), np.uint8)
     mask = cv2.inRange(hsv, lower_bound, upper_bound)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
@@ -64,7 +65,7 @@ def detect_balls(turtle):
 
     for cnt in contours:
         if cv2.contourArea(cnt) > 10:
-            
+
             perimeter = cv2.arcLength(cnt, True)
             circularity = (4 * np.pi * area) / (perimeter**2) if perimeter > 0 else 0
 
