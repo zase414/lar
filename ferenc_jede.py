@@ -43,7 +43,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
 
         # garage exit
-        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1):
+        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 0.8):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
@@ -51,7 +51,7 @@ class Ferenc:
                     continue
             else:
                 # go forward
-                turtle.cmd_velocity(0.4, 0.08)
+                turtle.cmd_velocity(0.4, 0)
                 rate.sleep()
 
 
