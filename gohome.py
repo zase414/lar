@@ -13,12 +13,56 @@ def main():
     turtle = Turtlebot(rgb=True, pc=True)
     sleep(2)
 
-    # takes picture and saves it on launch
-    # save_img(turtle)
-    while True:
+    # --- PID Tuning Constants ---
+    # You will need to tune these values based on your robot's responsiveness
+    Kp = 0.005  # Proportional: Reacts to current error
+    Ki = 0.0001 # Integral: Reacts to accumulated past error
+    Kd = 0.001  # Derivative: Reacts to the rate of change of the error
 
-        rects = detect_rectangles(turtle=turtle)
+    # --- PID State Variables ---
+    integral = 0
+    prev_error = 0
+    prev_time = time.time()
+    
+    # Target Y-coordinate (e.g., center of a 480p image is 240)
+    # Adjust this to match half the height of your specific camera resolution
+    TARGET_Y = 640//2
+
+    while True:
+        # Assuming detect_rectangles returns an (x, y) tuple, or None if nothing is found
+        center = detect_rectangles(turtle=turtle)
         
+        current_time = time.time()
+        dt = current_time - prev_time
+        
+        if center is not None and dt > 0:
+            cx, cy = center
+            
+            # 1. Calculate Error
+            error = TARGET_Y - cy
+            
+            # 2. Calculate P, I, and D terms
+            proportional = Kp * error
+            integral += error * dt
+            derivative = (error - prev_error) / dt
+            
+            # 3. Calculate total PID output
+            pid_output = proportional + (Ki * integral) + (Kd * derivative)
+            
+            # 4. Regulate Velocity
+            # Applying PID to angular velocity. Cap the max speed if necessary.
+            turtle.cmd_velocity(linear=0.4, angular=pid_output)
+            
+            # 5. Store current values for the next loop iteration
+            prev_error = error
+            
+        else:
+            # Safety fallback: Stop moving if no rectangle is detected
+            turtle.cmd_velocity(linear=0.0, angular=0.0)
+            
+        # Update prev_time regardless of detection to prevent massive dt spikes
+        prev_time = current_time 
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
@@ -115,7 +159,7 @@ def detect_rectangles(turtle) -> Tuple[int, int]:
 
     cv2.imshow("CONTOURS", filtered)
     cv2.imshow("IMAGE", im)
-    cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
+    # cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
     cv2.waitKey(1)
     
     return found_pair
