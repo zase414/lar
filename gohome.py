@@ -83,7 +83,7 @@ def detect_rectangles(turtle) -> List:
                 aspect_ratio = float(h) / w
                 
                 # If height is 1.5x larger than width, it's a vertical rectangle
-                if aspect_ratio > 1.1:
+                if aspect_ratio > 1.5:
                     vertical_rects.append((x, y, w, h))
 
     # Sort the rectangles from left to right (based on x-coordinate)
@@ -95,15 +95,21 @@ def detect_rectangles(turtle) -> List:
         # Grab the first two from left to right
         found_pair = vertical_rects[:2]
         
+        # X, Y
+        center = (0,0)
         # Draw them on the filtered image
-        for (x, y, w, h) in found_pair:
+        for (x, y, w, h), i in found_pair:
             # Draw the bounding box
             cv2.rectangle(filtered, (x, y), (x + w, y + h), (0, 255, 0), 2)
             
             # Calculate and draw the center point
             center_x = x + w // 2
             center_y = y + h // 2
+            center[0] += center_x
+            center[1] += center_y
             cv2.circle(filtered, (center_x, center_y), 2, (0, 0, 255), 3)
+        center //= 2
+        cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 
     cv2.imshow("CONTOURS", filtered)
     cv2.imshow("IMAGE", im)
