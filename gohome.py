@@ -46,8 +46,8 @@ def mouse_callback(event, x, y, flags, param):
 def detect_rectangles(turtle) -> list:
     # --- 1. Adjust Color Bounds for Purple ---
     # OpenCV Hue goes from 0 to 179. Purple usually falls between 125 and 160.
-    HUE_LOW = 125
-    HUE_HIGH = 160
+    HUE_LOW = 110
+    HUE_HIGH = 130
     SAT_MIN = 40
     VALUE_MIN = 40
 
