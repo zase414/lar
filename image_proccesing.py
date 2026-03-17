@@ -52,7 +52,7 @@ def get_depth(center_x, center_y, radius, pc) -> float:
         close_radius = 1
 
     else:
-        close_radius = 3  # prumer z 49 hodnot
+        close_radius = 2  # prumer z 25 hodnot
 
     val_num = (2 * close_radius + 1) ^ 2
     for i in range(-close_radius, close_radius, 1):
