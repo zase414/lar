@@ -26,9 +26,9 @@ class Ferenc:
         rate = Rate(10)
 
         # --- PID Tuning Constants ---
-        Kp = 0.0005
+        Kp = 0.01
         Ki = 0.0001 
-        Kd = 0.001  
+        Kd = 0.3 
 
         # --- PID State Variables ---
         integral = 0
