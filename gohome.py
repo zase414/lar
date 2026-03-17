@@ -4,6 +4,7 @@ from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
 from image_proccesing import get_depth # Assuming this is your custom module
+from typing import List
 
 import numpy as np
 import cv2
@@ -43,7 +44,7 @@ def mouse_callback(event, x, y, flags, param):
         h, s, v = hsv[y, x]
         print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
-def detect_rectangles(turtle) -> list:
+def detect_rectangles(turtle) -> List:
     # --- 1. Adjust Color Bounds for Purple ---
     # OpenCV Hue goes from 0 to 179. Purple usually falls between 125 and 160.
     HUE_LOW = 110
@@ -82,7 +83,7 @@ def detect_rectangles(turtle) -> list:
                 aspect_ratio = float(h) / w
                 
                 # If height is 1.5x larger than width, it's a vertical rectangle
-                if aspect_ratio > 1.5:
+                if aspect_ratio > 1.1:
                     vertical_rects.append((x, y, w, h))
 
     # Sort the rectangles from left to right (based on x-coordinate)
