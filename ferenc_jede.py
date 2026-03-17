@@ -70,6 +70,15 @@ class Ferenc:
             rate.sleep()
 
 
+    def rimming(self, rate, distance):
+        turtle = self.turtle
+
+        turtle.cmd_velocity(0, 0)
+        turtle.reset_odometry()
+        current_coords = turtle.get_odometry()
+
+    def calculate_
+
 
 
 
