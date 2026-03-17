@@ -26,7 +26,7 @@ def space_infront(turtle) -> bool:
 
     # if closest 30 percent of depth data is further than 0,6 meters --> return True
     if data.size > 50:
-        dist = np.percentile(data, 30)
+        dist = np.percentile(data, 23)
         if dist > 0.7:
             return True
 
