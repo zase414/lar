@@ -3,6 +3,7 @@ from enum import IntEnum
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
+from image_proccesing import get_depth
 
 import numpy as np
 
@@ -41,6 +42,7 @@ def mouse_callback(event, x, y, flags, param):
         print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
 def detect_balls(turtle):
+    depth = 0
     HUE_LOW = 25
     HUE_HIGH = 65
     SAT_MIN = 37
@@ -72,7 +74,8 @@ def detect_balls(turtle):
             if circularity > 0.7:
                 (x, y), radius = cv2.minEnclosingCircle(cnt)
                 center = (int(x), int(y))
-                
+
+                depth = get_depth(turtle, center[0], center[1], radius)
                 cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
                 cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 

@@ -36,8 +36,12 @@ def space_infront(turtle) -> bool:
 
     return False
 
-def get_depth(center_x, center_y, radius, pc) -> float:
+def get_depth(turtle, center_x, center_y, radius) -> float:
     """Gets depth of center of detected object."""
+    if radius < 2:
+        return ERROR
+
+    pc = turtle.get_point_cloud()
     max_x = 639
     max_y = 479
     depth = float
@@ -45,9 +49,6 @@ def get_depth(center_x, center_y, radius, pc) -> float:
         print('No point cloud')
 
     # předělat aby vyprůměroval body středu okolo středu
-    if radius < 2:
-        return ERROR
-
     if radius < 16:   # pruměr z 9 hodnot na středu
         close_radius = 1
 
@@ -58,10 +59,13 @@ def get_depth(center_x, center_y, radius, pc) -> float:
     for i in range(-close_radius, close_radius, 1):
         for j in range(-close_radius, close_radius, 1):
             # ferenc zběsile filtruje data (kontroluje zda je v obraze a filtruje chybové délky)
+            if pc[center_x + i][center_y + j][2] is None:
+                depth += 0
+                val_num -= 1
             if ((center_x + i > 0) and (center_y + j > 0)
                 and (center_x + i < max_x) and (center_y + j < max_y)
-                and float(pc[center_x+i][center_y+j]) < 0.1):
-                depth += float(pc[center_x+i][center_y+j])
+                and float(pc[center_x+i][center_y+j][2]) < 0.1):
+                depth += float(pc[center_x+i][center_y+j][2])
             else:
                 depth += 0
                 val_num -= 1
