@@ -36,7 +36,7 @@ class Ferenc:
         
         TARGET_X = 640//2 
 
-        while not self.stop and not self.turtle.is_shutting_down:
+        while (not self.stop) and (not self.turtle.is_shutting_down):
             # Assuming detect_rectangles returns an (x, y) tuple, or None if nothing is found
             center = self.detect_rectangles(turtle=turtle)
             
