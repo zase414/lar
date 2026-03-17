@@ -4,6 +4,7 @@ from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
 from image_proccesing import get_depth
+from typing import Tuple
 
 import numpy as np
 
