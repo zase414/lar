@@ -4,6 +4,7 @@ from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
 from image_proccesing import space_infront
 from robolab_turtlebot import Turtlebot, Rate, get_time
+from visuals import detect_balls
 
 import numpy as np
 import cv2
@@ -54,6 +55,21 @@ class Ferenc:
                 # go forward
                 turtle.cmd_velocity(0.4, 0)
                 rate.sleep()
+
+        #find ball turns on to it
+        (center_y, center_x), radius = detect_balls(turtle)
+        DEAD_CENTER_X = 640/2
+        TOLERANCE_PIXEL_BAND = 15
+        dist = DEAD_CENTER_X- center_x
+        while(abs(dist) <TOLERANCE_PIXEL_BAND):
+            ang_speed = 0.5 if dist < 0 else -0.5
+            turtle.cmd_velocity(0, ang_speed)
+            (center_y, center_x), radius = detect_balls(turtle)
+
+            rate.sleep()
+
+
+
 
 
 if __name__ == "__main__":
