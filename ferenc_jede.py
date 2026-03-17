@@ -55,6 +55,9 @@ class Ferenc:
                 turtle.cmd_velocity(0.4, 0)
                 rate.sleep()
 
+        #find ball turns on to it
+        
+
 
 if __name__ == "__main__":
     ferenc = Ferenc()
