@@ -13,13 +13,12 @@ import time
 
 class Ferenc:
     def __init__(self):
-        self.turtle = Turtlebot(rgb=True, pc=True)
+        self.turtle = Turtlebot(rgb=True)
         self.stop = False
 
     def main(self):
         turtle = self.turtle
 
-        turtle.wait_for_point_cloud()
         sleep(2)
 
         turtle.register_bumper_event_cb(lambda msge : callback_bumper_stop(self, msge))
@@ -38,7 +37,7 @@ class Ferenc:
         
         TARGET_X = 640//2 
 
-        while (not self.stop) and (not self.turtle.is_shutting_down):
+        while (not self.stop) and (not self.turtle.is_shutting_down()):
             # Assuming detect_rectangles returns an (x, y) tuple, or None if nothing is found
             center = self.detect_rectangles(turtle=turtle)
             
