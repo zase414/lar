@@ -57,14 +57,14 @@ class Ferenc:
                 rate.sleep()
 
         #find ball turns on to it
-        center_y, center_x, radius = detect_balls(turtle)
+        (center_y, center_x), radius = detect_balls(turtle)
         DEAD_CENTER_X = 640/2
         TOLERANCE_PIXEL_BAND = 15
         dist = DEAD_CENTER_X- center_x
         while(abs(dist) <TOLERANCE_PIXEL_BAND):
             ang_speed = 0.5 if dist < 0 else -0.5
             turtle.cmd_velocity(0, ang_speed)
-            center_y, center_x, radius = detect_balls(turtle)
+            (center_y, center_x), radius = detect_balls(turtle)
 
             rate.sleep()
 
