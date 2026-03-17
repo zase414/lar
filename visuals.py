@@ -73,10 +73,10 @@ def detect_balls(turtle):
             circularity = (4 * np.pi * area) / (perimeter**2) if perimeter > 0 else 0
 
             if circularity > 0.7:
-                (x, y), radius = cv2.minEnclosingCircle(cnt)
-                center = (int(x), int(y))
+                (y, x), radius = cv2.minEnclosingCircle(cnt)
+                center = (int(y), int(x))
 
-                # depth = get_depth(turtle, center[0], center[1], radius)
+                # depth = get_depth(turtle, center[1], center[0], radius)
                 cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
                 cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 
