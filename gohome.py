@@ -164,7 +164,7 @@ def detect_rectangles(turtle) -> Tuple[int, int]:
     # cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
     cv2.waitKey(1)
     
-    return found_pair
+    return center
 
 if __name__ == "__main__":
     main()
