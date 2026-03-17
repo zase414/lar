@@ -59,12 +59,12 @@ def get_depth(turtle, center_x, center_y, radius) -> float:
     for i in range(-close_radius, close_radius, 1):
         for j in range(-close_radius, close_radius, 1):
             # ferenc zběsile filtruje data (kontroluje zda je v obraze a filtruje chybové délky)
-            if pc[center_x + i][center_y + j][2] is None:
+            if pc[center_y + i][center_x + j][2] is None:
                 val_num -= 1
-            if ((center_x + i > 0) and (center_y + j > 0)
-                and (center_x + i < max_x) and (center_y + j < max_y)
-                and float(pc[center_x+i][center_y+j][2]) < 0.1):
-                depth += float(pc[center_x+i][center_y+j][2])
+            if ((center_y + i > 0) and (center_x + j > 0)
+                and (center_y + i < max_y) and (center_x + j < max_x)
+                and float(pc[center_y+i][center_x+j][2]) < 0.1):
+                depth += float(pc[center_y+i][center_x+j][2])
             else:
                 val_num -= 1
     depth = depth/val_num
