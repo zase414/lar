@@ -1,15 +1,11 @@
 from __future__ import print_function
 
-from numpy.ma.core import negative
-
 from enums import depth_ERR
 
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from scipy.io import savemat
 
 import numpy as np
-
-import cv2
 
 def main():
     turtle = Turtlebot(rgb=True, pc=True)
