@@ -31,6 +31,7 @@ class Ferenc:
         # until robot finds garage exit spin
         space = space_infront(turtle=turtle)
         while (not turtle.is_shutting_down()) and (not space):
+            print("edging")
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
