@@ -73,7 +73,6 @@ def get_depth(turtle, center_x, center_y, radius) -> float:
         
     average_depth = depth_sum / val_count
     print(f"Objekt je daleko: {average_depth:.2f} m")
-    print(pc[center_x][center_y])
     return average_depth
 
 
