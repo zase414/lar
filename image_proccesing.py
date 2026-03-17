@@ -36,9 +36,9 @@ def space_infront(turtle) -> bool:
 
     return False
 
-def get_depth(turtle, center_x, center_y, close_radius) -> float:
+def get_depth(turtle, center_x, center_y, radius) -> float:
     
-    if close_radius < 2:
+    if radius < 2:
         return ERROR
 
     pc = turtle.get_point_cloud()
@@ -49,16 +49,16 @@ def get_depth(turtle, center_x, center_y, close_radius) -> float:
     max_x = 640
     max_y = 480
     
-    if close_radius < 16:   
-        close_radius = 1  # 3x3 grid
+    if radius < 16:   
+        radius = 1  # 3x3 grid
     else:
-        close_radius = 2  # 5x5 grid
+        radius = 2  # 5x5 grid
 
     depth_sum = 0.0
     val_count = 0 
     
-    for i in range(-close_radius, close_radius + 1):
-        for j in range(-close_radius, close_radius + 1):
+    for i in range(-radius, radius + 1):
+        for j in range(-radius, radius + 1):
             y = center_y + i
             x = center_x + j
             
