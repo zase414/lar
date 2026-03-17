@@ -16,7 +16,7 @@ def main():
     # takes picture and saves it on launch
     # save_img(turtle)
     while True:
-        
+
         rects = detect_rectangles(turtle=turtle)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -94,7 +94,7 @@ def detect_rectangles(turtle) -> List:
         total_x = 0
         total_y = 0
         # draw boundaries and dots
-        for (x, y, w, h), i in found_pair:
+        for (x, y, w, h) in found_pair:
             # box
             cv2.rectangle(filtered, (x, y), (x + w, y + h), (0, 255, 0), 2)
             
