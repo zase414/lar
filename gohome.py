@@ -28,7 +28,7 @@ class Ferenc:
         # --- PID Tuning Constants ---
         Kp = 0.01
         Ki = 0.0001 
-        Kd = 0.3 
+        Kd = 0.001 
 
         # --- PID State Variables ---
         integral = 0
