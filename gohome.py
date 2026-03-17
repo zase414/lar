@@ -104,7 +104,7 @@ def detect_rectangles(turtle) -> List:
             total_x += center_x
             total_y += center_y
             cv2.circle(filtered, (center_x, center_y), 2, (0, 0, 255), 3)
-        if (len(found_pair > 0)):
+        if len(found_pair) > 0:
             avg_x = total_x // len(found_pair)
             avg_y = total_y // len(found_pair)
             
