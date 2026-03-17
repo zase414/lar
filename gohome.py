@@ -30,7 +30,6 @@ class Ferenc:
         Ki = 0.0001 
         Kd = 0.001 
 
-        # --- PID State Variables ---
         integral = 0
         prev_error = 0
         prev_time = get_time()
@@ -38,8 +37,9 @@ class Ferenc:
         TARGET_X = 640//2 
 
         while (not self.stop) and (not self.turtle.is_shutting_down()):
-            # Assuming detect_rectangles returns an (x, y) tuple, or None if nothing is found
-            center = self.detect_rectangles(turtle=turtle)
+
+            # tuple x,y or None if not found
+            center,  = self.detect_rectangles(turtle=turtle)
             
             current_time = get_time()
             dt = current_time - prev_time
@@ -47,26 +47,18 @@ class Ferenc:
             if center is not None and dt > 0:
                 center_x, center_y = center
                 
-                # 1. Calculate Error
                 error = TARGET_X - center_x
                 
-                # 2. Calculate P, I, and D terms
                 proportional = Kp * error
                 integral += error * dt
                 derivative = (error - prev_error) / dt
                 
-                # 3. Calculate total PID output
-                pid_output = proportional + (Ki * integral) + (Kd * derivative)
-                
-                # 4. Regulate Velocity
-                # Applying PID to angular velocity. Cap the max speed if necessary.
+                # total
+                pid_output = proportional + (Ki * integral) + (Kd * derivative) 
+                # set speed   
                 turtle.cmd_velocity(linear=0.4, angular=pid_output)
-                
-                # 5. Store current values for the next loop iteration
                 prev_error = error
-                
             else:
-                # Safety fallback: Stop moving if no rectangle is detected
                 turtle.cmd_velocity(linear=0.0, angular=0.0)
                 integral = 0
                 
@@ -130,6 +122,7 @@ class Ferenc:
         found_pair = []
 
         center = None
+        
         if len(vertical_rects) >= 2:
             # first 2 from the left
             found_pair = vertical_rects[:2]
