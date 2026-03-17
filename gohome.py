@@ -113,7 +113,7 @@ class Ferenc:
         
         for c in contours:
             area = cv2.contourArea(c)
-            if area > 800: # no noise
+            if area > 300: # no noise
                 
                 x, y, w, h = cv2.boundingRect(c)
                 
