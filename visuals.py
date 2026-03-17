@@ -75,7 +75,7 @@ def detect_balls(turtle):
                 (x, y), radius = cv2.minEnclosingCircle(cnt)
                 center = (int(x), int(y))
 
-                depth = get_depth(turtle, center[0], center[1], radius)
+                # depth = get_depth(turtle, center[0], center[1], radius)
                 cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
                 cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 
