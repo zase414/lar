@@ -83,7 +83,8 @@ class Ferenc:
 
     def calculate_points(self, distance, coords) -> list:
         points = []
-        ball_center = []
+        ball_center = [distance+0.04, 0, 0] # 4cm radius of ball
+
         return points
 
 
