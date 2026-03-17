@@ -3,7 +3,7 @@ from enum import IntEnum
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
-from image_proccesing import get_depth # Assuming this is your custom module
+from image_proccesing import get_depth
 from typing import List
 
 import numpy as np
@@ -16,7 +16,7 @@ def main():
     # takes picture and saves it on launch
     # save_img(turtle)
     while True:
-        # Now expecting a list of detected rectangles
+        
         rects = detect_rectangles(turtle=turtle)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -45,8 +45,7 @@ def mouse_callback(event, x, y, flags, param):
         print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
 def detect_rectangles(turtle) -> List:
-    # --- 1. Adjust Color Bounds for Purple ---
-    # OpenCV Hue goes from 0 to 179. Purple usually falls between 125 and 160.
+
     HUE_LOW = 110
     HUE_HIGH = 130
     SAT_MIN = 40
@@ -71,45 +70,45 @@ def detect_rectangles(turtle) -> List:
     
     vertical_rects = []
     
-    # --- 2. Filter for Vertical Rectangles ---
     for c in contours:
         area = cv2.contourArea(c)
-        if area > 300: # Filter out noise
-            # Get the straight bounding rectangle
+        if area > 300: # no noise
+            
             x, y, w, h = cv2.boundingRect(c)
             
-            # Prevent division by zero just in case
             if w > 0:
                 aspect_ratio = float(h) / w
-                
-                # If height is 1.5x larger than width, it's a vertical rectangle
+               
                 if aspect_ratio > 1.5:
                     vertical_rects.append((x, y, w, h))
 
-    # Sort the rectangles from left to right (based on x-coordinate)
+    # sort
     vertical_rects = sorted(vertical_rects, key=lambda r: r[0])
     
-    # Look for at least two rectangles to represent your `| |`
+    # find | |
     found_pair = []
     if len(vertical_rects) >= 2:
-        # Grab the first two from left to right
+        # first 2 from the left
         found_pair = vertical_rects[:2]
         
-        # X, Y
-        center = (0,0)
-        # Draw them on the filtered image
+        total_x = 0
+        total_y = 0
+        # draw boundaries and dots
         for (x, y, w, h), i in found_pair:
-            # Draw the bounding box
+            # box
             cv2.rectangle(filtered, (x, y), (x + w, y + h), (0, 255, 0), 2)
             
-            # Calculate and draw the center point
+            # center of each rect
             center_x = x + w // 2
             center_y = y + h // 2
-            center[0] += center_x
-            center[1] += center_y
+            total_x += center_x
+            total_y += center_y
             cv2.circle(filtered, (center_x, center_y), 2, (0, 0, 255), 3)
-        center //= 2
-        cv2.circle(filtered, center, 2, (0, 0, 255), 3)
+        if (len(found_pair > 0)):
+            avg_x = total_x // len(found_pair)
+            avg_y = total_y // len(found_pair)
+            
+            cv2.circle(filtered, (avg_x, avg_y), 2, (0, 0, 255), 3)
 
     cv2.imshow("CONTOURS", filtered)
     cv2.imshow("IMAGE", im)
