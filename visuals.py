@@ -65,7 +65,7 @@ def detect_balls(turtle) -> Tuple[Tuple[int, int], int]:
     filtered = cv2.bitwise_and(im, im, mask=mask)
 
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    center = tuple
+    center = (0, 0)
     radius = 0
     for c in contours:
         area = cv2.contourArea(c)
