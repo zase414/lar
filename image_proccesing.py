@@ -36,40 +36,49 @@ def space_infront(turtle) -> bool:
 
     return False
 
-def get_depth(turtle, center_x, center_y, radius) -> float:
-    """Gets depth of center of detected object."""
-    if radius < 2:
+def get_depth(turtle, center_x, center_y, close_radius) -> float:
+    
+    if close_radius < 2:
         return ERROR
 
     pc = turtle.get_point_cloud()
-    max_x = 639
-    max_y = 479
-    depth = float(0)
     if pc is None:
         print('No point cloud')
+        return ERROR
 
-    # předělat aby vyprůměroval body středu okolo středu
-    if radius < 16:   # pruměr z 9 hodnot na středu
-        close_radius = 1
-
+    max_x = 640
+    max_y = 480
+    
+    if close_radius < 16:   
+        close_radius = 1  # 3x3 grid
     else:
-        close_radius = 2  # prumer z 25 hodnot
+        close_radius = 2  # 5x5 grid
 
-    val_num = (2 * close_radius + 1) ^ 2
-    for i in range(-close_radius, close_radius, 1):
-        for j in range(-close_radius, close_radius, 1):
-            # ferenc zběsile filtruje data (kontroluje zda je v obraze a filtruje chybové délky)
-            if pc[center_y + i][center_x + j][2] is None:
-                val_num -= 1
-            if ((center_y + i > 0) and (center_x + j > 0)
-                and (center_y + i < max_y) and (center_x + j < max_x)
-                and float(pc[center_y+i][center_x+j][2]) < 0.1):
-                depth += float(pc[center_y+i][center_x+j][2])
-            else:
-                val_num -= 1
-    depth = depth/val_num
-    print("Objekt je daleko: ", depth, " m")
-    return depth
+    depth_sum = 0.0
+    val_count = 0 
+    
+    for i in range(-close_radius, close_radius + 1):
+        for j in range(-close_radius, close_radius + 1):
+            y = center_y + i
+            x = center_x + j
+            
+            if 0 <= y < max_y and 0 <= x < max_x:
+                point_data = pc[y][x][2]
+                
+                if point_data is not None:
+                    point_depth = float(point_data)
+                    if point_depth > 0.1:  
+                        depth_sum += point_depth
+                        val_count += 1
+
+    if val_count == 0:
+        print("Objekt je příliš blízko. Žádná data.")
+        return ERROR
+        
+    average_depth = depth_sum / val_count
+    print(f"Objekt je daleko: {average_depth:.2f} m")
+    
+    return average_depth
 
 
 if __name__ == "__main__":
