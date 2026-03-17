@@ -46,8 +46,8 @@ def mouse_callback(event, x, y, flags, param):
 
 def detect_rectangles(turtle) -> Tuple[int, int]:
 
-    HUE_LOW = 110
-    HUE_HIGH = 130
+    HUE_LOW = 105
+    HUE_HIGH = 140
     SAT_MIN = 40
     VALUE_MIN = 40
 
