@@ -63,7 +63,7 @@ def get_depth(turtle, center_x, center_y, close_radius) -> float:
             x = center_x + j
             
             if 0 <= y < max_y and 0 <= x < max_x:
-                point_data = pc[y][x][2]
+                point_data = pc[x][y][2]
                 
                 if point_data is not None:
                     point_depth = float(point_data)
@@ -77,7 +77,7 @@ def get_depth(turtle, center_x, center_y, close_radius) -> float:
         
     average_depth = depth_sum / val_count
     print(f"Objekt je daleko: {average_depth:.2f} m")
-    print(pc[center_y][center_x])
+    print(pc[center_x][center_y])
     return average_depth
 
 
