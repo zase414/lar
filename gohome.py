@@ -14,6 +14,9 @@ def main():
     turtle = Turtlebot(rgb=True, pc=True)
     sleep(2)
 
+    turtle.register_bumper_event_cb(lambda msge : callback_bumper_stop(self, msge))
+    turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
+
     # --- PID Tuning Constants ---
     # You will need to tune these values based on your robot's responsiveness
     Kp = 0.005  # Proportional: Reacts to current error
