@@ -8,6 +8,7 @@ from typing import Tuple
 
 import numpy as np
 import cv2
+import time
 
 def main():
     turtle = Turtlebot(rgb=True, pc=True)
@@ -26,7 +27,7 @@ def main():
     
     # Target Y-coordinate (e.g., center of a 480p image is 240)
     # Adjust this to match half the height of your specific camera resolution
-    TARGET_Y = 640//2
+    TARGET_Y = 240 
 
     while True:
         # Assuming detect_rectangles returns an (x, y) tuple, or None if nothing is found
@@ -67,6 +68,7 @@ def main():
             break
 
     cv2.destroyAllWindows()
+
 
 def save_img(turtle):
     sleep(2)
