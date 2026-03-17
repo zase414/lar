@@ -4,7 +4,7 @@ from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
 from image_proccesing import get_depth
-from typing import List
+from typing import Tuple
 
 import numpy as np
 import cv2
@@ -16,7 +16,7 @@ def main():
     # takes picture and saves it on launch
     # save_img(turtle)
     while True:
-        
+
         rects = detect_rectangles(turtle=turtle)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -44,10 +44,10 @@ def mouse_callback(event, x, y, flags, param):
         h, s, v = hsv[y, x]
         print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
-def detect_rectangles(turtle) -> List:
+def detect_rectangles(turtle) -> Tuple[int, int]:
 
     HUE_LOW = 110
-    HUE_HIGH = 130
+    HUE_HIGH = 140
     SAT_MIN = 40
     VALUE_MIN = 40
 
@@ -87,6 +87,8 @@ def detect_rectangles(turtle) -> List:
     
     # find | |
     found_pair = []
+
+    center = (0,0)
     if len(vertical_rects) >= 2:
         # first 2 from the left
         found_pair = vertical_rects[:2]
@@ -94,7 +96,7 @@ def detect_rectangles(turtle) -> List:
         total_x = 0
         total_y = 0
         # draw boundaries and dots
-        for (x, y, w, h), i in found_pair:
+        for (x, y, w, h) in found_pair:
             # box
             cv2.rectangle(filtered, (x, y), (x + w, y + h), (0, 255, 0), 2)
             
@@ -104,11 +106,12 @@ def detect_rectangles(turtle) -> List:
             total_x += center_x
             total_y += center_y
             cv2.circle(filtered, (center_x, center_y), 2, (0, 0, 255), 3)
-        if (len(found_pair > 0)):
+        if len(found_pair) > 0:
             avg_x = total_x // len(found_pair)
             avg_y = total_y // len(found_pair)
-            
             cv2.circle(filtered, (avg_x, avg_y), 2, (0, 0, 255), 3)
+            center = (avg_x, avg_y)
+            print(center)
 
     cv2.imshow("CONTOURS", filtered)
     cv2.imshow("IMAGE", im)
