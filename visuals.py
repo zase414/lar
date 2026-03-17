@@ -43,7 +43,7 @@ def mouse_callback(event, x, y, flags, param):
         h, s, v = hsv[y, x]
         print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
-def detect_balls(turtle) -> tuple[tuple[int, int], int]:
+def detect_balls(turtle) -> Tuple[Tuple[int, int], int]:
     HUE_LOW = 25
     HUE_HIGH = 65
     SAT_MIN = 37
