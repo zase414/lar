@@ -7,9 +7,9 @@ from scipy.io import savemat
 
 import numpy as np
 
-ERROR = -100
-
 import cv2
+
+ERROR = -100
 
 def main():
     turtle = Turtlebot(rgb=True, pc=True)
