@@ -118,7 +118,7 @@ def detect_rectangles(turtle) -> Tuple[int, int]:
     
     for c in contours:
         area = cv2.contourArea(c)
-        if area > 300: # no noise
+        if area > 800: # no noise
             
             x, y, w, h = cv2.boundingRect(c)
             
