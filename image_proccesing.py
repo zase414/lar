@@ -2,14 +2,14 @@ from __future__ import print_function
 
 from numpy.ma.core import negative
 
+from enums import depth_ERR
+
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from scipy.io import savemat
 
 import numpy as np
 
 import cv2
-
-ERROR = -100
 
 def main():
     turtle = Turtlebot(rgb=True, pc=True)
@@ -39,12 +39,12 @@ def space_infront(turtle) -> bool:
 def get_depth(turtle, center_x, center_y, radius) -> float:
     
     if radius < 2:
-        return ERROR
+        return depth_ERR   # -100
 
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
-        return ERROR
+        return depth_ERR
 
     max_x = 640
     max_y = 480
@@ -73,7 +73,7 @@ def get_depth(turtle, center_x, center_y, radius) -> float:
 
     if val_count == 0:
         print("Objekt je příliš blízko. Žádná data.")
-        return ERROR
+        return depth_ERR
         
     average_depth = depth_sum / val_count
     print(f"Objekt je daleko: {average_depth:.2f} m")

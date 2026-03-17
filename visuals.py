@@ -4,6 +4,7 @@ from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
 from image_proccesing import get_depth
+from enums import depth_ERR
 
 import numpy as np
 
@@ -42,7 +43,7 @@ def mouse_callback(event, x, y, flags, param):
         h, s, v = hsv[y, x]
         print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
-def detect_balls(turtle) -> tuple[tuple[int, int], int]:
+def detect_balls(turtle) -> tuple[tuple[int, int], int, float]:
     depth = 0
     HUE_LOW = 25
     HUE_HIGH = 65
@@ -67,6 +68,7 @@ def detect_balls(turtle) -> tuple[tuple[int, int], int]:
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     center = tuple()
     radius = 0
+    depth = depth_ERR  # -100
     for c in contours:
         area = cv2.contourArea(c)
         if area > 300:
@@ -77,7 +79,7 @@ def detect_balls(turtle) -> tuple[tuple[int, int], int]:
                 (y, x), radius = cv2.minEnclosingCircle(c)
                 center = (int(y), int(x))
 
-                # depth = get_depth(turtle, center[1], center[0], radius)
+                depth = get_depth(turtle, center[1], center[0], radius)
                 cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
                 cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 
@@ -85,7 +87,7 @@ def detect_balls(turtle) -> tuple[tuple[int, int], int]:
     cv2.imshow("IMAGE", im)
     cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
     cv2.waitKey(1)
-    return center, radius
+    return center, radius, depth
 
 if __name__ == "__main__":
     main()

@@ -13,3 +13,5 @@ class Bumper(IntEnum):
     LEFT = 0
     CENTER = 1
     RIGHT = 2
+
+depth_ERR = -100
