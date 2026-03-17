@@ -61,7 +61,7 @@ class Ferenc:
         DEAD_CENTER_X = 640/2
         TOLERANCE_PIXEL_BAND = 15
         dist = DEAD_CENTER_X- center_x
-        while(abs(dist) <TOLERANCE_PIXEL_BAND):
+        while(abs(dist) > TOLERANCE_PIXEL_BAND):
             ang_speed = 0.5 if dist < 0 else -0.5
             print("distance on x axis: ", dist)
             turtle.cmd_velocity(0, ang_speed)
