@@ -16,7 +16,7 @@ def main():
     # takes picture and saves it on launch
     # save_img(turtle)
     while True:
-        detect_balls(turtle=turtle)
+        center, radius = detect_balls(turtle=turtle)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
@@ -42,7 +42,7 @@ def mouse_callback(event, x, y, flags, param):
         h, s, v = hsv[y, x]
         print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
-def detect_balls(turtle):
+def detect_balls(turtle) -> tuple[tuple[int, int], int]:
     depth = 0
     HUE_LOW = 25
     HUE_HIGH = 65
@@ -65,7 +65,8 @@ def detect_balls(turtle):
     filtered = cv2.bitwise_and(im, im, mask=mask)
 
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+    center = tuple()
+    radius = 0
     for c in contours:
         area = cv2.contourArea(c)
         if area > 300:
@@ -84,6 +85,7 @@ def detect_balls(turtle):
     cv2.imshow("IMAGE", im)
     cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
     cv2.waitKey(1)
+    return center, radius
 
 if __name__ == "__main__":
     main()
