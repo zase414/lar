@@ -44,7 +44,7 @@ def get_depth(turtle, center_x, center_y, radius) -> float:
     pc = turtle.get_point_cloud()
     max_x = 639
     max_y = 479
-    depth = float
+    depth = float(0)
     if pc is None:
         print('No point cloud')
 
@@ -60,14 +60,12 @@ def get_depth(turtle, center_x, center_y, radius) -> float:
         for j in range(-close_radius, close_radius, 1):
             # ferenc zběsile filtruje data (kontroluje zda je v obraze a filtruje chybové délky)
             if pc[center_x + i][center_y + j][2] is None:
-                depth += 0
                 val_num -= 1
             if ((center_x + i > 0) and (center_y + j > 0)
                 and (center_x + i < max_x) and (center_y + j < max_y)
                 and float(pc[center_x+i][center_y+j][2]) < 0.1):
                 depth += float(pc[center_x+i][center_y+j][2])
             else:
-                depth += 0
                 val_num -= 1
     depth = depth/val_num
     print("Objekt je daleko: ", depth, " m")
