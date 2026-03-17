@@ -7,9 +7,6 @@ from scipy.io import savemat
 
 import numpy as np
 
-def main():
-    turtle = Turtlebot(rgb=True, pc=True)
-
 def space_infront(turtle) -> bool:
     pc = turtle.get_point_cloud()
     if pc is None:
@@ -24,9 +21,9 @@ def space_infront(turtle) -> bool:
     mask = np.logical_and(mask, pc[:, :, 1] > -0.25)
     data = np.sort(pc[:, :, 2][mask])
 
-    # if closest 30 percent of depth data is further than 0,6 meters --> return True
+    # if closest 25 percent of depth data is further than 0,6 meters --> return True
     if data.size > 50:
-        dist = np.percentile(data, 23)
+        dist = np.percentile(data, 25)
         if dist > 0.7:
             return True
 
@@ -40,7 +37,7 @@ def get_depth(turtle, center_x, center_y, radius) -> float:
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
-        return depth_ERR
+        return depth_ERR  # -100
 
     max_x = 640
     max_y = 480
@@ -74,7 +71,3 @@ def get_depth(turtle, center_x, center_y, radius) -> float:
     average_depth = depth_sum / val_count
     print(f"Objekt je daleko: {average_depth:.2f} m")
     return average_depth
-
-
-if __name__ == "__main__":
-    main()
