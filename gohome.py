@@ -32,7 +32,7 @@ class Ferenc:
         # --- PID State Variables ---
         integral = 0
         prev_error = 0
-        prev_time = rate.get_time()
+        prev_time = get_time()
         
         TARGET_X = 640//2 
 
@@ -40,7 +40,7 @@ class Ferenc:
             # Assuming detect_rectangles returns an (x, y) tuple, or None if nothing is found
             center = self.detect_rectangles(turtle=turtle)
             
-            current_time = rate.get_time()
+            current_time = get_time()
             dt = current_time - prev_time
             
             if center is not None and dt > 0:
