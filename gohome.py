@@ -18,6 +18,8 @@ class Ferenc:
 
     def main(self):
         turtle = self.turtle
+
+        turtle.wait_for_point_cloud()
         sleep(2)
 
         turtle.register_bumper_event_cb(lambda msge : callback_bumper_stop(self, msge))
