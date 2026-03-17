@@ -18,8 +18,7 @@ def main():
     turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
 
     # --- PID Tuning Constants ---
-    # You will need to tune these values based on your robot's responsiveness
-    Kp = 0.005  # Proportional: Reacts to current error
+    Kp = 0.0005  # Proportional: Reacts to current error
     Ki = 0.0001 # Integral: Reacts to accumulated past error
     Kd = 0.001  # Derivative: Reacts to the rate of change of the error
 
@@ -30,7 +29,7 @@ def main():
     
     # Target Y-coordinate (e.g., center of a 480p image is 240)
     # Adjust this to match half the height of your specific camera resolution
-    TARGET_Y = 240 
+    TARGET_Y = 640//2 
 
     while True:
         # Assuming detect_rectangles returns an (x, y) tuple, or None if nothing is found
@@ -40,10 +39,10 @@ def main():
         dt = current_time - prev_time
         
         if center is not None and dt > 0:
-            cx, cy = center
+            center_x, center_y = center
             
             # 1. Calculate Error
-            error = TARGET_Y - cy
+            error = TARGET_Y - center_y
             
             # 2. Calculate P, I, and D terms
             proportional = Kp * error
@@ -69,6 +68,8 @@ def main():
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+        rate.sleep()
 
     cv2.destroyAllWindows()
 
