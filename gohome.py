@@ -131,7 +131,7 @@ class Ferenc:
         # first 2 from the left
         found_pair = vertical_rects[:2]
 
-        ret: Tuple[Point, Point, Point]
+        ret: Tuple[Point, Point, Point] = tuple()
         # draw boundaries and dots
         for (i, (x, y, w, h)) in enumerate(found_pair):
             # box
