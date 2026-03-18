@@ -100,6 +100,7 @@ class Ferenc:
         rate.sleep()
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
+        turtle = self.turtle
         DISTANCE_TOLERANCE = 0.05 #5cm
         TOLERANCE_PIXEL_BAND = 15
         DEAD_CENTER_X = 640 / 2
