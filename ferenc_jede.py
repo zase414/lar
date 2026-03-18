@@ -145,15 +145,20 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
         turtle.reset_odometry()
         current_coords = turtle.get_odometry()
+
+        # hexagon trajectory
         points = self.calculate_points(distance, current_coords)
 
-    def calculate_points(self, dist, coords) -> list:
-        """Calculates coordinates of sextagon to drive around the ball"""
-        points = []
-        ball_radius = 0.004
-        ball_center = [dist + ball_radius, 0, 0]  # 4cm radius of ball
+        # go from point to point for each point of the hexagon
+        for point in points:
+            self.ptp(point, rate)
 
-        # make all the points of a sextagon
+    def calculate_points(self, dist, coords) -> list:
+        """Calculates coordinates of hexagon to drive around the ball"""
+        points = []
+        ball_radius = 0.004 # 4cm radius of ball
+
+        # make all the points of a hexagon
         x = 0
         y = 0
 
@@ -186,6 +191,11 @@ class Ferenc:
         print(points)
 
         return points
+
+    def ptp(self, point, rate) -> None:
+        turtle = self.turtle
+        cur_coords = turtle.get_odometry()
+
 
 if __name__ == "__main__":
     ferenc = Ferenc()
