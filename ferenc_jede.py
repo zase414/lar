@@ -107,7 +107,7 @@ class Ferenc:
 
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
-        diff = dist - final_dist
+        diff = final_dist - dist
 
         while (not turtle.is_shutting_down()) and (abs(diff) > DISTANCE_TOLERANCE):
             lin_speed = -0.5 if diff < 0 else 0.5
@@ -117,8 +117,8 @@ class Ferenc:
                 turtle.play_sound(4)
 
             #if ball not totally infront, rotate
-            if (abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND):
-                self.rotate_toward_ball(rate)
+            #if (abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND):
+            #    self.rotate_toward_ball(rate)
 
 
             turtle.cmd_velocity(lin_speed, 0)
@@ -126,7 +126,7 @@ class Ferenc:
             (center_x, center_y), radius = detect_balls(turtle)
             dist = get_depth(turtle, center_x, center_y, radius)
             diff = final_dist - dist
-            print("distance from ball is :", dist, "diff from designated distance ", diff)
+            print("distance from ball is :", dist, "diff from designated distance ", diff, "X_pixel distance: ", DEAD_CENTER_X - center_x)
             rate.sleep()
 
         # reset params
