@@ -57,7 +57,7 @@ def get_depth(turtle, center_x, center_y, radius) -> Optional[float]:
             x = center_x + j
             
             if 0 <= y < max_y and 0 <= x < max_x:
-                point_data = pc[x][y][2]
+                point_data = pc[y][x][2]
                 
                 if point_data is not None:
                     point_depth = float(point_data)
