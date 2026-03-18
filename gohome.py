@@ -38,19 +38,16 @@ class Ferenc:
         TARGET_X = 640 // 2
 
         while not self.turtle.is_shutting_down():
-            if self.stop:
-                turtle.cmd_velocity(linear=0, angular=0)
-                rate.sleep()
-                continue
-
-            left, right, center = self.detect_rectangles(turtle=turtle)
+            rectangles = self.detect_rectangles(turtle=turtle)
 
             current_time = get_time()
             dt = current_time - prev_time
 
-            if center is not None and dt > 0:
+            if len(rectangles) and dt > 0 and not self.stop:
+                left, right, center = rectangles
+
                 center_x, center_y, center_dep = center
-                letf_x, left_y, left_dep = left
+                left_x, left_y, left_dep = left
                 right_x, right_y, right_dep = right
 
                 distance_err = right_dep - left_dep
