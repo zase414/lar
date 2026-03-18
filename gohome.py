@@ -26,12 +26,10 @@ class Ferenc:
         turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
         rate = Rate(10)
 
-        # --- PID Tuning Constants ---
         Kp = 0.01
         Ki = 0.0001
         Kd = 0.001
 
-        # --- PID State Variables ---
         integral = 0
         prev_error = 0
         prev_time = get_time()
@@ -39,7 +37,6 @@ class Ferenc:
         TARGET_X = 640 // 2
 
         while (not self.stop) and (not self.turtle.is_shutting_down()):
-            # Assuming detect_rectangles returns an (x, y) tuple, or None if nothing is found
             center = self.detect_rectangles(turtle=turtle)
 
             current_time = get_time()
@@ -48,30 +45,22 @@ class Ferenc:
             if center is not None and dt > 0:
                 center_x, center_y = center
 
-                # 1. Calculate Error
                 error = TARGET_X - center_x
 
-                # 2. Calculate P, I, and D terms
                 proportional = Kp * error
                 integral += error * dt
                 derivative = (error - prev_error) / dt
 
-                # 3. Calculate total PID output
                 pid_output = proportional + (Ki * integral) + (Kd * derivative)
 
-                # 4. Regulate Velocity
-                # Applying PID to angular velocity. Cap the max speed if necessary.
                 turtle.cmd_velocity(linear=0.4, angular=pid_output)
 
-                # 5. Store current values for the next loop iteration
                 prev_error = error
 
             else:
-                # Safety fallback: Stop moving if no rectangle is detected
                 turtle.cmd_velocity(linear=0.0, angular=0.0)
                 integral = 0
 
-            # Update prev_time regardless of detection to prevent massive dt spikes
             prev_time = current_time
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -96,7 +85,7 @@ class Ferenc:
         im = turtle.get_rgb_image()
         if im is None:
             return None
-
+        
         hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
 
         lower_bound = np.array([HUE_LOW, SAT_MIN, VALUE_MIN])
