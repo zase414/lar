@@ -270,7 +270,7 @@ class Ferenc:
 
             cur_coords = turtle.get_odometry()
             angle_diff = angle - cur_coords[2]
-            print(cur_coords[2])
+            print("Current angle is ", cur_coords[2], " rad")
             rate.sleep()
         turtle.cmd_velocity(0, 0)
 
