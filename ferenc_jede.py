@@ -261,7 +261,7 @@ class Ferenc:
         angle_diff = angle - cur_coords[2]
 
         # while ferenc is not rotated at the calculated angle -> rotate
-        while (not turtle.is_shutting_down()) and abs(angle_diff) < 0.02:
+        while (not turtle.is_shutting_down()) and (not abs(angle_diff) < 0.02):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
