@@ -73,8 +73,8 @@ def detect_balls(turtle) -> Tuple[Tuple[int, int], int]:
             circularity = (4 * np.pi * area) / (perimeter**2) if perimeter > 0 else 0
 
             if circularity > 0.7:
-                (y, x), radius = cv2.minEnclosingCircle(c)
-                center = (int(y), int(x))
+                (x, y), radius = cv2.minEnclosingCircle(c)
+                center = (int(x), int(y))
 
                 cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
                 cv2.circle(filtered, center, 2, (0, 0, 255), 3)

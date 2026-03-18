@@ -4,6 +4,7 @@ from enums import depth_ERR
 
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from scipy.io import savemat
+from typing import Optional
 
 import numpy as np
 
@@ -29,7 +30,7 @@ def space_infront(turtle) -> bool:
 
     return False
 
-def get_depth(turtle, center_x, center_y, radius) -> float | None:
+def get_depth(turtle, center_x, center_y, radius) -> Optional[float]:
     
     if radius < 2:
         return None
@@ -56,7 +57,7 @@ def get_depth(turtle, center_x, center_y, radius) -> float | None:
             x = center_x + j
             
             if 0 <= y < max_y and 0 <= x < max_x:
-                point_data = pc[x][y][2]
+                point_data = pc[y][x][2]
                 
                 if point_data is not None:
                     point_depth = float(point_data)
