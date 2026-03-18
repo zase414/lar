@@ -32,7 +32,7 @@ class Ferenc:
         # find and ball turn on to it
         self.rotate_toward_ball(rate)
         # drives until ball is 40cm infront of camera
-        self.drive_toward_ball(rate, 40)
+        self.drive_toward_ball(rate, 0.40)
 
         # points = self.calculate_points(1, [0, 0, 0]) # checking output
 
