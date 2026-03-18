@@ -13,7 +13,7 @@ class Ferenc:
         self.stop = False
 
     def main(self):
-        """Robot named Ferenc exits garage, then drives around the ball and parks back."""
+        """Ferenc exits garage, then drives around the ball and parks back."""
         turtle = self.turtle
 
         turtle.wait_for_point_cloud()
@@ -22,11 +22,6 @@ class Ferenc:
         turtle.register_bumper_event_cb(lambda msge : callback_bumper_stop(self, msge))
         turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
         rate = Rate(10)
-
-        # checking bumber status
-        while self.stop:
-            turtle.cmd_velocity(0, 0)
-            rate.sleep()
 
         # until robot finds garage exit spin
         self.find_exit(rate)
@@ -47,9 +42,11 @@ class Ferenc:
         while (not turtle.is_shutting_down()) and (not space):
             print("Finding exit")
             if self.stop:
+                print("Stopped")
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
+                print("Spin")
                 turtle.cmd_velocity(0.002, 0.4)
             space = space_infront(turtle=turtle)
             rate.sleep()
