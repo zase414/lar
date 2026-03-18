@@ -212,7 +212,7 @@ class Ferenc:
 
         angle_diff = angle - cur_coords[2]
         # while ferenc is not rotated at the calculated angle -> rotate
-        while (not turtle.is_shutting_down()) and abs(angle_diff) < angle_thresh:
+        while (not turtle.is_shutting_down()) and (not abs(angle_diff) < angle_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
@@ -224,7 +224,7 @@ class Ferenc:
             rate.sleep()
 
         # while ferenc is not located at x,y coords, drive forward:
-        while (not turtle.is_shutting_down()) and abs(x) < x_thresh and abs(y) < y_thresh:
+        while (not turtle.is_shutting_down()) and (not abs(x) < x_thresh) and (not abs(y) < y_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
@@ -237,7 +237,7 @@ class Ferenc:
             rate.sleep()
 
         # while ferenc is not rotated at the calculated angle -> rotate
-        while (not turtle.is_shutting_down()) and abs(angle_diff) < angle_thresh:
+        while (not turtle.is_shutting_down()) and (not abs(angle_diff) < angle_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
@@ -257,7 +257,7 @@ class Ferenc:
         turtle.reset_odometry()
         sleep(0.5)
         cur_coords = turtle.get_odometry()
-        angle = pi/2
+        angle = pi
         angle_diff = angle - cur_coords[2]
 
         # while ferenc is not rotated at the calculated angle -> rotate
@@ -266,7 +266,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0.02, 0.2)
+                turtle.cmd_velocity(0, 0.4)
 
             cur_coords = turtle.get_odometry()
             angle_diff = angle - cur_coords[2]
