@@ -35,7 +35,7 @@ class Ferenc:
         # points = self.calculate_points(1, [0, 0, 0]) # checking output
 
 
-    def find_exit(self, rate):
+    def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
         turtle = self.turtle
         space = space_infront(turtle=turtle)
@@ -55,7 +55,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
         rate.sleep()
 
-    def exit_garage(self, rate, space_detect_time):
+    def exit_garage(self, rate, space_detect_time) -> None:
         turtle = self.turtle
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.2):
             if self.stop:
@@ -70,7 +70,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
         rate.sleep()
 
-    def find_ball(self, rate):
+    def find_ball(self, rate) -> None:
         """Until ferenc finds ball he's spinning"""
         turtle = self.turtle
         (center_x, center_y), radius = detect_balls(turtle)
@@ -98,7 +98,7 @@ class Ferenc:
         rate.sleep()
 
 
-    def drive_around_ball(self, rate, distance):
+    def drive_around_ball(self, rate, distance) -> None:
         turtle = self.turtle
 
         turtle.cmd_velocity(0, 0)
@@ -127,9 +127,6 @@ class Ferenc:
         print(points)
 
         return points
-
-
-
 
 if __name__ == "__main__":
     ferenc = Ferenc()
