@@ -98,6 +98,7 @@ class Ferenc:
         # reset params
         turtle.cmd_velocity(0, 0)
         rate.sleep()
+
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
         turtle = self.turtle
