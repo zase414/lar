@@ -96,7 +96,7 @@ class Ferenc:
         # reset params
         turtle.cmd_velocity(0, 0)
         rate.sleep()
-    def drive_toward_ball(self, rate, final_dist):
+    def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
         DISTANCE_TOLERANCE = 0.05 #5cm
         TOLERANCE_PIXEL_BAND = 15
@@ -123,8 +123,13 @@ class Ferenc:
             (center_x, center_y), radius = detect_balls(turtle)
             dist = get_depth(turtle, center_x, center_y, radius)
             diff = final_dist - dist
-            print()
+            print("distance from ball is :", dist, "diff from designated distance ", diff)
             rate.sleep()
+
+        # reset params
+        print("distance achieved, final distance is :", dist, "diff from designated distance ", diff)
+        turtle.cmd_velocity(0, 0)
+        rate.sleep()
 
 
 
