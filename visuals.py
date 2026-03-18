@@ -68,7 +68,7 @@ def detect_balls(turtle) -> Tuple[Tuple[int, int], int]:
     radius = 0
     for c in contours:
         area = cv2.contourArea(c)
-        if area > 300:
+        if area > 200:
             perimeter = cv2.arcLength(c, True)
             circularity = (4 * np.pi * area) / (perimeter**2) if perimeter > 0 else 0
 
