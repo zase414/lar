@@ -43,7 +43,7 @@ class Ferenc:
             current_time = get_time()
             dt = current_time - prev_time
 
-            if len(rectangles) and dt > 0 and not self.stop:
+            if len(rectangles) == 3 and dt > 0 and not self.stop:
                 left, right, center = rectangles
 
                 center_x, center_y, center_dep = center
