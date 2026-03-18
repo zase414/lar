@@ -35,7 +35,7 @@ class Ferenc:
         self.exit_garage(rate, space_detect_time)
 
         # find and ball turn on to it
-        self.find_ball(rate)
+        # self.find_ball(rate)
 
         # points = self.calculate_points(1, [0, 0, 0]) # checking output
 
