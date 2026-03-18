@@ -5,7 +5,7 @@ from callbacks import callback_bumper_stop, callback_button0_resume
 from image_proccesing import space_infront
 from robolab_turtlebot import Turtlebot, Rate, get_time
 from visuals import detect_balls
-from math import pi, cos, sqrt
+from math import pi, cos, sqrt, sin
 
 class Ferenc:
     def __init__(self):
@@ -113,20 +113,38 @@ class Ferenc:
         """Calculates coordinates of sextagon to drive around the ball"""
         points = []
         ball_radius = 0.004
-        ball_center = [dist + ball_radius, 0, 0] # 4cm radius of ball
+        ball_center = [dist + ball_radius, 0, 0]  # 4cm radius of ball
 
         # make all the points of a sextagon
-        for i in range(5):
-            angle = i*(pi/3)
+        x = 0
+        y = 0
 
-            # pythagoras theorem
-            y = cos(pi/6)*(dist + ball_radius)
-            x = sqrt(y**2 - (dist + ball_radius)**2)
-            points[i] = [x, y, angle]
+        for i in range(5):
+            angle = i * (pi / 3)
+            if i == 0:
+                # pythagoras theorem
+                y = cos(pi / 6) * (dist + ball_radius)
+                x = sqrt(((dist + ball_radius) ** 2) - (y ** 2))
+
+            if i == 1:
+                x += dist + 0.004
+
+            if i == 2:
+                y = coords[1]
+                x += sin(pi / 6) * (dist + ball_radius)
+
+            if i == 3:
+                y = -(cos(pi / 6) * (dist + ball_radius))
+                x -= sin(pi / 6) * (dist + ball_radius)
+
+            if i == 4:
+                x -= dist + 0.004
+
+            points.append([x, y, angle])
 
         # point of return
         # starting point, but ferenc is looking the other way
-        points[5] = [coords[0], coords[2], coords[3] + pi]
+        points.append([coords[0], coords[1], coords[2] + pi])
         print(points)
 
         return points
