@@ -250,6 +250,28 @@ class Ferenc:
         # reset params
         turtle.cmd_velocity(0, 0)
 
+    def test_odometry(self, rate):
+        turtle = self.turtle
+        turtle.cmd_velocity(0, 0)
+        turtle.reset_odometry()
+        sleep(0.5)
+        cur_coords = turtle.get_odometry()
+        angle = pi/2
+        angle_diff = angle - cur_coords[2]
+
+        # while ferenc is not rotated at the calculated angle -> rotate
+        while (not turtle.is_shutting_down()) and abs(angle_diff) < 0.02:
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(4)
+            else:
+                turtle.cmd_velocity(0.02, 0.2)
+
+            cur_coords = turtle.get_odometry()
+            angle_diff = angle - cur_coords[2]
+            print(cur_coords[2])
+            rate.sleep()
+        turtle.cmd_velocity(0, 0)
 
 if __name__ == "__main__":
     ferenc = Ferenc()
