@@ -120,11 +120,10 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 #if ball not totally infront, rotate
-                #if (abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND):
-                #    self.rotate_toward_ball(rate)
-
-
-                turtle.cmd_velocity(lin_speed, 0)
+                if (abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND):
+                    self.rotate_toward_ball(rate)
+                else:
+                    turtle.cmd_velocity(lin_speed, 0)
                 
                 (center_x, center_y), radius = detect_balls(turtle)
                 dist = get_depth(turtle, center_x, center_y, radius)
