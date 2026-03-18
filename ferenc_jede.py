@@ -172,7 +172,7 @@ class Ferenc:
             angle = i * (pi / 3)
             if i == 0:
                 # pythagoras theorem
-                y = cos(pi / 6) * (dist + ball_radius)
+                y = -(cos(pi / 6) * (dist + ball_radius))
                 x = sqrt(((dist + ball_radius) ** 2) - (y ** 2))
 
             if i == 1:
@@ -183,11 +183,12 @@ class Ferenc:
                 x += sin(pi / 6) * (dist + ball_radius)
 
             if i == 3:
-                y = -(cos(pi / 6) * (dist + ball_radius))
+                y = cos(pi / 6) * (dist + ball_radius)
                 x -= sin(pi / 6) * (dist + ball_radius)
 
             if i == 4:
                 x -= dist + 0.004
+                angle = -2 * (pi / 3)
 
             points.append([x, y, angle])
 
