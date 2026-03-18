@@ -5,7 +5,7 @@ from callbacks import callback_bumper_stop, callback_button0_resume
 from image_proccesing import space_infront, get_depth
 from robolab_turtlebot import Turtlebot, Rate, get_time
 from visuals import detect_balls
-from math import pi, cos, sqrt, sin
+from math import pi, cos, sqrt, sin, atan2
 
 class Ferenc:
     def __init__(self):
@@ -200,6 +200,55 @@ class Ferenc:
     def ptp(self, point, rate) -> None:
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
+        x_thresh = 0.015
+        y_thresh = 0.015
+        angle_thresh = 0.015
+        x = point[0] - cur_coords[0]
+        y = point[1] - cur_coords[1]
+
+        # calculate angle to the next point
+        angle = atan2(y, x)
+
+        angle_diff = angle - cur_coords[2]
+        # while ferenc is not rotated at the calculated angle -> rotate
+        while (not turtle.is_shutting_down()) and abs(angle_diff) < angle_thresh:
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(4)
+            else:
+                turtle.cmd_velocity(0.02, 0.2)
+
+            cur_coords = turtle.get_odometry()
+            angle_diff = angle - cur_coords[2]
+            rate.sleep()
+
+        # while ferenc is not located at x,y coords, drive forward:
+        while (not turtle.is_shutting_down()) and abs(x) < x_thresh and abs(y) < y_thresh:
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(4)
+            else:
+                turtle.cmd_velocity(0.1, 0)
+
+            cur_coords = turtle.get_odometry()
+            x = point[0] - cur_coords[0]
+            y = point[1] - cur_coords[1]
+            rate.sleep()
+
+        # while ferenc is not rotated at the calculated angle -> rotate
+        while (not turtle.is_shutting_down()) and abs(angle_diff) < angle_thresh:
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(4)
+            else:
+                turtle.cmd_velocity(0.02, 0.2)
+
+            cur_coords = turtle.get_odometry()
+            angle_diff = point[2] - cur_coords[2]
+            rate.sleep()
+
+        # reset params
+        turtle.cmd_velocity(0, 0)
 
 
 if __name__ == "__main__":
