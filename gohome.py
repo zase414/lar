@@ -85,7 +85,7 @@ class Ferenc:
             h, s, v = hsv[y, x]
             print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
-    def detect_rectangles(self, turtle) -> Tuple[Vec3Int, Vec3Int, Vec3Int]:
+    def detect_rectangles(self, turtle) -> List[Vec3Int]:
         HUE_LOW   = 110
         HUE_HIGH  = 140
         SAT_MIN   = 40
@@ -131,7 +131,7 @@ class Ferenc:
         # first 2 from the left
         found_pair = vertical_rects[:2]
 
-        ret: Tuple[Point, Point, Point]
+        ret: List[Point, Point, Point] = []
         # draw boundaries and dots
         for (i, (x, y, w, h)) in enumerate(found_pair):
             # box
