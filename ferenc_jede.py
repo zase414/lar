@@ -201,9 +201,9 @@ class Ferenc:
     def ptp(self, point, rate) -> None:
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
-        x_thresh = 0.015
-        y_thresh = 0.015
-        angle_thresh = 0.015
+        x_thresh = 0.02
+        y_thresh = 0.02
+        angle_thresh = 0.02
         x = point[0] - cur_coords[0]
         y = point[1] - cur_coords[1]
 
@@ -217,7 +217,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0.02, 0.2)
+                turtle.cmd_velocity(0, 0.2)
 
             cur_coords = turtle.get_odometry()
             angle_diff = angle - cur_coords[2]
@@ -229,7 +229,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0.1, 0)
+                turtle.cmd_velocity(0.2, 0)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -242,7 +242,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0.02, 0.2)
+                turtle.cmd_velocity(0, 0.2)
 
             cur_coords = turtle.get_odometry()
             angle_diff = point[2] - cur_coords[2]
