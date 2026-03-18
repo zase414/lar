@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
-from image_proccesing import space_infront
+from image_proccesing import space_infront, get_depth
 from robolab_turtlebot import Turtlebot, Rate, get_time
 from visuals import detect_balls
 from math import pi, cos, sqrt
@@ -30,7 +30,7 @@ class Ferenc:
         self.exit_garage(rate, space_detect_time)
 
         # find and ball turn on to it
-        # self.find_ball(rate)
+        # self.rotate_toward_ball(rate)
 
         # points = self.calculate_points(1, [0, 0, 0]) # checking output
 
@@ -70,7 +70,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
         rate.sleep()
 
-    def find_ball(self, rate) -> None:
+    def rotate_toward_ball(self, rate) -> None:
         """Until ferenc finds ball he's spinning"""
         turtle = self.turtle
         (center_x, center_y), radius = detect_balls(turtle)
@@ -96,6 +96,39 @@ class Ferenc:
         # reset params
         turtle.cmd_velocity(0, 0)
         rate.sleep()
+    def drive_toward_ball(self, rate, final_dist):
+        """until distance to ball is final_dist"""
+        DISTANCE_TOLERANCE = 0.05 #5cm
+        TOLERANCE_PIXEL_BAND = 15
+        DEAD_CENTER_X = 640 / 2
+
+        (center_x, center_y), radius = detect_balls(turtle)
+        dist = get_depth(turtle, center_x, center_y, radius)
+        diff = final_dist - dist
+
+        while (not turtle.is_shutting_down()) and (abs(diff) > DISTANCE_TOLERANCE):
+            lin_speed = -0.5 if diff < 0 else 0.5
+
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(4)
+
+            #if ball not totally infront, rotate
+            if (abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND):
+                rotate_toward_ball(self, rate)
+
+
+            turtle.cmd_velocity(lin_speed, 0)
+            
+            (center_x, center_y), radius = detect_balls(turtle)
+            dist = get_depth(turtle, center_x, center_y, radius)
+            diff = final_dist - dist
+            print()
+            rate.sleep()
+
+
+
+
 
 
     def drive_around_ball(self, rate, distance) -> None:
