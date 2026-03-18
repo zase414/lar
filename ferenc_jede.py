@@ -3,7 +3,7 @@
 from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
 from image_proccesing import space_infront, get_depth
-from robolab_turtlebot import Turtlebot, Rate, get_time
+from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from visuals import detect_balls
 from math import pi, cos, sqrt, sin, atan2
 
@@ -148,6 +148,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         turtle.reset_odometry()
+        sleep(0.5)
         current_coords = turtle.get_odometry()
 
         # hexagon trajectory
