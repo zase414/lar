@@ -118,7 +118,7 @@ class Ferenc:
 
             #if ball not totally infront, rotate
             if (abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND):
-                rotate_toward_ball(self, rate)
+                self.rotate_toward_ball(rate)
 
 
             turtle.cmd_velocity(lin_speed, 0)
