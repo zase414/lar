@@ -246,7 +246,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0.2)
 
             cur_coords = turtle.get_odometry()
-            angle_diff = (point[2]+0.02) - cur_coords[2]  # little over rotation so it can spin only in one direction
+            angle_diff = (point[2]+0.02) - cur_coords[2]  # little over-rotation so it can spin only in one direction
             rate.sleep()
 
         # reset params
