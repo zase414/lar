@@ -125,6 +125,8 @@ class Ferenc:
             
             (center_x, center_y), radius = detect_balls(turtle)
             dist = get_depth(turtle, center_x, center_y, radius)
+            if dist is None:
+                break
             diff = final_dist - dist
             print("distance from ball is :", dist, "diff from designated distance ", diff, "X_pixel distance: ", DEAD_CENTER_X - center_x)
             rate.sleep()
