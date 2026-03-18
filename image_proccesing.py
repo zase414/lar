@@ -29,15 +29,15 @@ def space_infront(turtle) -> bool:
 
     return False
 
-def get_depth(turtle, center_x, center_y, radius) -> float:
+def get_depth(turtle, center_x, center_y, radius) -> float | None:
     
     if radius < 2:
-        return depth_ERR   # -100
+        return None
 
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
-        return depth_ERR  # -100
+        return None
 
     max_x = 640
     max_y = 480
@@ -66,7 +66,7 @@ def get_depth(turtle, center_x, center_y, radius) -> float:
 
     if val_count == 0:
         print("Objekt je příliš blízko. Žádná data.")
-        return depth_ERR
+        return None
         
     average_depth = depth_sum / val_count
     print(f"Objekt je daleko: {average_depth:.2f} m")
