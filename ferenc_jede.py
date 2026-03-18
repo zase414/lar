@@ -34,7 +34,6 @@ class Ferenc:
         # drives until ball is 40cm infront of camera
         self.drive_toward_ball(rate, 0.40)
 
-        # points = self.calculate_points(1, [0, 0, 0]) # checking output
 
 
     def find_exit(self, rate) -> None:
