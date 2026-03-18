@@ -145,7 +145,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
         turtle.reset_odometry()
         current_coords = turtle.get_odometry()
-        # points = self.calculate_points(distance, current_coords)
+        points = self.calculate_points(distance, current_coords)
 
     def calculate_points(self, dist, coords) -> list:
         """Calculates coordinates of sextagon to drive around the ball"""
