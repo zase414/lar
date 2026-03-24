@@ -35,8 +35,8 @@ class Ferenc:
         turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
         rate = Rate(10)
 
-        Kp = 0.003
-        Ki = 0.000005
+        Kp = 0.0005
+        Ki = 0.000002
         Kd = 0.001
 
         integral = 0
@@ -108,7 +108,7 @@ class Ferenc:
                 integral += error * dt
                 derivative = (error - prev_error) / dt
 
-                pid_output = min(max(proportional + (Ki * integral) + 0*(Kd * derivative), -1), 1)
+                pid_output = min(max(proportional + (Ki * integral) + (Kd * derivative), -1), 1)
 
                 turtle.cmd_velocity(linear=0.3, angular=pid_output)
 
