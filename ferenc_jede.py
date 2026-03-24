@@ -151,8 +151,6 @@ class Ferenc:
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
 
-        print("The turtle is ", dist, " m far")
-
         turtle.cmd_velocity(0, 0)
         turtle.reset_odometry()
         sleep(0.5)
@@ -170,7 +168,7 @@ class Ferenc:
     def calculate_points(self, dist, coords) -> list:
         """Calculates coordinates of hexagon to drive around the ball"""
         points = []
-        ball_radius = 0.004 # 4cm radius of ball
+        ball_radius = 0.04 # 4cm radius of ball
 
         # make all the points of a hexagon
         x = 0
@@ -184,7 +182,7 @@ class Ferenc:
                 x = sqrt(((dist + ball_radius) ** 2) - (y ** 2))
 
             if i == 1:
-                x += dist + 0.004
+                x += dist + 0.04
 
             if i == 2:
                 y = coords[1]
@@ -195,7 +193,7 @@ class Ferenc:
                 x -= sin(pi / 6) * (dist + ball_radius)
 
             if i == 4:
-                x -= dist + 0.004
+                x -= dist + 0.04
                 angle = -2 * (pi / 3)
 
             points.append([x, y, angle])
@@ -203,23 +201,22 @@ class Ferenc:
         # point of return
         # starting point, but ferenc is looking the other way
         points.append([coords[0], coords[1], coords[2] + pi])
-        print(points)
 
         return points
 
     def go_ptp(self, point, rate) -> None:
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
-        x_thresh = 0.02
-        y_thresh = 0.02
+        dist_thresh = 0.02
         angle_thresh = 0.02
         x = point[0] - cur_coords[0]
         y = point[1] - cur_coords[1]
+        d = sqrt(x**2 + y**2)
 
         # calculate angle to the next point
         angle = atan2(y, x)
 
-        angle_diff = angle - cur_coords[2]
+        angle_diff = self.normalize_angle(angle - cur_coords[2])
         # while ferenc is not rotated at the calculated angle -> rotate
         while (not turtle.is_shutting_down()) and (not abs(angle_diff) < angle_thresh):
             if self.stop:
@@ -229,13 +226,12 @@ class Ferenc:
                 turtle.cmd_velocity(0, -0.2)
 
             cur_coords = turtle.get_odometry()
-            angle_diff = angle - cur_coords[2]
+            angle_diff = self.normalize_angle(angle - cur_coords[2])
 
-            print(cur_coords)
             rate.sleep()
 
         # while ferenc is not located at x,y coords, drive forward:
-        while (not turtle.is_shutting_down()) and (not abs(x) < x_thresh) and (not abs(y) < y_thresh):
+        while (not turtle.is_shutting_down()) and (not abs(d) < dist_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
@@ -245,11 +241,13 @@ class Ferenc:
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
             y = point[1] - cur_coords[1]
+            d = sqrt(x**2 + y**2) # distance from point
 
             print(cur_coords)
             rate.sleep()
 
         # while ferenc is not rotated at the calculated angle -> rotate
+        angle_diff = self.normalize_angle((point[2] + 0.02) - cur_coords[2])  # little over-rotation so it can spin only in one direction
         while (not turtle.is_shutting_down()) and (not abs(angle_diff) < angle_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -258,13 +256,16 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0.2)
 
             cur_coords = turtle.get_odometry()
-            angle_diff = (point[2]+0.02) - cur_coords[2]  # little over-rotation so it can spin only in one direction
+            angle_diff = self.normalize_angle((point[2]+0.02) - cur_coords[2])   # little over-rotation so it can spin only in one direction
 
-            print(cur_coords)
             rate.sleep()
 
         # reset params
         turtle.cmd_velocity(0, 0)
+
+    def normalize_angle(self, angle):
+        """Normalizes an angle to be strictly within -pi and pi"""
+        return (angle + pi) % (2 * pi) - pi
 
     def test_odometry(self, rate):
         turtle = self.turtle
