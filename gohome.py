@@ -67,7 +67,7 @@ class Ferenc:
                 prev_error = error
                 prev_time = current_time
             else:
-                turtle.cmd_velocity(linear=0.0, angular=0.1)
+                turtle.cmd_velocity(linear=0.0, angular=0.5)
                 integral = 0
                 prev_time = current_time
 
