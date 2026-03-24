@@ -52,9 +52,50 @@ class Ferenc:
                 left_x, left_y, left_dep = left
                 right_x, right_y, right_dep = right
 
-                distance_err = (right_dep - left_dep) * 0.1
+                # --- DYNAMIC TARGET CALCULATION ---
+                # 1. Camera setup and safety distance
+                fx = 600.0  # Approx focal length for Turtlebot camera (tune if needed)
+                D_safe = 0.5  # Distance to aim for in front of the garage (assume meters)
+                              # Note: If your depth is in millimeters, change this to 500.
 
-                error = TARGET_X - center_x
+                # 2. Map pixels and depth to 3D space
+                X_L = (left_x - 320) * left_dep / fx
+                Z_L = left_dep
+                X_R = (right_x - 320) * right_dep / fx
+                Z_R = right_dep
+
+                # 3. Find 3D midpoint of the garage entrance
+                X_mid = (X_L + X_R) / 2.0
+                Z_mid = (Z_L + Z_R) / 2.0
+
+                # 4. Calculate the normal vector pointing straight OUT of the garage
+                dX = X_R - X_L
+                dZ = Z_R - Z_L
+                
+                N_X = dZ
+                N_Z = -dX
+
+                # Normalize the vector
+                length = (N_X**2 + N_Z**2)**0.5
+                if length != 0:
+                    n_X = N_X / length
+                    n_Z = N_Z / length
+                else:
+                    n_X, n_Z = 0, 1
+
+                # 5. Calculate target point D_safe meters in front of the garage
+                X_target = X_mid + D_safe * n_X
+                Z_target = Z_mid + D_safe * n_Z
+
+                # 6. Project this 3D target back to a 2D pixel on the camera
+                if Z_target > 0.01:
+                    projected_target_x = int(320 + (X_target * fx / Z_target))
+                else:
+                    projected_target_x = 320
+                # -----------------------------------
+
+                # We want the virtual projected target to be in the center of the camera (320)
+                error = 320 - projected_target_x
 
                 proportional = Kp * error
                 integral += error * dt
@@ -62,7 +103,7 @@ class Ferenc:
 
                 pid_output = proportional + (Ki * integral) + (Kd * derivative)
 
-                turtle.cmd_velocity(linear=0.4, angular=pid_output + distance_err)
+                turtle.cmd_velocity(linear=0.4, angular=pid_output)
 
                 prev_error = error
                 prev_time = current_time
