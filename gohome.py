@@ -35,104 +35,108 @@ class Ferenc:
         turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
         rate = Rate(10)
 
-        Kp = 0.0005
-        Ki = 0.000002
-        Kd = 0.001
+        # -----------------------------------
+        # NEW ODOMETRY TARGET & GAINS
+        # -----------------------------------
+        target_odo_x = None
+        target_odo_y = None
 
-        integral = 0
-        prev_error = 0
-        prev_time = get_time()
+        Kp_linear = 0.3      # Forward speed cap
+        Kp_angular = 1.5     # Steering aggressiveness
+        GOAL_TOLERANCE = 0.05  # 5 cm stopping threshold
 
-        TARGET_X = 640 // 2
-        H_FOV = 60.0
         WIDTH = 640
-                
-                
+        H_FOV = 60.0
         fx = get_focal_length(WIDTH, H_FOV)
-        goal_achieved = false
 
         while not self.turtle.is_shutting_down():
-            rectangles = self.detect_rectangles(turtle=turtle)
+            if self.stop:
+                turtle.cmd_velocity(linear=0.0, angular=0.0)
+                rate.sleep()
+                continue
 
-            current_time = get_time()
-            dt = current_time - prev_time
+            # 1. Get current Odometry pose (x, y, theta)
+            pose = turtle.get_odometry()
+            if pose is None:
+                rate.sleep()
+                continue
+            curr_x, curr_y, curr_theta = pose
 
-            if goal_achieved:
+            # 2. Lock target in Odometry frame ONCE
+            if target_odo_x is None:
+                rectangles = self.detect_rectangles(turtle=turtle)
+
+                if rectangles and len(rectangles) >= 2:
+                    # Extract positions of Left and Right visual markers
+                    left, right = rectangles[0], rectangles[1]
+                    left_x, left_dep = left[0], left[2]
+                    right_x, right_dep = right[0], right[2]
+
+                    X_L = (left_x - 320) * left_dep / fx
+                    Z_L = left_dep
+                    X_R = (right_x - 320) * right_dep / fx
+                    Z_R = right_dep
+
+                    X_mid = (X_L + X_R) / 2.0
+                    Z_mid = (Z_L + Z_R) / 2.0
+
+                    # Create standard offset in front of garage
+                    D_safe = 0.8 
+                    dX, dZ = X_R - X_L, Z_R - Z_L
+                    length = math.hypot(dZ, -dX)
+
+                    n_X, n_Z = (dZ / length, -dX / length) if length > 0 else (0, 1)
+
+                    X_target_cam = X_mid + D_safe * n_X
+                    Z_target_cam = Z_mid + D_safe * n_Z
+
+                    # Convert Camera coordinates to Local Robot Frame (Forward=X, Left=Y)
+                    local_x = Z_target_cam
+                    local_y = -X_target_cam
+
+                    # Rotate and Translate local coordinates into Global Odometry frame
+                    target_odo_x = curr_x + local_x * math.cos(curr_theta) - local_y * math.sin(curr_theta)
+                    target_odo_y = curr_y + local_x * math.sin(curr_theta) + local_y * math.cos(curr_theta)
+
+                    print(f"--> Target locked in odometry space at: ({target_odo_x:.2f}, {target_odo_y:.2f})")
+                else:
+                    # Still looking for target: turn in place to scan
+                    turtle.cmd_velocity(linear=0.0, angular=0.4)
+                    rate.sleep()
+                    continue
+
+            # 3. Odometry Control Loop: Navigate to the locked target
+            dx = target_odo_x - curr_x
+            dy = target_odo_y - curr_y
+            distance = math.hypot(dx, dy)
+
+            # Check if we arrived
+            if distance < GOAL_TOLERANCE:
+                print("Distance to point is 0! Objective complete.")
+                turtle.cmd_velocity(linear=0.0, angular=0.0)
                 break
 
-            if rectangles and len(rectangles) == 3 and dt > 0 and not self.stop:
-                left, right, center = rectangles
+            # Calculate steering angle
+            desired_theta = math.atan2(dy, dx)
+            angle_error = desired_theta - curr_theta
 
-                center_x, center_y, center_dep = center
-                left_x, left_y, left_dep = left
-                right_x, right_y, right_dep = right
-                
-                D_safe = 0.8 # Safe distance infront of the garage
+            # Normalize angle to [-PI, PI] to avoid spinning the long way
+            angle_error = (angle_error + math.pi) % (2 * math.pi) - math.pi
 
-                # 2. Map pixels and depth to 3D space
-                X_L = (left_x - 320) * left_dep / fx
-                Z_L = left_dep
-                X_R = (right_x - 320) * right_dep / fx
-                Z_R = right_dep
-
-                # 3. Find 3D midpoint of the garage entrance
-                X_mid = (X_L + X_R) / 2.0
-                Z_mid = (Z_L + Z_R) / 2.0
-
-                # 4. Calculate the normal vector pointing straight OUT of the garage
-                dX = X_R - X_L
-                dZ = Z_R - Z_L
-                
-                N_X = dZ
-                N_Z = -dX
-
-                # Normalize the vector
-                length = (N_X**2 + N_Z**2)**0.5
-                if length != 0:
-                    n_X = N_X / length
-                    n_Z = N_Z / length
-                else:
-                    n_X, n_Z = 0, 1
-
-                # 5. Calculate target point D_safe meters in front of the garage
-                X_target = X_mid + D_safe * n_X
-                Z_target = Z_mid + D_safe * n_Z
-
-                if Z_target < 0:
-                    goal_achieved = True
-
-                # 6. Project this 3D target back to a 2D pixel on the camera
-                if Z_target > 0.01:
-                    projected_target_x = int(320 + (X_target * fx / Z_target))
-                else:
-                    projected_target_x = 320
-                # -----------------------------------
-
-                # We want the virtual projected target to be in the center of the camera (320)
-                error = 320 - projected_target_x
-
-                proportional = Kp * error
-                integral += error * dt
-                derivative = (error - prev_error) / dt
-
-                pid_output = min(max(proportional + (Ki * integral) + (Kd * derivative), -1), 1)
-
-                turtle.cmd_velocity(linear=0.3, angular=pid_output)
-
-                prev_error = error
-                prev_time = current_time
+            # State Machine: If severely misaligned, turn in place. Otherwise, drive forward.
+            if abs(angle_error) > 0.3:
+                v = 0.0
+                w = Kp_angular * angle_error
             else:
-                turtle.cmd_velocity(linear=0.0, angular=0.5)
-                integral = 0
-                prev_time = current_time
+                v = min(Kp_linear, distance) # Smoothly slow down as you approach
+                w = Kp_angular * angle_error
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
+            turtle.cmd_velocity(linear=v, angular=w)
             rate.sleep()
 
         cv2.destroyAllWindows()
 
+        
     def detect_rectangles(self, turtle) -> List[Vec3Int]:
         HUE_LOW   = 110
         HUE_HIGH  = 140
