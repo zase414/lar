@@ -51,7 +51,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 print("Spin")
-                turtle.cmd_velocity(0, 0.28)
+                turtle.cmd_velocity(0, 0.3)
             space = space_infront(turtle=turtle)
             rate.sleep()
 
