@@ -26,16 +26,16 @@ class Ferenc:
         rate = Rate(10)
 
         # until robot finds garage exit spin
-        self.find_exit(rate)
-        space_detect_time = get_time()
+        # self.find_exit(rate)
+        # space_detect_time = get_time()
 #
-        self.exit_garage(rate, space_detect_time)
+        # self.exit_garage(rate, space_detect_time)
 #
         ## find and ball turn on to it
         # self.rotate_toward_ball(rate)
         ## drives until ball is 40cm infront of camera
         #self.drive_toward_ball(rate, 1)
-        # self.drive_around_ball(rate)
+        self.drive_around_ball(rate)
 
 
 
@@ -62,6 +62,7 @@ class Ferenc:
     def exit_garage(self, rate, space_detect_time) -> None:
         turtle = self.turtle
         turtle.reset_odometry()
+        sleep(0.2)
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.2):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -148,6 +149,7 @@ class Ferenc:
 
 
     def drive_around_ball(self, rate) -> None:
+        """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
 
         (center_x, center_y), radius = detect_balls(turtle)
@@ -158,7 +160,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         turtle.reset_odometry()
-        sleep(0.5)
+        sleep(0.2)
         current_coords = turtle.get_odometry()
 
         # hexagon trajectory
@@ -168,7 +170,7 @@ class Ferenc:
 
         # go from point to point for each point of the hexagon
         p_num = 0
-        point_of_return = False
+        point_of_return = False  # final point the hexagon (starting point but rotated by 180°)
         for point in points:
             p_num += 1
             if p_num == len(points):
@@ -192,7 +194,7 @@ class Ferenc:
                 x = sqrt(((dist + ball_radius) ** 2) - (y ** 2))
 
             if i == 1:
-                x += dist + 0.04
+                x += dist + ball_radius
 
             if i == 2:
                 y = coords[1]
@@ -203,7 +205,7 @@ class Ferenc:
                 x -= sin(pi / 6) * (dist + ball_radius)
 
             if i == 4:
-                x -= dist + 0.04
+                x -= dist + ball_radius
                 angle = -2 * (pi / 3)
 
             points.append([x, y, angle])
@@ -214,12 +216,17 @@ class Ferenc:
 
         return points
 
-    def go_ptp(self, point, rate, point_of_return) -> None:
+    def go_ptp(self, point, rate, point_of_return):
+        """Function that navigates from one point of a hexagon to the next"""
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
+
+        # thresholds fo accurate enough stopping in given points
         dist_thresh = 0.07
         angle_thresh = 0.024
         angle_is_close_thresh = 0.05
+
+        # current location and distance from goal point
         x = point[0] - cur_coords[0]
         y = point[1] - cur_coords[1]
         d = sqrt(x**2 + y**2)
@@ -227,12 +234,13 @@ class Ferenc:
         # calculate angle to the next point
         angle = atan2(y, x)
 
-        angle_diff = self.normalize_angle(angle - cur_coords[2])
         # while ferenc is not rotated at the calculated angle -> rotate
+        angle_diff = self.normalize_angle(angle - cur_coords[2])
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
+
             elif abs(angle_diff) < angle_is_close_thresh:
                 turtle.cmd_velocity(0, -0.21)
             else:
@@ -256,7 +264,6 @@ class Ferenc:
             y = point[1] - cur_coords[1]
             d = sqrt(x**2 + y**2) # distance from point
 
-            print(d)
             rate.sleep()
 
         # while ferenc is not rotated at the calculated angle -> rotate
