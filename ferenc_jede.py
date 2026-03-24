@@ -32,9 +32,9 @@ class Ferenc:
         self.exit_garage(rate, space_detect_time)
 #
         ## find and ball turn on to it
-        # self.rotate_toward_ball(rate)
+        self.rotate_toward_ball(rate)
         ## drives until ball is 40cm infront of camera
-        # self.drive_toward_ball(rate, 1)
+        self.drive_toward_ball(rate, 1)
         # self.drive_around_ball(rate)
 
     def find_exit(self, rate) -> None:
