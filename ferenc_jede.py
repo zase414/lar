@@ -217,8 +217,8 @@ class Ferenc:
     def go_ptp(self, point, rate, point_of_return) -> None:
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
-        dist_thresh = 0.07
-        angle_thresh = 0.025
+        dist_thresh = 0.06
+        angle_thresh = 0.022
         angle_is_close_thresh = 0.05
         x = point[0] - cur_coords[0]
         y = point[1] - cur_coords[1]
