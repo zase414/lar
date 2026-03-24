@@ -149,6 +149,7 @@ class Ferenc:
                 rate.sleep()
 
         # reset params
+        turtle.cmd_velocity(0, 0)
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
         if dist is None:
@@ -156,7 +157,6 @@ class Ferenc:
             dist = 0
         diff = dist - final_dist
         print("distance achieved, final distance is :", dist, "diff from designated distance ", diff)
-        turtle.cmd_velocity(0, 0)
         rate.sleep()
 
 
