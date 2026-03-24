@@ -92,10 +92,8 @@ class Ferenc:
             cv2.circle(im, (center_x, center_y), 2, (0, 0, 255), 3)
             cv2.imshow("IMAGE", im)
             cv2.waitKey(1)
-            ang_speed = -0.5 if dist < 0 else 0.5
-
-            if abs(dist) < TOLERANCE_PIXEL_BAND*3:
-                ang_speed = -0.2 if dist < 0 else 0.2
+            ang_speed = max(min(abs(dist * 0.01), 0.5), 0.1)
+            ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
