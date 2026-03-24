@@ -209,7 +209,7 @@ class Ferenc:
     def go_ptp(self, point, rate) -> None:
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
-        dist_thresh = 0.06
+        dist_thresh = 0.08
         angle_thresh = 0.02
         x = point[0] - cur_coords[0]
         y = point[1] - cur_coords[1]
@@ -249,16 +249,16 @@ class Ferenc:
             rate.sleep()
 
         # while ferenc is not rotated at the calculated angle -> rotate
-        angle_diff = self.normalize_angle((point[2] + 0.02) - cur_coords[2])  # little over-rotation so it can spin only in one direction
+        angle_diff = self.normalize_angle((point[2] + 0.03) - cur_coords[2])  # little over-rotation so it can spin only in one direction
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0, 0.2)
+                turtle.cmd_velocity(0, 0.3)
 
             cur_coords = turtle.get_odometry()
-            angle_diff = self.normalize_angle((point[2]+0.02) - cur_coords[2])   # little over-rotation so it can spin only in one direction
+            angle_diff = self.normalize_angle((point[2]+0.03) - cur_coords[2])   # little over-rotation so it can spin only in one direction
 
             rate.sleep()
 
