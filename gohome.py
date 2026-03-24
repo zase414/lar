@@ -15,7 +15,7 @@ Vec3Int = Tuple[int, int, int]
 
 class Ferenc:
     def __init__(self):
-        self.turtle = Turtlebot(rgb=True)
+        self.turtle = Turtlebot(rgb=True, pc=True)
         self.stop = False
 
     def main(self):
@@ -43,7 +43,7 @@ class Ferenc:
             current_time = get_time()
             dt = current_time - prev_time
 
-            if len(rectangles) == 3 and dt > 0 and not self.stop:
+            if rectangles and len(rectangles) == 3 and dt > 0 and not self.stop:
                 left, right, center = rectangles
 
                 center_x, center_y, center_dep = center
@@ -128,7 +128,7 @@ class Ferenc:
         # first 2 from the left
         found_pair = vertical_rects[:2]
 
-        ret: List[Point, Point, Point] = []
+        ret: List[Vec3Int, Vec3Int, Vec3Int] = []
         # draw boundaries and dots
         for (i, (x, y, w, h)) in enumerate(found_pair):
             # box
