@@ -49,12 +49,16 @@ class Ferenc:
                 
                 
         fx = get_focal_length(WIDTH, H_FOV)
+        goal_achieved = false
 
         while not self.turtle.is_shutting_down():
             rectangles = self.detect_rectangles(turtle=turtle)
 
             current_time = get_time()
             dt = current_time - prev_time
+
+            if goal_achieved:
+                break
 
             if rectangles and len(rectangles) == 3 and dt > 0 and not self.stop:
                 left, right, center = rectangles
@@ -93,6 +97,9 @@ class Ferenc:
                 # 5. Calculate target point D_safe meters in front of the garage
                 X_target = X_mid + D_safe * n_X
                 Z_target = Z_mid + D_safe * n_Z
+
+                if Z_target < 0:
+                    goal_achieved = True
 
                 # 6. Project this 3D target back to a 2D pixel on the camera
                 if Z_target > 0.01:
