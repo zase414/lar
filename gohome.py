@@ -23,6 +23,8 @@ class Ferenc:
         turtle = self.turtle
         sleep(2)
 
+        turtle.wait_for_point_cloud()
+
         turtle.register_bumper_event_cb(lambda msge: callback_bumper_stop(self, msge))
         turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
         rate = Rate(10)
@@ -60,12 +62,12 @@ class Ferenc:
 
                 pid_output = proportional + (Ki * integral) + (Kd * derivative)
 
-                turtle.cmd_velocity(linear=0.4, angular=pid_output + distance_err)
+                turtle.cmd_velocity(linear=0.4, angular=pid_output - distance_err)
 
                 prev_error = error
-                prev_time = current_time # Only update PID time when active
+                prev_time = current_time
             else:
-                turtle.cmd_velocity(linear=0.0, angular=0.1)
+                turtle.cmd_velocity(linear=0.0, angular=0.5)
                 integral = 0
                 prev_time = current_time
 
@@ -83,9 +85,12 @@ class Ferenc:
         VALUE_MIN = 40
 
         im = turtle.get_rgb_image()
+        
         if im is None:
             return None
-        
+            
+        cv2.imshow("IMAGE", im)
+
         hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
 
         lower_bound = np.array([HUE_LOW, SAT_MIN, VALUE_MIN])
@@ -109,16 +114,15 @@ class Ferenc:
                     if aspect_ratio > 1.5:
                         vertical_rects.append((x, y, w, h))
 
-        # Sort by X coordinate to distinguish left/right
+        # left/right
         vertical_rects = sorted(vertical_rects, key=lambda r: r[0])
 
         if len(vertical_rects) < 2:
             return None
 
-        # Take first 2 from the left
         found_pair = vertical_rects[:2]
 
-        ret: List[Vec3Int] = [] # Fixed type hint
+        ret: List[Vec3Int] = []
         
         for (x, y, w, h) in found_pair:
             cv2.rectangle(filtered, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -137,7 +141,6 @@ class Ferenc:
         cv2.circle(filtered, (avg_x, avg_y), 2, (0, 255, 0), 3)
         
         cv2.imshow("CONTOURS", filtered)
-        cv2.imshow("IMAGE", im)
         cv2.waitKey(1)
 
         return ret
