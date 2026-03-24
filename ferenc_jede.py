@@ -34,7 +34,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 40cm infront of camera
-        self.drive_toward_ball(rate, 0.65)
+        self.drive_toward_ball(rate, 0.8)
         self.drive_around_ball(rate)
 
 
