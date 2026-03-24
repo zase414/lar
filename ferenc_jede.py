@@ -36,7 +36,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
-        self.drive_toward_ball(rate, 0.75)
+        self.drive_toward_ball(rate, 0.8)
         self.drive_around_ball(rate)
 
 
@@ -157,16 +157,28 @@ class Ferenc:
         wanted_distance = 0.33
 
         (center_x, center_y), radius = detect_balls(turtle)
-        rate.sleep()
-        dist = get_depth(turtle, center_x, center_y, radius)
-        if dist is None:
+
+        distance_sum = 0
+        avg_den = 0
+        for i in range(3):
+            dist = get_depth(turtle, center_x, center_y, radius)
+            if dist is None:
+                continue
+            else:
+                distance_sum += dist
+                avg_den += 1
+
+        if distance_sum == 0:
             print("nevidim ho možo")
             return
 
-        final_dist = self.drive_closer(wanted_distance, dist, rate)
+        actual_dist = distance_sum/avg_den
+        print("Toto je vyprůměrovaná hodnota: ", actual_dist)
+
+        final_dist = self.drive_closer(wanted_distance, actual_dist, rate)
 
         turtle.reset_odometry()
-        sleep(0.1)
+        sleep(0.2)
         current_coords = turtle.get_odometry()
         # hexagon trajectory
         points = self.calculate_points(final_dist, current_coords)
