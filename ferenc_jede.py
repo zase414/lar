@@ -52,10 +52,14 @@ class Ferenc:
             space = space_infront(turtle=turtle)
             rate.sleep()
 
+        # reset params
+        turtle.cmd_velocity(0, 0)
+        rate.sleep()
+
     def exit_garage(self, rate, space_detect_time) -> None:
         turtle = self.turtle
         turtle.reset_odometry()
-        sleep(0.2)
+        sleep(0.1)
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.2):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -153,7 +157,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         turtle.reset_odometry()
-        sleep(0.2)
+        sleep(0.1)
         current_coords = turtle.get_odometry()
 
         # hexagon trajectory
