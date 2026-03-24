@@ -63,7 +63,7 @@ class Ferenc:
                 left_x, left_y, left_dep = left
                 right_x, right_y, right_dep = right
                 
-                D_safe = 0.4 # Safe distance infront of the garage
+                D_safe = 0.8 # Safe distance infront of the garage
 
                 # 2. Map pixels and depth to 3D space
                 X_L = (left_x - 320) * left_dep / fx
