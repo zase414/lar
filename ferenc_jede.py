@@ -36,7 +36,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
-        self.drive_toward_ball(rate, 0.7)
+        self.drive_toward_ball(rate, 0.75)
         self.drive_around_ball(rate)
 
 
@@ -122,7 +122,7 @@ class Ferenc:
 
         while (not turtle.is_shutting_down()) and (diff > DISTANCE_TOLERANCE):
             # if 20 cm far from destination - slows down
-            lin_speed = 0.26 if dist > (final_dist + 0.2) else 0.12
+            lin_speed = 0.2 if dist > (final_dist + 0.25) else 0.1
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
