@@ -115,7 +115,7 @@ class Ferenc:
         diff = dist - final_dist
 
         while (not turtle.is_shutting_down()) and (abs(diff) > DISTANCE_TOLERANCE):
-            lin_speed = 0.2
+            lin_speed = 0.15
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -137,6 +137,9 @@ class Ferenc:
                 rate.sleep()
 
         # reset params
+        (center_x, center_y), radius = detect_balls(turtle)
+        dist = get_depth(turtle, center_x, center_y, radius)
+        diff = final_dist - dist
         print("distance achieved, final distance is :", dist, "diff from designated distance ", diff)
         turtle.cmd_velocity(0, 0)
         rate.sleep()
