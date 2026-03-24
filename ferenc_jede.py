@@ -122,6 +122,8 @@ class Ferenc:
 
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
+        if dist is None:
+            dist = 0
         diff = dist - final_dist
 
         while (not turtle.is_shutting_down()) and (abs(diff) > DISTANCE_TOLERANCE):
