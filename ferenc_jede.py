@@ -34,7 +34,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 40cm infront of camera
-        self.drive_toward_ball(rate, 0.8)
+        self.drive_toward_ball(rate, 0.7)
         self.drive_around_ball(rate)
 
 
@@ -61,14 +61,14 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
-        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.4):
+        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.7):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
                 turtle.play_sound(4)
             else:
                 # go forward with 5° offset to negate early exit
-                self.go_forward(0.4, turtle.get_odometry()[2], pi/36)
+                self.go_forward(0.28, turtle.get_odometry()[2], pi/36)
                 rate.sleep()
 
         # reset params
