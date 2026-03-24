@@ -54,7 +54,7 @@ class Ferenc:
         GOAL_TOLERANCE = 0.05  # 5 cm stopping threshold
 
         WIDTH = 640
-        H_FOV = 60.0
+        H_FOV = 75.0
         fx = get_focal_length(WIDTH, H_FOV)
 
         while not self.turtle.is_shutting_down():
@@ -95,7 +95,7 @@ class Ferenc:
                     Z_mid = (Z_L + Z_R) / 2.0
 
                     # Create standard offset in front of garage
-                    D_safe = 0.8 
+                    D_safe = 0.4
                     dX, dZ = X_R - X_L, Z_R - Z_L
                     length = math.hypot(dZ, -dX)
 
