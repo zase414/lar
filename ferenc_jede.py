@@ -66,8 +66,8 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                # go forward with 10° offset to negate early exit
-                self.go_forward(0.4, turtle.get_odometry()[2], pi/18)
+                # go forward with 5° offset to negate early exit
+                self.go_forward(0.4, turtle.get_odometry()[2], pi/36)
                 rate.sleep()
 
         # reset params
