@@ -87,11 +87,6 @@ class Ferenc:
         dist = DEAD_CENTER_X - center_x
 
         while (not turtle.is_shutting_down()) and (abs(dist) > TOLERANCE_PIXEL_BAND):
-            im = turtle.get_rgb_image()
-            cv2.circle(im, (center_x, center_y), int(radius), (0, 255, 0), 2)
-            cv2.circle(im, (center_x, center_y), 2, (0, 0, 255), 3)
-            cv2.imshow("IMAGE", im)
-            cv2.waitKey(1)
             ang_speed = max(min(abs(dist * 0.01), 0.5), 0.1)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
