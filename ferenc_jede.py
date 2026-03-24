@@ -227,8 +227,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.03
-        angle_thresh = 0.015
+        dist_thresh = 0.034
+        angle_thresh = 0.018
         angle_is_close_thresh = 0.065
 
         # current location and distance from goal point
