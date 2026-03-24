@@ -1,7 +1,7 @@
 from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
 from enum import IntEnum
-from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
+from robolab_turtlebot import Turtlebot, Rate, get_time, sleep, get_rgb_K
 from datetime import datetime
 from scipy.io import savemat
 import math
@@ -26,6 +26,7 @@ class Ferenc:
         self.stop = False
 
     def main(self):
+        print(get_rgb_K(self))
         turtle = self.turtle
         sleep(2)
 
@@ -136,7 +137,7 @@ class Ferenc:
 
         cv2.destroyAllWindows()
 
-        
+
     def detect_rectangles(self, turtle) -> List[Vec3Int]:
         HUE_LOW   = 110
         HUE_HIGH  = 140
