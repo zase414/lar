@@ -16,6 +16,8 @@ class Ferenc:
         """Ferenc exits garage, then drives around the ball and parks back."""
         turtle = self.turtle
 
+        print("Main started")
+
         turtle.wait_for_point_cloud()
 
         # initialize bumber and buttons
