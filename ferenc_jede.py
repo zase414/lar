@@ -153,6 +153,7 @@ class Ferenc:
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
         if dist is None:
+            print("nevidim ho možo")
             return
 
         turtle.cmd_velocity(0, 0)
@@ -227,7 +228,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0, -0.2)
+                turtle.cmd_velocity(0, -0.4)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
@@ -240,7 +241,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0.2, 0)
+                turtle.cmd_velocity(0.3, 0)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -257,7 +258,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0, 0.3)
+                turtle.cmd_velocity(0, 0.4)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle((point[2]+0.03) - cur_coords[2])   # little over-rotation so it can spin only in one direction
