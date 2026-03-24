@@ -166,13 +166,13 @@ class Ferenc:
             print("nevidim ho možo")
             return
 
-        self.drive_closer(wanted_distance, dist, rate)
+        final_dist = self.drive_closer(wanted_distance, dist, rate)
 
         turtle.reset_odometry()
         sleep(0.1)
         current_coords = turtle.get_odometry()
         # hexagon trajectory
-        points = self.calculate_points(dist, current_coords)
+        points = self.calculate_points(final_dist, current_coords)
 
         print("\nPoints are:", points, "\n\n")
 
@@ -294,18 +294,21 @@ class Ferenc:
         # reset params
         turtle.cmd_velocity(0, 0)
 
-    def drive_closer(self, final_distance, starting_distance, rate):
+    def drive_closer(self, wanted_distance, starting_distance, rate) -> float:
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
 
         cur_coords = turtle.get_odometry()
-
-        while (starting_distance-cur_coords[0]) > final_distance:
+        final_distance = starting_distance-cur_coords[0]
+        while final_distance > wanted_distance:
             self.go_forward(0.2, cur_coords[2], 0)
 
             cur_coords = turtle.get_odometry()
+            final_distance = starting_distance - cur_coords[0]
             rate.sleep()
+
+        return final_distance
 
 
     def normalize_angle(self, angle):
