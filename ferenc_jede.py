@@ -150,6 +150,8 @@ class Ferenc:
 
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
+        if dist is None:
+            return
 
         turtle.cmd_velocity(0, 0)
         turtle.reset_odometry()
