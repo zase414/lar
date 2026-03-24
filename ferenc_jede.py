@@ -23,7 +23,7 @@ class Ferenc:
         turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
         rate = Rate(10)
 
-        self.test_odometry(rate)
+        # self.test_odometry(rate)
         # until robot finds garage exit spin
         #self.find_exit(rate)
         #space_detect_time = get_time()
@@ -31,9 +31,10 @@ class Ferenc:
         #self.exit_garage(rate, space_detect_time)
 #
         ## find and ball turn on to it
-        #self.rotate_toward_ball(rate)
+        # self.rotate_toward_ball(rate)
         ## drives until ball is 40cm infront of camera
         #self.drive_toward_ball(rate, 1)
+        self.drive_around_ball(rate)
 
 
 
@@ -144,8 +145,13 @@ class Ferenc:
 
 
 
-    def drive_around_ball(self, rate, distance) -> None:
+    def drive_around_ball(self, rate) -> None:
         turtle = self.turtle
+
+        (center_x, center_y), radius = detect_balls(turtle)
+        dist = get_depth(turtle, center_x, center_y, radius)
+
+        print("The turtle is ", dist, " m far")
 
         turtle.cmd_velocity(0, 0)
         turtle.reset_odometry()
@@ -153,11 +159,13 @@ class Ferenc:
         current_coords = turtle.get_odometry()
 
         # hexagon trajectory
-        points = self.calculate_points(distance, current_coords)
+        points = self.calculate_points(dist, current_coords)
+
+        print("points are:", points)
 
         # go from point to point for each point of the hexagon
         for point in points:
-            self.ptp(point, rate)
+            self.go_ptp(point, rate)
 
     def calculate_points(self, dist, coords) -> list:
         """Calculates coordinates of hexagon to drive around the ball"""
@@ -199,7 +207,7 @@ class Ferenc:
 
         return points
 
-    def ptp(self, point, rate) -> None:
+    def go_ptp(self, point, rate) -> None:
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
         x_thresh = 0.02
@@ -222,6 +230,8 @@ class Ferenc:
 
             cur_coords = turtle.get_odometry()
             angle_diff = angle - cur_coords[2]
+
+            print(cur_coords)
             rate.sleep()
 
         # while ferenc is not located at x,y coords, drive forward:
@@ -235,6 +245,8 @@ class Ferenc:
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
             y = point[1] - cur_coords[1]
+
+            print(cur_coords)
             rate.sleep()
 
         # while ferenc is not rotated at the calculated angle -> rotate
@@ -247,6 +259,8 @@ class Ferenc:
 
             cur_coords = turtle.get_odometry()
             angle_diff = (point[2]+0.02) - cur_coords[2]  # little over-rotation so it can spin only in one direction
+
+            print(cur_coords)
             rate.sleep()
 
         # reset params
