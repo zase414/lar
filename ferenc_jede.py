@@ -37,7 +37,7 @@ class Ferenc:
         self.rotate_toward_ball(rate)
         ## drives until ball is 40cm infront of camera
         self.drive_toward_ball(rate, 0.7)
-        # self.drive_around_ball(rate)
+        self.drive_around_ball(rate)
 
 
     def find_exit(self, rate) -> None:
