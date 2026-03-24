@@ -120,9 +120,19 @@ class Ferenc:
             dist = 0
         diff = dist - final_dist
 
-        while (not turtle.is_shutting_down()) and (diff > DISTANCE_TOLERANCE):
-            # if 20 cm far from destination - slows down
-            lin_speed = 0.18 if dist > (final_dist + 0.3) else 0.08
+        while not turtle.is_shutting_down():
+            (center_x, center_y), radius = detect_balls(turtle)
+            dist = get_depth(turtle, center_x, center_y, radius)
+
+            if dist is None:
+                break
+
+            diff = dist - final_dist
+
+            if diff <= DISTANCE_TOLERANCE:
+                break
+
+            lin_speed = max(0.05, min(0.25, diff))
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -130,12 +140,6 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 self.go_forward(lin_speed, turtle.get_odometry()[2], 0)
-                
-                (center_x, center_y), radius = detect_balls(turtle)
-                dist = get_depth(turtle, center_x, center_y, radius)
-                if dist is None:
-                    break
-                diff = dist - final_dist
                 # print("distance from ball is :", dist, "diff from designated distance ", diff, "X_pixel distance: ", DEAD_CENTER_X - center_x)
                 rate.sleep()
 
