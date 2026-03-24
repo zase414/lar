@@ -109,7 +109,7 @@ class Ferenc:
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
         turtle = self.turtle
-        DISTANCE_TOLERANCE = 0.03 # 3cm
+        DISTANCE_TOLERANCE = 0.02 # 2cm
 
         turtle.reset_odometry()
         sleep(0.1)
@@ -132,7 +132,7 @@ class Ferenc:
             if diff <= DISTANCE_TOLERANCE:
                 break
 
-            lin_speed = max(0.05, min(0.25, diff))
+            lin_speed = max(0.05, min(0.2, diff))
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
