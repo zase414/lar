@@ -121,7 +121,8 @@ class Ferenc:
         diff = dist - final_dist
 
         while (not turtle.is_shutting_down()) and (diff > DISTANCE_TOLERANCE):
-            lin_speed = 0.25 if dist > (final_dist + 0.5) else 0.1
+            # if 20 cm far from destination - slows down
+            lin_speed = 0.26 if dist > (final_dist + 0.2) else 0.12
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -153,7 +154,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.28
+        wanted_distance = 0.3
 
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
@@ -225,9 +226,9 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.07
-        angle_thresh = 0.024
-        angle_is_close_thresh = 0.05
+        dist_thresh = 0.06
+        angle_thresh = 0.02
+        angle_is_close_thresh = 0.06
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -245,9 +246,9 @@ class Ferenc:
                 turtle.play_sound(4)
 
             elif abs(angle_diff) < angle_is_close_thresh:
-                turtle.cmd_velocity(0, -0.21)
+                turtle.cmd_velocity(0, -0.2)
             else:
-                turtle.cmd_velocity(0, -0.52)
+                turtle.cmd_velocity(0, -0.5)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
@@ -260,7 +261,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(0.34, cur_coords[2], angle)
+                self.go_forward(0.32, cur_coords[2], angle)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -277,9 +278,9 @@ class Ferenc:
                 turtle.play_sound(4)
 
             elif point_of_return:
-                turtle.cmd_velocity(0, -0.51)
+                turtle.cmd_velocity(0, -0.5)
             else:
-                turtle.cmd_velocity(0, 0.51)
+                turtle.cmd_velocity(0, 0.5)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle((point[2]+0.03) - cur_coords[2])   # little over-rotation so it can spin only in one direction
@@ -290,6 +291,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
 
     def drive_closer(self, wanted_distance, starting_distance, rate) -> float:
+        """Goes closer to the ball even if it is too close to see"""
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
@@ -297,7 +299,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         final_distance = starting_distance - cur_coords[0]
         while final_distance > wanted_distance:
-            self.go_forward(0.08, cur_coords[2], 0)
+            self.go_forward(0.07, cur_coords[2], 0)
 
             cur_coords = turtle.get_odometry()
             final_distance = starting_distance - cur_coords[0]
