@@ -28,10 +28,10 @@ class Ferenc:
         rate = Rate(10)
 
         # until robot finds garage exit spin
-        self.find_exit(rate)
-        space_detect_time = get_time()
+        # self.find_exit(rate)
+        # space_detect_time = get_time()
 #
-        self.exit_garage(rate, space_detect_time)
+        # self.exit_garage(rate, space_detect_time)
 #
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
