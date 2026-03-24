@@ -136,9 +136,6 @@ class Ferenc:
                 continue # Skip the driving step until target_odo_x is firmly locked
 
             # 3. Odometry Control Loop: Navigate to the locked target
-            # ... (Keep your existing Step 3 code here) ...
-
-            # 3. Odometry Control Loop: Navigate to the locked target
             dx = target_odo_x - curr_x
             dy = target_odo_y - curr_y
             distance = math.hypot(dx, dy)
