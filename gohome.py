@@ -26,6 +26,7 @@ class Ferenc:
         self.stop = False
 
     def main(self):
+        print(get_rgb_K(self))
         turtle = self.turtle
         sleep(2)
 
@@ -136,7 +137,7 @@ class Ferenc:
 
         cv2.destroyAllWindows()
 
-        
+
     def detect_rectangles(self, turtle) -> List[Vec3Int]:
         HUE_LOW   = 110
         HUE_HIGH  = 140
