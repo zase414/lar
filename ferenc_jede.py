@@ -167,8 +167,13 @@ class Ferenc:
         print("\nPoints are:", points, "\n\n")
 
         # go from point to point for each point of the hexagon
+        p_num = 0
+        point_of_return = False
         for point in points:
-            self.go_ptp(point, rate)
+            p_num += 1
+            if p_num == len(points):
+                point_of_return = True
+            self.go_ptp(point, rate, point_of_return)
 
     def calculate_points(self, dist, coords) -> list:
         """Calculates coordinates of hexagon to drive around the ball"""
@@ -209,12 +214,12 @@ class Ferenc:
 
         return points
 
-    def go_ptp(self, point, rate) -> None:
+    def go_ptp(self, point, rate, point_of_return) -> None:
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
         dist_thresh = 0.07
         angle_thresh = 0.025
-        angle_is_close_thresh = 0.08
+        angle_is_close_thresh = 0.05
         x = point[0] - cur_coords[0]
         y = point[1] - cur_coords[1]
         d = sqrt(x**2 + y**2)
@@ -229,9 +234,9 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             elif abs(angle_diff) < angle_is_close_thresh:
-                turtle.cmd_velocity(0, -0.15)
+                turtle.cmd_velocity(0, -0.2)
             else:
-                turtle.cmd_velocity(0, -0.5)
+                turtle.cmd_velocity(0, -0.55)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
@@ -261,11 +266,10 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
 
-            elif abs(angle_diff) < angle_is_close_thresh:
-                turtle.cmd_velocity(0, 0.15)
-
+            elif point_of_return:
+                turtle.cmd_velocity(0, -0.45)
             else:
-                turtle.cmd_velocity(0, 0.5)
+                turtle.cmd_velocity(0, 0.45)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle((point[2]+0.03) - cur_coords[2])   # little over-rotation so it can spin only in one direction
