@@ -36,7 +36,7 @@ class Ferenc:
         rate = Rate(10)
 
         Kp = 0.003
-        Ki = 0.0002
+        Ki = 0.000005
         Kd = 0.001
 
         integral = 0
@@ -108,9 +108,9 @@ class Ferenc:
                 integral += error * dt
                 derivative = (error - prev_error) / dt
 
-                pid_output = proportional + (Ki * integral) + 0*(Kd * derivative)
+                pid_output = min(max(proportional + (Ki * integral) + 0*(Kd * derivative), -1), 1)
 
-                turtle.cmd_velocity(linear=0.4, angular=pid_output)
+                turtle.cmd_velocity(linear=0.3, angular=pid_output)
 
                 prev_error = error
                 prev_time = current_time
