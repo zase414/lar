@@ -4,6 +4,7 @@ from enum import IntEnum
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
+import math
 
 from image_proccesing import get_depth 
 from typing import Tuple, List
@@ -34,7 +35,7 @@ class Ferenc:
         turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
         rate = Rate(10)
 
-        Kp = 0.01
+        Kp = 0.005
         Ki = 0.0001
         Kd = 0.001
 
