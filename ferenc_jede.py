@@ -51,7 +51,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 print("Spin")
-                turtle.cmd_velocity(0, 0.35)
+                turtle.cmd_velocity(0, 0.4)
             space = space_infront(turtle=turtle)
             rate.sleep()
 
@@ -69,7 +69,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 # go forward with 10° offset to negate early exit
-                self.go_forward(0.4, turtle.get_odometry()[2], pi/9)
+                self.go_forward(0.4, turtle.get_odometry()[2], pi/18)
                 rate.sleep()
 
         # reset params
