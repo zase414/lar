@@ -120,6 +120,9 @@ class Ferenc:
         TOLERANCE_PIXEL_BAND = 15
         DEAD_CENTER_X = 640 / 2
 
+        turtle.reset_odometry()
+        sleep(0.1)
+
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
         if dist is None:
@@ -134,11 +137,11 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                #if ball not totally infront, rotate
-                if abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND:
-                    self.rotate_toward_ball(rate)
-                else:
-                    turtle.cmd_velocity(lin_speed, 0)
+                # if ball not totally infront, rotate
+                # if abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND:
+                #    self.rotate_toward_ball(rate)
+                #else:
+                self.go_forward(lin_speed, turtle.get_odometry()[2], 0)
                 
                 (center_x, center_y), radius = detect_balls(turtle)
                 dist = get_depth(turtle, center_x, center_y, radius)
