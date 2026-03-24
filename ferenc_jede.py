@@ -161,7 +161,7 @@ class Ferenc:
         # hexagon trajectory
         points = self.calculate_points(dist, current_coords)
 
-        print("points are:", points)
+        print("\nPoints are:", points, "\n\n")
 
         # go from point to point for each point of the hexagon
         for point in points:
@@ -209,8 +209,8 @@ class Ferenc:
     def go_ptp(self, point, rate) -> None:
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
-        dist_thresh = 0.02
-        angle_thresh = 0.02
+        dist_thresh = 0.04
+        angle_thresh = 0.03
         x = point[0] - cur_coords[0]
         y = point[1] - cur_coords[1]
         d = sqrt(x**2 + y**2)
