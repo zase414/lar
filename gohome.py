@@ -52,7 +52,7 @@ class Ferenc:
                 left_x, left_y, left_dep = left
                 right_x, right_y, right_dep = right
 
-                distance_err = (right_dep - left_dep) * 0.2
+                distance_err = (right_dep - left_dep) * 0.1
 
                 error = TARGET_X - center_x
 
@@ -62,7 +62,7 @@ class Ferenc:
 
                 pid_output = proportional + (Ki * integral) + (Kd * derivative)
 
-                turtle.cmd_velocity(linear=0.4, angular=pid_output - distance_err)
+                turtle.cmd_velocity(linear=0.4, angular=pid_output + distance_err)
 
                 prev_error = error
                 prev_time = current_time
@@ -81,7 +81,7 @@ class Ferenc:
     def detect_rectangles(self, turtle) -> List[Vec3Int]:
         HUE_LOW   = 110
         HUE_HIGH  = 140
-        SAT_MIN   = 40
+        SAT_MIN   = 50
         VALUE_MIN = 40
 
         im = turtle.get_rgb_image()
