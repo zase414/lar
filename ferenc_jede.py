@@ -25,18 +25,17 @@ class Ferenc:
         turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
         rate = Rate(10)
 
-        # self.test_odometry(rate)
         # until robot finds garage exit spin
-        #self.find_exit(rate)
-        #space_detect_time = get_time()
+        self.find_exit(rate)
+        space_detect_time = get_time()
 #
-        #self.exit_garage(rate, space_detect_time)
+        self.exit_garage(rate, space_detect_time)
 #
         ## find and ball turn on to it
         # self.rotate_toward_ball(rate)
         ## drives until ball is 40cm infront of camera
         #self.drive_toward_ball(rate, 1)
-        self.drive_around_ball(rate)
+        # self.drive_around_ball(rate)
 
 
 
@@ -62,6 +61,7 @@ class Ferenc:
 
     def exit_garage(self, rate, space_detect_time) -> None:
         turtle = self.turtle
+        turtle.reset_odometry()
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.2):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -69,7 +69,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 # go forward
-                turtle.cmd_velocity(0.4, 0)
+                self.go_forward(0.4, turtle.get_odometry()[2], 0)
                 rate.sleep()
 
         # reset params
@@ -293,29 +293,6 @@ class Ferenc:
         angular_velocity = Kp * angle_diff
 
         turtle.cmd_velocity(lin_velocity, angular_velocity)
-
-    def test_odometry(self, rate):
-        turtle = self.turtle
-        turtle.cmd_velocity(0, 0)
-        turtle.reset_odometry()
-        sleep(0.5)
-        cur_coords = turtle.get_odometry()
-        angle = pi
-        angle_diff = angle - cur_coords[2]
-
-        # while ferenc is not rotated at the calculated angle -> rotate
-        while (not turtle.is_shutting_down()) and (not abs(angle_diff) < 0.02):
-            if self.stop:
-                turtle.cmd_velocity(0, 0)
-                turtle.play_sound(4)
-            else:
-                turtle.cmd_velocity(0, 0.4)
-
-            cur_coords = turtle.get_odometry()
-            angle_diff = angle - cur_coords[2]
-            print("Current angle is ", cur_coords[2], " rad")
-            rate.sleep()
-        turtle.cmd_velocity(0, 0)
 
 if __name__ == "__main__":
     ferenc = Ferenc()
