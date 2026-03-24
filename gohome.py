@@ -111,7 +111,7 @@ class Ferenc:
                 integral += error * dt
                 derivative = (error - prev_error) / dt
 
-                pid_output = proportional + (Ki * integral) + (Kd * derivative)
+                pid_output = proportional + (Ki * integral) + 0*(Kd * derivative)
 
                 turtle.cmd_velocity(linear=0.4, angular=pid_output)
 
