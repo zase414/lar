@@ -32,7 +32,7 @@ class Ferenc:
         self.exit_garage(rate, space_detect_time)
 #
         ## find and ball turn on to it
-        self.rotate_toward_ball(rate)
+        # self.rotate_toward_ball(rate)
         ## drives until ball is 40cm infront of camera
         # self.drive_toward_ball(rate, 1)
         # self.drive_around_ball(rate)
@@ -92,7 +92,7 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0.002, ang_speed)
+                turtle.cmd_velocity(0, ang_speed)
                 (center_x, center_y), radius = detect_balls(turtle)
                 dist = DEAD_CENTER_X - center_x
                 print("distance: ", dist, "center x y ", center_x, center_y, "should while end",
