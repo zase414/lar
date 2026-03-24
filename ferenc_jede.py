@@ -7,6 +7,8 @@ from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from visuals import detect_balls
 from math import pi, cos, sqrt, sin, atan2
 
+import cv2
+
 class Ferenc:
     def __init__(self):
         self.turtle = Turtlebot(rgb=True, pc=True)
@@ -85,6 +87,10 @@ class Ferenc:
         dist = DEAD_CENTER_X - center_x
 
         while (not turtle.is_shutting_down()) and (abs(dist) > TOLERANCE_PIXEL_BAND):
+            im = turtle.get_rgb_image()
+            cv2.circle(im, center, int(radius), (0, 255, 0), 2)
+            cv2.circle(im, (center_x, center_y), 2, (0, 0, 255), 3)
+            cv2.imshow("IMAGE", im)
             ang_speed = -0.3 if dist < 0 else 0.3
 
             if self.stop:
@@ -132,14 +138,14 @@ class Ferenc:
                 dist = get_depth(turtle, center_x, center_y, radius)
                 if dist is None:
                     break
-                diff = final_dist - dist
+                diff = dist - final_dist
                 # print("distance from ball is :", dist, "diff from designated distance ", diff, "X_pixel distance: ", DEAD_CENTER_X - center_x)
                 rate.sleep()
 
         # reset params
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
-        diff = final_dist - dist
+        diff = dist - final_dist
         print("distance achieved, final distance is :", dist, "diff from designated distance ", diff)
         turtle.cmd_velocity(0, 0)
         rate.sleep()
