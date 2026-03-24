@@ -37,6 +37,7 @@ class Ferenc:
         self.drive_toward_ball(rate, 0.65)
         self.drive_around_ball(rate)
 
+
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
         turtle = self.turtle
@@ -60,7 +61,7 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
-        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.2):
+        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.4):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
@@ -122,7 +123,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 #if ball not totally infront, rotate
-                if (abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND):
+                if abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND:
                     self.rotate_toward_ball(rate)
                 else:
                     turtle.cmd_velocity(lin_speed, 0)
@@ -139,10 +140,6 @@ class Ferenc:
         print("distance achieved, final distance is :", dist, "diff from designated distance ", diff)
         turtle.cmd_velocity(0, 0)
         rate.sleep()
-
-
-
-
 
 
     def drive_around_ball(self, rate) -> None:
