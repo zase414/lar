@@ -234,9 +234,9 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             elif abs(angle_diff) < angle_is_close_thresh:
-                turtle.cmd_velocity(0, -0.2)
+                turtle.cmd_velocity(0, -0.23)
             else:
-                turtle.cmd_velocity(0, -0.55)
+                turtle.cmd_velocity(0, -0.6)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
@@ -249,7 +249,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(0.34, cur_coords[2], angle)
+                self.go_forward(0.36, cur_coords[2], angle)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -267,9 +267,9 @@ class Ferenc:
                 turtle.play_sound(4)
 
             elif point_of_return:
-                turtle.cmd_velocity(0, -0.45)
+                turtle.cmd_velocity(0, -0.5)
             else:
-                turtle.cmd_velocity(0, 0.45)
+                turtle.cmd_velocity(0, 5)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle((point[2]+0.03) - cur_coords[2])   # little over-rotation so it can spin only in one direction
