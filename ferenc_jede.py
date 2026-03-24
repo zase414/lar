@@ -35,7 +35,7 @@ class Ferenc:
 #
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
-        ## drives until ball is 40cm infront of camera
+        ## drives until ball is 1m infront of camera
         self.drive_toward_ball(rate, 1)
         self.drive_around_ball(rate)
 
@@ -126,7 +126,7 @@ class Ferenc:
         diff = dist - final_dist
 
         while (not turtle.is_shutting_down()) and (abs(diff) > DISTANCE_TOLERANCE):
-            lin_speed = 0.15
+            lin_speed = 0.25 if dist > (final_dist + 0.5) else 0.1
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -158,7 +158,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.3
+        wanted_distance = 0.28
 
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
@@ -300,9 +300,9 @@ class Ferenc:
         sleep(0.1)
 
         cur_coords = turtle.get_odometry()
-        final_distance = starting_distance-cur_coords[0]
+        final_distance = starting_distance - cur_coords[0]
         while final_distance > wanted_distance:
-            self.go_forward(0.2, cur_coords[2], 0)
+            self.go_forward(0.08, cur_coords[2], 0)
 
             cur_coords = turtle.get_odometry()
             final_distance = starting_distance - cur_coords[0]
