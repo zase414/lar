@@ -125,7 +125,7 @@ class Ferenc:
             dist = 0
         diff = dist - final_dist
 
-        while (not turtle.is_shutting_down()) and (abs(diff) > DISTANCE_TOLERANCE):
+        while (not turtle.is_shutting_down()) and (diff > DISTANCE_TOLERANCE):
             lin_speed = 0.25 if dist > (final_dist + 0.5) else 0.1
 
             if self.stop:
