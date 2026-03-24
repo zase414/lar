@@ -180,6 +180,7 @@ class Ferenc:
         turtle.reset_odometry()
         sleep(0.2)
         current_coords = turtle.get_odometry()
+        print("Toto je finálíní hodnota: ", final_dist)
         # hexagon trajectory
         points = self.calculate_points(final_dist, current_coords)
 
