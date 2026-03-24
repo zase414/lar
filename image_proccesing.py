@@ -22,9 +22,9 @@ def space_infront(turtle) -> bool:
     mask = np.logical_and(mask, pc[:, :, 1] > -0.25)
     data = np.sort(pc[:, :, 2][mask])
 
-    # if closest 75 percent of depth data is further than 0,6 meters --> return True
+    # if closest 90 percent of depth data is further than 0,6 meters --> return True
     if data.size > 50:
-        dist = np.percentile(data, 75)
+        dist = np.percentile(data, 90)
         if dist > 0.6:
             return True
 
