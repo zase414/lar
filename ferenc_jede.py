@@ -91,6 +91,7 @@ class Ferenc:
             cv2.circle(im, (center_x, center_y), int(radius), (0, 255, 0), 2)
             cv2.circle(im, (center_x, center_y), 2, (0, 0, 255), 3)
             cv2.imshow("IMAGE", im)
+            cv2.waitKey(1)
             ang_speed = -0.3 if dist < 0 else 0.3
 
             if self.stop:
