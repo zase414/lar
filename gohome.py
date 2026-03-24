@@ -35,8 +35,8 @@ class Ferenc:
         turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
         rate = Rate(10)
 
-        Kp = 0.005
-        Ki = 0.0001
+        Kp = 0.003
+        Ki = 0.000005
         Kd = 0.001
 
         integral = 0
@@ -62,12 +62,8 @@ class Ferenc:
                 center_x, center_y, center_dep = center
                 left_x, left_y, left_dep = left
                 right_x, right_y, right_dep = right
-
-                # --- DYNAMIC TARGET CALCULATION ---
-                # 1. Camera setup and safety distance
-                fx = 600.0  # Approx focal length for Turtlebot camera (tune if needed)
-                D_safe = 0.5  # Distance to aim for in front of the garage (assume meters)
-                              # Note: If your depth is in millimeters, change this to 500.
+                
+                D_safe = 0.4 # Safe distance infront of the garage
 
                 # 2. Map pixels and depth to 3D space
                 X_L = (left_x - 320) * left_dep / fx
@@ -112,9 +108,9 @@ class Ferenc:
                 integral += error * dt
                 derivative = (error - prev_error) / dt
 
-                pid_output = proportional + (Ki * integral) + 0*(Kd * derivative)
+                pid_output = min(max(proportional + (Ki * integral) + 0*(Kd * derivative), -1), 1)
 
-                turtle.cmd_velocity(linear=0.4, angular=pid_output)
+                turtle.cmd_velocity(linear=0.3, angular=pid_output)
 
                 prev_error = error
                 prev_time = current_time
