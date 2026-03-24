@@ -114,9 +114,7 @@ class Ferenc:
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
         turtle = self.turtle
-        DISTANCE_TOLERANCE = 0.05 #5cm
-        TOLERANCE_PIXEL_BAND = 15
-        DEAD_CENTER_X = 640 / 2
+        DISTANCE_TOLERANCE = 0.02 # 2cm
 
         turtle.reset_odometry()
         sleep(0.1)
@@ -135,10 +133,6 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                # if ball not totally infront, rotate
-                # if abs(DEAD_CENTER_X - center_x) >  TOLERANCE_PIXEL_BAND:
-                #    self.rotate_toward_ball(rate)
-                #else:
                 self.go_forward(lin_speed, turtle.get_odometry()[2], 0)
                 
                 (center_x, center_y), radius = detect_balls(turtle)
@@ -164,6 +158,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
+        wanted_distance = 0.25
 
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
@@ -171,11 +166,11 @@ class Ferenc:
             print("nevidim ho možo")
             return
 
-        turtle.cmd_velocity(0, 0)
+        self.drive_closer(wanted_distance, dist, rate)
+
         turtle.reset_odometry()
         sleep(0.1)
         current_coords = turtle.get_odometry()
-
         # hexagon trajectory
         points = self.calculate_points(dist, current_coords)
 
@@ -298,6 +293,20 @@ class Ferenc:
 
         # reset params
         turtle.cmd_velocity(0, 0)
+
+    def drive_closer(self, final_distance, starting_distance, rate):
+        turtle = self.turtle
+        turtle.reset_odometry()
+        sleep(0.1)
+
+        cur_coords = turtle.get_odometry()
+
+        while (starting_distance-cur_coords[0]) > final_distance:
+            self.go_forward(0.2, cur_coords[2], 0)
+
+            cur_coords = turtle.get_odometry()
+            rate.sleep()
+
 
     def normalize_angle(self, angle):
         """Normalizes an angle to be strictly within -pi and pi"""
