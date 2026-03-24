@@ -85,9 +85,12 @@ class Ferenc:
         VALUE_MIN = 40
 
         im = turtle.get_rgb_image()
+        
         if im is None:
             return None
-        
+            
+        cv2.imshow("IMAGE", im)
+
         hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
 
         lower_bound = np.array([HUE_LOW, SAT_MIN, VALUE_MIN])
@@ -138,7 +141,6 @@ class Ferenc:
         cv2.circle(filtered, (avg_x, avg_y), 2, (0, 255, 0), 3)
         
         cv2.imshow("CONTOURS", filtered)
-        cv2.imshow("IMAGE", im)
         cv2.waitKey(1)
 
         return ret
