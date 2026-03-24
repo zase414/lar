@@ -52,7 +52,7 @@ class Ferenc:
                 left_x, left_y, left_dep = left
                 right_x, right_y, right_dep = right
 
-                distance_err = (right_dep - left_dep) * 0.5 
+                distance_err = (right_dep - left_dep) * 0.2
 
                 error = TARGET_X - center_x
 
