@@ -14,6 +14,11 @@ import time
 
 Vec3Int = Tuple[int, int, int]
 
+def get_focal_length(width_pixels, fov_degrees):
+    # Convert degrees to radians for math.tan
+    fov_rad = math.radians(fov_degrees)
+    return width_pixels / (2 * math.tan(fov_rad / 2))
+
 class Ferenc:
     def __init__(self):
         self.turtle = Turtlebot(rgb=True, pc=True)
@@ -38,6 +43,11 @@ class Ferenc:
         prev_time = get_time()
 
         TARGET_X = 640 // 2
+        H_FOV = 60.0
+        WIDTH = 640
+                
+                
+        fx = get_focal_length(WIDTH, H_FOV)
 
         while not self.turtle.is_shutting_down():
             rectangles = self.detect_rectangles(turtle=turtle)
@@ -101,7 +111,7 @@ class Ferenc:
                 integral += error * dt
                 derivative = (error - prev_error) / dt
 
-                pid_output = proportional + (Ki * integral) + (Kd * derivative)
+                pid_output = proportional + (Ki * integral) + 0*(Kd * derivative)
 
                 turtle.cmd_velocity(linear=0.4, angular=pid_output)
 
