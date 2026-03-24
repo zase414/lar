@@ -231,7 +231,7 @@ class Ferenc:
             elif abs(angle_diff) < angle_is_close_thresh:
                 turtle.cmd_velocity(0, -0.15)
             else:
-                turtle.cmd_velocity(0, -0.42)
+                turtle.cmd_velocity(0, -0.4)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
@@ -244,7 +244,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                turtle.cmd_velocity(0.35, 0)
+                self.go_forward(0.34, cur_coords[2], angle)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -265,7 +265,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0.15)
 
             else:
-                turtle.cmd_velocity(0, 0.42)
+                turtle.cmd_velocity(0, 0.4)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle((point[2]+0.03) - cur_coords[2])   # little over-rotation so it can spin only in one direction
@@ -278,6 +278,17 @@ class Ferenc:
     def normalize_angle(self, angle):
         """Normalizes an angle to be strictly within -pi and pi"""
         return (angle + pi) % (2 * pi) - pi
+
+    def go_forward(self, lin_velocity, current_angle, needed_angle):
+        """Simple P regulated driving in a straight line"""
+        turtle = self.turtle
+        angle_diff = self.normalize_angle(needed_angle - current_angle)
+
+        # based on how off course is our robot rotated >>> steer it to go straight
+        Kp = 0.5
+        angular_velocity = Kp * angle_diff
+
+        turtle.cmd_velocity(lin_velocity, angular_velocity)
 
     def test_odometry(self, rate):
         turtle = self.turtle
