@@ -220,7 +220,7 @@ class Ferenc:
 
         angle_diff = self.normalize_angle(angle - cur_coords[2])
         # while ferenc is not rotated at the calculated angle -> rotate
-        while (not turtle.is_shutting_down()) and (not abs(angle_diff) < angle_thresh):
+        while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
@@ -233,7 +233,7 @@ class Ferenc:
             rate.sleep()
 
         # while ferenc is not located at x,y coords, drive forward:
-        while (not turtle.is_shutting_down()) and (not abs(d) < dist_thresh):
+        while (not turtle.is_shutting_down()) and (abs(d) > dist_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
@@ -250,7 +250,7 @@ class Ferenc:
 
         # while ferenc is not rotated at the calculated angle -> rotate
         angle_diff = self.normalize_angle((point[2] + 0.02) - cur_coords[2])  # little over-rotation so it can spin only in one direction
-        while (not turtle.is_shutting_down()) and (not abs(angle_diff) < angle_thresh):
+        while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
