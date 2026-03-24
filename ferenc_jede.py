@@ -94,7 +94,7 @@ class Ferenc:
             cv2.waitKey(1)
             ang_speed = -0.5 if dist < 0 else 0.5
 
-            if abs(dist) > TOLERANCE_PIXEL_BAND*3:
+            if abs(dist) < TOLERANCE_PIXEL_BAND*3:
                 ang_speed = -0.2 if dist < 0 else 0.2
 
             if self.stop:
