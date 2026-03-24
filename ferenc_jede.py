@@ -132,7 +132,7 @@ class Ferenc:
                 if dist is None:
                     break
                 diff = final_dist - dist
-                print("distance from ball is :", dist, "diff from designated distance ", diff, "X_pixel distance: ", DEAD_CENTER_X - center_x)
+                # print("distance from ball is :", dist, "diff from designated distance ", diff, "X_pixel distance: ", DEAD_CENTER_X - center_x)
                 rate.sleep()
 
         # reset params
