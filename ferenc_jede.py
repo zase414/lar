@@ -52,10 +52,6 @@ class Ferenc:
             space = space_infront(turtle=turtle)
             rate.sleep()
 
-        # reset params
-        turtle.cmd_velocity(0, 0)
-        rate.sleep()
-
     def exit_garage(self, rate, space_detect_time) -> None:
         turtle = self.turtle
         turtle.reset_odometry()
