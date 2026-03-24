@@ -1,7 +1,7 @@
 from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
 from enum import IntEnum
-from robolab_turtlebot import Turtlebot, Rate, get_time, sleep, get_rgb_K
+from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
 import math
@@ -26,7 +26,6 @@ class Ferenc:
         self.stop = False
 
     def main(self):
-        print(get_rgb_K(self))
         turtle = self.turtle
         sleep(2)
 
@@ -39,8 +38,16 @@ class Ferenc:
         # -----------------------------------
         # NEW ODOMETRY TARGET & GAINS
         # -----------------------------------
+        # -----------------------------------
+        # NEW ODOMETRY TARGET & GAINS
+        # -----------------------------------
         target_odo_x = None
         target_odo_y = None
+        
+        # Moving Average Filter Setup
+        target_buffer_x = []
+        target_buffer_y = []
+        REQUIRED_READINGS = 5  # Number of valid frames to collect before locking
 
         Kp_linear = 0.3      # Forward speed cap
         Kp_angular = 1.5     # Steering aggressiveness
@@ -63,15 +70,21 @@ class Ferenc:
                 continue
             curr_x, curr_y, curr_theta = pose
 
-            # 2. Lock target in Odometry frame ONCE
+            # 2. Lock target in Odometry frame using a Simple Moving Average
             if target_odo_x is None:
                 rectangles = self.detect_rectangles(turtle=turtle)
 
                 if rectangles and len(rectangles) >= 2:
-                    # Extract positions of Left and Right visual markers
                     left, right = rectangles[0], rectangles[1]
                     left_x, left_dep = left[0], left[2]
                     right_x, right_dep = right[0], right[2]
+
+                    # GUARD: Reject bad depth readings (0, negative, or NaN)
+                    if (left_dep <= 0.01 or right_dep <= 0.01 or 
+                        math.isnan(left_dep) or math.isnan(right_dep)):
+                        print("Invalid depth detected. Skipping frame...")
+                        rate.sleep()
+                        continue
 
                     X_L = (left_x - 320) * left_dep / fx
                     Z_L = left_dep
@@ -91,20 +104,39 @@ class Ferenc:
                     X_target_cam = X_mid + D_safe * n_X
                     Z_target_cam = Z_mid + D_safe * n_Z
 
-                    # Convert Camera coordinates to Local Robot Frame (Forward=X, Left=Y)
+                    # Convert Camera coordinates to Local Robot Frame
                     local_x = Z_target_cam
                     local_y = -X_target_cam
 
-                    # Rotate and Translate local coordinates into Global Odometry frame
-                    target_odo_x = curr_x + local_x * math.cos(curr_theta) - local_y * math.sin(curr_theta)
-                    target_odo_y = curr_y + local_x * math.sin(curr_theta) + local_y * math.cos(curr_theta)
+                    # Rotate and Translate into Global Odometry frame
+                    calc_odo_x = curr_x + local_x * math.cos(curr_theta) - local_y * math.sin(curr_theta)
+                    calc_odo_y = curr_y + local_x * math.sin(curr_theta) + local_y * math.cos(curr_theta)
 
-                    print(f"--> Target locked in odometry space at: ({target_odo_x:.2f}, {target_odo_y:.2f})")
+                    # Add to our moving average buffer
+                    target_buffer_x.append(calc_odo_x)
+                    target_buffer_y.append(calc_odo_y)
+                    print(f"Collected reading {len(target_buffer_x)}/{REQUIRED_READINGS}...")
+
+                    # Lock the target once we have enough clean data
+                    if len(target_buffer_x) >= REQUIRED_READINGS:
+                        target_odo_x = sum(target_buffer_x) / REQUIRED_READINGS
+                        target_odo_y = sum(target_buffer_y) / REQUIRED_READINGS
+                        print(f"--> Target LOCKED at averaged pos: ({target_odo_x:.2f}, {target_odo_y:.2f})")
+                    else:
+                        # Stop moving while we collect the remaining readings
+                        turtle.cmd_velocity(linear=0.0, angular=0.0)
+                        rate.sleep()
+                        continue
+                        
                 else:
                     # Still looking for target: turn in place to scan
                     turtle.cmd_velocity(linear=0.0, angular=0.4)
-                    rate.sleep()
-                    continue
+                    
+                rate.sleep()
+                continue # Skip the driving step until target_odo_x is firmly locked
+
+            # 3. Odometry Control Loop: Navigate to the locked target
+            # ... (Keep your existing Step 3 code here) ...
 
             # 3. Odometry Control Loop: Navigate to the locked target
             dx = target_odo_x - curr_x
