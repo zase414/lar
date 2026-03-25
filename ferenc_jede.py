@@ -171,7 +171,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.3  # 30cm before ball stop
+        wanted_distance = 0.27  # 27 cm before ball stop
 
         dist = self.average_depth()
         if dist is None:
@@ -245,9 +245,9 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.042
-        angle_thresh = 0.015
-        angle_is_close_thresh = 0.065
+        dist_thresh = 0.04
+        angle_thresh = 0.02
+        angle_is_close_thresh = 0.07
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -265,9 +265,9 @@ class Ferenc:
                 turtle.play_sound(4)
 
             elif abs(angle_diff) < angle_is_close_thresh:
-                turtle.cmd_velocity(0, -0.12)
+                turtle.cmd_velocity(0, -0.15)
             else:
-                turtle.cmd_velocity(0, -0.4)
+                turtle.cmd_velocity(0, -0.47)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
@@ -280,7 +280,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(0.2, cur_coords[2], angle)
+                self.go_forward(0.26, cur_coords[2], angle)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -297,9 +297,15 @@ class Ferenc:
                 turtle.play_sound(4)
 
             elif point_of_return:
-                turtle.cmd_velocity(0, -0.4)
+                if abs(angle_diff) < angle_is_close_thresh:
+                    turtle.cmd_velocity(0, -0.15)
+                else:
+                    turtle.cmd_velocity(0, -0.47)
             else:
-                turtle.cmd_velocity(0, 0.4)
+                if abs(angle_diff) < angle_is_close_thresh:
+                    turtle.cmd_velocity(0, 0.15)
+                else:
+                    turtle.cmd_velocity(0, 0.47)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle((point[2]+0.03) - cur_coords[2])   # little over-rotation so it can spin only in one direction
