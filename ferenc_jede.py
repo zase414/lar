@@ -365,6 +365,9 @@ class Ferenc:
 
         turtle.cmd_velocity(lin_velocity, angular_velocity)
 
+    def rotate_to_angle(self, ang_vel, current_angle, needed_angle):
+        turtle = self.turtle
+
 if __name__ == "__main__":
     ferenc = Ferenc()
     ferenc.main()
