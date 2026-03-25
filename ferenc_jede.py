@@ -37,7 +37,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
-        self.drive_toward_ball(rate, 0.8)
+        self.drive_toward_ball(rate, 0.65)
         self.drive_around_ball(rate)
 
 
@@ -130,7 +130,7 @@ class Ferenc:
 
             if dist is None or dist <= 0.1:  # Catch 0 or None readings
                 print("Ignoring frame")
-                turtle.cmd_velocity(0, 0)
+                turtle.cmd_velocity(0.003, 0)  # small movement so it is possible to detect again
                 rate.sleep()
                 continue
 
@@ -151,7 +151,6 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 self.go_forward(lin_speed, turtle.get_odometry()[2], 0)
-                # print("distance from ball is :", dist, "diff from designated distance ", diff, "X_pixel distance: ", DEAD_CENTER_X - center_x)
                 rate.sleep()
 
         # reset params
@@ -332,6 +331,7 @@ class Ferenc:
         return final_distance
 
     def average_depth(self) -> Optional[float]:
+        """Calculates average depth of the object so it can more accurately drive close to object"""
         turtle = self.turtle
         distance_sum = 0
         avg_den = 0
