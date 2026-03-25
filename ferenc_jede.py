@@ -171,7 +171,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.4  # 40cm before ball stop
+        wanted_distance = 0.3  # 30cm before ball stop
 
         dist = self.average_depth()
         if dist is None:
@@ -245,8 +245,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.035
-        angle_thresh = 0.018
+        dist_thresh = 0.042
+        angle_thresh = 0.015
         angle_is_close_thresh = 0.065
 
         # current location and distance from goal point
