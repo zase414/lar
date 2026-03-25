@@ -109,7 +109,9 @@ class Ferenc:
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
         turtle = self.turtle
-        DISTANCE_TOLERANCE = 0.02 # 2cm
+        DISTANCE_TOLERANCE = 0.03 # 3cm
+        CONSECUTIVE_READS_NEEDED = 2
+        consecutive_readings = 0
 
         turtle.reset_odometry()
         sleep(0.1)
@@ -118,19 +120,29 @@ class Ferenc:
         dist = get_depth(turtle, center_x, center_y, radius)
         if dist is None:
             dist = 0
+            turtle.cmd_velocity(0, 0)
+            rate.sleep()
+
         diff = dist - final_dist
 
         while not turtle.is_shutting_down():
             (center_x, center_y), radius = detect_balls(turtle)
             dist = get_depth(turtle, center_x, center_y, radius)
 
-            if dist is None:
-                break
+            if dist is None or dist <= 0.1:  # Catch 0 or None readings
+                print("Ignoring frame")
+                turtle.cmd_velocity(0, 0)
+                rate.sleep()
+                continue
 
             diff = dist - final_dist
 
             if diff <= DISTANCE_TOLERANCE:
-                break
+                consecutive_readings += 1
+                if consecutive_readings >= CONSECUTIVE_READS_NEEDED:
+                    break
+            else:
+                consecutive_readings = 0  # Reset if we get a reading further away
 
             lin_speed = max(0.05, min(0.2, diff))
 
@@ -151,40 +163,28 @@ class Ferenc:
             print("NO DISTANCE!!!")
             dist = 0
         diff = dist - final_dist
-        print("distance achieved, final distance is :", dist, "diff from designated distance ", diff)
+        print("distance achieved is :", dist, "diff is ", diff)
         rate.sleep()
 
 
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.33
+        wanted_distance = 0.4  # 40cm before ball stop
 
-        (center_x, center_y), radius = detect_balls(turtle)
-
-        distance_sum = 0
-        avg_den = 0
-        for i in range(3):
-            dist = get_depth(turtle, center_x, center_y, radius)
-            if dist is None:
-                continue
-            else:
-                distance_sum += dist
-                avg_den += 1
-
-        if distance_sum == 0:
-            print("nevidim ho možo")
+        dist = self.average_depth()
+        if dist is None:
+            print("Object not seen")
             return
 
-        actual_dist = distance_sum/avg_den
-        print("Toto je vyprůměrovaná hodnota: ", actual_dist)
+        print("This is average dist: ", dist)
 
-        final_dist = self.drive_closer(wanted_distance, actual_dist, rate)
+        final_dist = self.drive_closer(wanted_distance, dist, rate)
 
         turtle.reset_odometry()
         sleep(0.2)
         current_coords = turtle.get_odometry()
-        print("Toto je finálíní hodnota: ", final_dist)
+        print("This is final distance: ", final_dist)
         # hexagon trajectory
         points = self.calculate_points(final_dist, current_coords)
 
@@ -244,7 +244,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.034
+        dist_thresh = 0.035
         angle_thresh = 0.018
         angle_is_close_thresh = 0.065
 
@@ -264,9 +264,9 @@ class Ferenc:
                 turtle.play_sound(4)
 
             elif abs(angle_diff) < angle_is_close_thresh:
-                turtle.cmd_velocity(0, -0.15)
+                turtle.cmd_velocity(0, -0.12)
             else:
-                turtle.cmd_velocity(0, -0.45)
+                turtle.cmd_velocity(0, -0.4)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
@@ -279,7 +279,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(0.25, cur_coords[2], angle)
+                self.go_forward(0.2, cur_coords[2], angle)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -296,9 +296,9 @@ class Ferenc:
                 turtle.play_sound(4)
 
             elif point_of_return:
-                turtle.cmd_velocity(0, -0.45)
+                turtle.cmd_velocity(0, -0.4)
             else:
-                turtle.cmd_velocity(0, 0.45)
+                turtle.cmd_velocity(0, 0.4)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle((point[2]+0.03) - cur_coords[2])   # little over-rotation so it can spin only in one direction
@@ -313,18 +313,39 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
+        ball_radius = 0.04 # 4cm
 
         cur_coords = turtle.get_odometry()
-        final_distance = starting_distance - cur_coords[0]
-        while final_distance > wanted_distance:
+        final_distance = starting_distance - (cur_coords[0] + ball_radius)
+        while not turtle.is_shutting_down() and final_distance > wanted_distance:
             self.go_forward(0.08, cur_coords[2], 0)
 
             cur_coords = turtle.get_odometry()
-            final_distance = starting_distance - cur_coords[0]
+            final_distance = starting_distance - (cur_coords[0] + ball_radius)
             rate.sleep()
 
+        turtle.cmd_velocity(0, 0)
+        rate.sleep()
         return final_distance
 
+    def average_depth(self) -> float | None:
+        turtle = self.turtle
+        distance_sum = 0
+        avg_den = 0
+        for i in range(3):
+            (center_x, center_y), radius = detect_balls(turtle)
+            dist = get_depth(turtle, center_x, center_y, radius)
+            if dist is None:
+                continue
+            else:
+                distance_sum += dist
+                avg_den += 1
+
+        if distance_sum == 0:
+            return None
+
+        actual_dist = distance_sum / avg_den
+        return actual_dist
 
     def normalize_angle(self, angle):
         """Normalizes an angle to be strictly within -pi and pi"""
