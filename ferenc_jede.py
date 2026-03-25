@@ -63,7 +63,7 @@ class Ferenc:
     def exit_garage(self, rate, space_detect_time) -> None:
         turtle = self.turtle
         turtle.reset_odometry()
-        sleep(0.1)
+        rate.sleep()
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.7):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -113,7 +113,7 @@ class Ferenc:
         consecutive_readings = 0
 
         turtle.reset_odometry()
-        sleep(0.1)
+        rate.sleep()
 
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
@@ -181,7 +181,7 @@ class Ferenc:
         final_dist = self.drive_closer(wanted_distance, dist, rate)
 
         turtle.reset_odometry()
-        sleep(0.2)
+        rate.sleep()
         current_coords = turtle.get_odometry()
         print("\nThis is final distance: ", final_dist)
         # hexagon trajectory
