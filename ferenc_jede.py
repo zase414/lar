@@ -6,6 +6,7 @@ from image_proccesing import space_infront, get_depth
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from visuals import detect_balls
 from math import pi, cos, sqrt, sin, atan2
+from typing import Optional
 
 import cv2
 
@@ -328,7 +329,7 @@ class Ferenc:
         rate.sleep()
         return final_distance
 
-    def average_depth(self) -> float | None:
+    def average_depth(self) -> Optional[float]:
         turtle = self.turtle
         distance_sum = 0
         avg_den = 0
