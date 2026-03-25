@@ -37,7 +37,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
-        self.drive_toward_ball(rate, 0.65)
+        self.drive_toward_ball(rate, 0.66)
         self.drive_around_ball(rate)
 
 
@@ -130,7 +130,7 @@ class Ferenc:
 
             if dist is None or dist <= 0.1:  # Catch 0 or None readings
                 print("Ignoring frame")
-                turtle.cmd_velocity(0.003, 0)  # small movement so it is possible to detect again
+                turtle.cmd_velocity(0.007, 0)  # small movement so it is possible to detect again
                 rate.sleep()
                 continue
 
@@ -143,7 +143,7 @@ class Ferenc:
             else:
                 consecutive_readings = 0  # Reset if we get a reading further away
 
-            lin_speed = max(0.05, min(0.2, diff))
+            lin_speed = max(0.04, min(0.2, diff))
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
