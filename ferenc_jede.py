@@ -99,8 +99,6 @@ class Ferenc:
                 turtle.cmd_velocity(0, ang_speed)
                 (center_x, center_y), radius = detect_balls(turtle)
                 dist = DEAD_CENTER_X - center_x
-                print("distance: ", dist, "center x y ", center_x, center_y, "should while end",
-                      abs(dist) > TOLERANCE_PIXEL_BAND)
                 rate.sleep()
 
         # reset params
@@ -185,11 +183,9 @@ class Ferenc:
         turtle.reset_odometry()
         sleep(0.2)
         current_coords = turtle.get_odometry()
-        print("This is final distance: ", final_dist)
+        print("\nThis is final distance: ", final_dist)
         # hexagon trajectory
         points = self.calculate_points(final_dist, current_coords)
-
-        print("\nPoints are:", points, "\n\n")
 
         # go from point to point for each point of the hexagon
         p_num = 0
@@ -245,8 +241,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.04
-        angle_thresh = 0.018
+        dist_thresh = 0.028
+        angle_thresh = 0.014
         angle_is_close_thresh = 0.06
 
         # current location and distance from goal point
@@ -265,7 +261,7 @@ class Ferenc:
                 turtle.play_sound(4)
 
             elif abs(angle_diff) < angle_is_close_thresh:
-                turtle.cmd_velocity(0, -0.11)
+                turtle.cmd_velocity(0, -0.1)
             else:
                 turtle.cmd_velocity(0, -0.5)
 
@@ -298,12 +294,12 @@ class Ferenc:
 
             elif point_of_return:
                 if abs(angle_diff) < angle_is_close_thresh:
-                    turtle.cmd_velocity(0, -0.11)
+                    turtle.cmd_velocity(0, -0.1)
                 else:
                     turtle.cmd_velocity(0, -0.6)
             else:
                 if abs(angle_diff) < angle_is_close_thresh:
-                    turtle.cmd_velocity(0, 0.11)
+                    turtle.cmd_velocity(0, 0.1)
                 else:
                     turtle.cmd_velocity(0, 0.6)
 
