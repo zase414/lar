@@ -233,8 +233,11 @@ class Ferenc:
         
         avg_x = (ret[0][0] + ret[1][0]) // 2
         avg_y = (ret[0][1] + ret[1][1]) // 2
-        avg_dep = (ret[0][2] + ret[1][2]) // 2
-        ret.append((avg_x, avg_y, avg_dep))
+        # avg_dep = (ret[0][2] + ret[1][2]) // 2
+        ret.append((avg_x, avg_y, 
+        #avg_dep
+        0
+        ))
 
         cv2.circle(filtered, (avg_x, avg_y), 2, (0, 255, 0), 3)
         cv2.imshow("CONTOURS", filtered)
