@@ -73,12 +73,13 @@ class Ferenc:
                 rectangles = self.detect_rectangles(turtle=turtle)
                 if rectangles and len(rectangles) >= 2:
                     success_count += 1
-                    if success_count > 2:
-                        print("Pylons detected! Stopping to measure...")
-                        turtle.cmd_velocity(linear=0.0, angular=0.0)
-                        measurements_x.clear()
-                        measurements_z.clear()
-                        state = "MEASURING"
+                    turtle.cmd_velocity(linear=0.0, angular=0.4)
+                else if success_count > 2:
+                    print("Pylons detected! Stopping to measure...")
+                    turtle.cmd_velocity(linear=0.0, angular=0.0)
+                    measurements_x.clear()
+                    measurements_z.clear()
+                    state = "MEASURING"
                 else:
                     turtle.cmd_velocity(linear=0.0, angular=0.4)
                 
