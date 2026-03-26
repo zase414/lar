@@ -96,8 +96,8 @@ class Ferenc:
                     continue
 
                 # 1. Setup our known geometric constants
-                PYLON_SPACE_BETWEEN = 0.5 # Replace with your actual distance in meters
-                D_SAFE = 0.4              # How far back from the gate to stop
+                PYLON_SPACE_BETWEEN = 0.5
+                D_SAFE = 0.4
                 
                 left, right = rectangles[0], rectangles[1]
                 left_x = left[0]
@@ -141,7 +141,7 @@ class Ferenc:
                     target_odo_y = curr_y + local_x * math.sin(curr_theta) + local_y * math.cos(curr_theta)
 
                     print(f"--> Target LOCKED at Odometry: ({target_odo_x:.2f}, {target_odo_y:.2f})")
-                    state = "DRIVING"
+                    #state = "DRIVING"
                 
                 rate.sleep()
                 continue
