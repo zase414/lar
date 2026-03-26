@@ -50,7 +50,7 @@ class Ferenc:
         GOAL_TOLERANCE = 0.05  
 
         WIDTH = 640
-        H_FOV = 60.0
+        H_FOV = 50.0
         fx = get_focal_length(WIDTH, H_FOV)
 
         while not self.turtle.is_shutting_down():
