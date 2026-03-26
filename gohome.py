@@ -50,7 +50,7 @@ class Ferenc:
         GOAL_TOLERANCE = 0.05  
 
         WIDTH = 640
-        H_FOV = 50.0
+        H_FOV = 60.0
         fx = get_focal_length(WIDTH, H_FOV)
 
         while not self.turtle.is_shutting_down():
@@ -96,8 +96,8 @@ class Ferenc:
                     continue
 
                 # 1. Setup our known geometric constants
-                PYLON_SPACE_BETWEEN = 0.5 # Replace with your actual distance in meters
-                D_SAFE = 0.4              # How far back from the gate to stop
+                PYLON_SPACE_BETWEEN = 0.5
+                D_SAFE = 0.4
                 
                 left, right = rectangles[0], rectangles[1]
                 left_x = left[0]
