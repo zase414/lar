@@ -4,6 +4,7 @@ from enum import IntEnum
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
+from time import sleep
 import math
 
 from image_proccesing import get_depth 
@@ -71,6 +72,7 @@ class Ferenc:
             if state == "SCANNING":
                 rectangles = self.detect_rectangles(turtle=turtle)
                 if rectangles and len(rectangles) >= 2:
+                    sleep(1)
                     print("Pylons detected! Stopping to measure...")
                     turtle.cmd_velocity(linear=0.0, angular=0.0)
                     measurements_x.clear()
