@@ -56,7 +56,7 @@ class Ferenc:
         GOAL_TOLERANCE = 0.05  
 
         WIDTH = 640
-        H_FOV = 60.0
+        H_FOV = 50.0
         fx = get_focal_length(WIDTH, H_FOV)
         
         # Standard Horizon Line (Center Y for a 640x480 resolution)
