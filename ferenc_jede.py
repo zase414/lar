@@ -31,7 +31,7 @@ class Ferenc:
 
         # until robot finds garage exit spin
         self.find_exit(rate)
-        # space_detect_time = get_time()
+        space_detect_time = get_time()
 #
         self.exit_garage(rate, space_detect_time)
 #
