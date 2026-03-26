@@ -4,7 +4,6 @@ from enum import IntEnum
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
 from scipy.io import savemat
-from time import sleep
 import math
 
 from image_proccesing import get_depth 
@@ -35,33 +34,24 @@ class Ferenc:
         turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
         rate = Rate(10)
 
-        # Added states to match the required sequence
+        # Explicit states make the logic much more robust
         state = "SCANNING" 
         
         target_odo_x = None
         target_odo_y = None
-        target_heading = None
-        drive_start_x = None
-        drive_start_y = None
         
-        # Buffers for target normal and position
-        measurements_Px = []
-        measurements_Pz = []
-        measurements_Nx = []
-        measurements_Nz = []
-        REQUIRED_READINGS = 10  
+        # Buffer for Camera Frame coordinates
+        measurements_x = []
+        measurements_z = []
+        REQUIRED_READINGS = 10  # We can take more because we will be stationary
 
         Kp_linear = 0.25     
         Kp_angular = 1.0     
         GOAL_TOLERANCE = 0.05  
 
         WIDTH = 640
-        H_FOV = 50.0
+        H_FOV = 60.0
         fx = get_focal_length(WIDTH, H_FOV)
-        
-        # Standard Horizon Line (Center Y for a 640x480 resolution)
-        # Adjust if your camera resolution differs.
-        CY = 240.0 
 
         while not self.turtle.is_shutting_down():
             if self.stop:
@@ -81,13 +71,10 @@ class Ferenc:
             if state == "SCANNING":
                 rectangles = self.detect_rectangles(turtle=turtle)
                 if rectangles and len(rectangles) >= 2:
-                    sleep(1)
                     print("Pylons detected! Stopping to measure...")
                     turtle.cmd_velocity(linear=0.0, angular=0.0)
-                    measurements_Px.clear()
-                    measurements_Pz.clear()
-                    measurements_Nx.clear()
-                    measurements_Nz.clear()
+                    measurements_x.clear()
+                    measurements_z.clear()
                     state = "MEASURING"
                 else:
                     turtle.cmd_velocity(linear=0.0, angular=0.4)
@@ -96,10 +83,10 @@ class Ferenc:
                 continue
 
             # ---------------------------------------------------------
-            # STATE: MEASURING (Extracting 3D geometry from 2D frame)
+            # STATE: MEASURING (Stationary data collection)
             # ---------------------------------------------------------
             elif state == "MEASURING":
-                turtle.cmd_velocity(linear=0.0, angular=0.0) 
+                turtle.cmd_velocity(linear=0.0, angular=0.0) # Ensure we are stopped
                 rectangles = self.detect_rectangles(turtle=turtle)
                 
                 if not rectangles or len(rectangles) < 2:
@@ -108,149 +95,87 @@ class Ferenc:
                     rate.sleep()
                     continue
 
+                # 1. Setup our known geometric constants
                 PYLON_SPACE_BETWEEN = 0.5
-                D_SAFE = 0.5 # Distance to park in front of the gate
+                D_SAFE = 0.4
                 
                 left, right = rectangles[0], rectangles[1]
                 left_x = left[0]
                 right_x = right[0]
 
-                # 1. Perspective Depth Ratio using Bounding Box Y Centers
-                # The further away an object is on the ground, the closer it moves to the horizon line (CY)
-                dy_L = max(float(left[1]) - CY, 1.0)
-                dy_R = max(float(right[1]) - CY, 1.0)
-                R = dy_R / dy_L  # Ratio of Z distances: Z_L = R * Z_R
+                # 2. Find the apparent width in pixels
+                px_dist = right_x - left_x
                 
-                # 2. X coordinates in unit camera plane
-                u_L = (left_x - (WIDTH / 2.0)) / fx
-                u_R = (right_x - (WIDTH / 2.0)) / fx
-                
-                # 3. Solve for exact Z distances using the known width between pylons
-                denom = math.sqrt((u_L * R - u_R)**2 + (R - 1.0)**2)
-                if denom < 0.0001: # Avoid division by zero
+                if px_dist <= 0:
+                    print("Invalid bounding boxes. Skipping frame...")
                     rate.sleep()
                     continue
-                    
-                Z_R = PYLON_SPACE_BETWEEN / denom
-                Z_L = R * Z_R
-                
-                # 4. Reconstruct True 3D Coordinates of both pylons in Camera Frame
-                X_L = u_L * Z_L
-                X_R = u_R * Z_R
-                
-                C_x = (X_L + X_R) / 2.0
-                C_z = (Z_L + Z_R) / 2.0
-                
-                # 5. Extract the Normal Vector (Perpendicular line coming out of the gate)
-                V_x = X_R - X_L
-                V_z = Z_R - Z_L
-                W_calc = math.hypot(V_x, V_z)
-                if W_calc < 0.0001: W_calc = 0.0001
-                
-                # Normal facing towards the camera
-                N_x = V_z / W_calc
-                N_z = -V_x / W_calc 
-                
-                # 6. Set Target Parking Spot D_SAFE meters along the Normal
-                P_cam_x = C_x + D_SAFE * N_x
-                P_cam_z = C_z + D_SAFE * N_z
-                
-                measurements_Px.append(P_cam_x)
-                measurements_Pz.append(P_cam_z)
-                measurements_Nx.append(N_x)
-                measurements_Nz.append(N_z)
-                print(f"Collected geometric reading {len(measurements_Px)}/{REQUIRED_READINGS}")
 
-                if len(measurements_Px) >= REQUIRED_READINGS:
-                    # Average the noise out
-                    avg_Px = sum(measurements_Px) / len(measurements_Px)
-                    avg_Pz = sum(measurements_Pz) / len(measurements_Pz)
-                    avg_Nx = sum(measurements_Nx) / len(measurements_Nx)
-                    avg_Nz = sum(measurements_Nz) / len(measurements_Nz)
+                # 3. Calculate distance (Z) to the gate using similar triangles
+                # Formula: Z = (Real_Width * Focal_Length) / Pixel_Width
+                Z_gate = (PYLON_SPACE_BETWEEN * fx) / px_dist
 
-                    local_x = avg_Pz
-                    local_y = -avg_Px
+                # 4. Calculate the lateral offset (X) of the gate's center
+                mid_x = (left_x + right_x) / 2.0
+                X_gate = (mid_x - (WIDTH / 2.0)) * Z_gate / fx
 
+                # 5. Set our target point (Stop D_SAFE meters straight back)
+                X_target_cam = X_gate
+                Z_target_cam = Z_gate - D_SAFE
+                
+                measurements_x.append(X_target_cam)
+                measurements_z.append(Z_target_cam)
+                print(f"Collected clean geometric reading {len(measurements_x)}/{REQUIRED_READINGS}")
+
+                if len(measurements_x) >= REQUIRED_READINGS:
+                    # Average the raw camera coordinates
+                    avg_X_cam = sum(measurements_x) / len(measurements_x)
+                    avg_Z_cam = sum(measurements_z) / len(measurements_z)
+
+                    # Transform to Robot Frame (ROS standard: X forward, Y left)
+                    local_x = avg_Z_cam
+                    local_y = -avg_X_cam
+
+                    # Transform ONE time to global Odometry frame
                     target_odo_x = curr_x + local_x * math.cos(curr_theta) - local_y * math.sin(curr_theta)
                     target_odo_y = curr_y + local_x * math.sin(curr_theta) + local_y * math.cos(curr_theta)
-                    
-                    # Calculate the absolute global heading to look directly at the center of the gate
-                    target_heading = curr_theta + math.atan2(avg_Nx, -avg_Nz)
-                    target_heading = (target_heading + math.pi) % (2 * math.pi) - math.pi
 
-                    print(f"--> Parking Spot LOCKED: ({target_odo_x:.2f}, {target_odo_y:.2f})")
-                    state = "DRIVING_TO_PARK"
+                    print(f"--> Target LOCKED at Odometry: ({target_odo_x:.2f}, {target_odo_y:.2f})")
+                    state = "DRIVING"
                 
                 rate.sleep()
                 continue
 
             # ---------------------------------------------------------
-            # STATE: DRIVING_TO_PARK (Navigate to perpendicular spot)
+            # STATE: DRIVING (Navigating to locked Odometry point)
             # ---------------------------------------------------------
-            elif state == "DRIVING_TO_PARK":
+            elif state == "DRIVING":
                 dx = target_odo_x - curr_x
                 dy = target_odo_y - curr_y
                 distance = math.hypot(dx, dy)
 
                 if distance < GOAL_TOLERANCE:
-                    print("Parked in front of gate! Now rotating...")
+                    print("Arrived at target point!")
                     turtle.cmd_velocity(linear=0.0, angular=0.0)
-                    state = "TURNING_TO_GATE"
-                    rate.sleep()
-                    continue
+                    break
 
                 desired_theta = math.atan2(dy, dx)
                 angle_error = (desired_theta - curr_theta + math.pi) % (2 * math.pi) - math.pi
 
+                # Smoother control logic
                 if abs(angle_error) > 0.5:
+                    # If heavily misaligned, turn in place, but smoothly
                     v = 0.0
-                    w = math.copysign(0.5, angle_error) 
+                    w = math.copysign(0.5, angle_error) # Cap turn speed
                 else:
-                    v = max(0.05, min(Kp_linear, distance * 0.8)) 
+                    # Blend forward and turning smoothly
+                    v = max(0.05, min(Kp_linear, distance * 0.8)) # Don't go slower than 0.05 m/s
                     w = Kp_angular * angle_error
 
                 turtle.cmd_velocity(linear=v, angular=w)
-                self.detect_rectangles(turtle=turtle) # Keep camera alive
-                rate.sleep()
-
-            # ---------------------------------------------------------
-            # STATE: TURNING_TO_GATE (Align to the normal vector)
-            # ---------------------------------------------------------
-            elif state == "TURNING_TO_GATE":
-                angle_error = (target_heading - curr_theta + math.pi) % (2 * math.pi) - math.pi
                 
-                if abs(angle_error) < 0.05: # Roughly 3 degrees tolerance
-                    print("Aligned with gate! Driving 50cm forward...")
-                    turtle.cmd_velocity(linear=0.0, angular=0.0)
-                    drive_start_x = curr_x
-                    drive_start_y = curr_y
-                    state = "DRIVING_THROUGH"
-                    rate.sleep()
-                    continue
-                    
-                v = 0.0
-                w = max(0.1, min(0.5, abs(angle_error) * Kp_angular)) * math.copysign(1.0, angle_error)
-                turtle.cmd_velocity(linear=v, angular=w)
-                self.detect_rectangles(turtle=turtle)
-                rate.sleep()
-
-            # ---------------------------------------------------------
-            # STATE: DRIVING_THROUGH (Drive precisely 50cm forward)
-            # ---------------------------------------------------------
-            elif state == "DRIVING_THROUGH":
-                distance_driven = math.hypot(curr_x - drive_start_x, curr_y - drive_start_y)
-                
-                if distance_driven >= 0.5:
-                    print("Mission Accomplished! Driven 50cm.")
-                    turtle.cmd_velocity(linear=0.0, angular=0.0)
-                    break
-                    
-                # Small corrective angular velocity to drive perfectly straight
-                angle_error = (target_heading - curr_theta + math.pi) % (2 * math.pi) - math.pi
-                w = Kp_angular * angle_error * 0.5
-                
-                turtle.cmd_velocity(linear=0.15, angular=w)
-                self.detect_rectangles(turtle=turtle)
+                # Optional: keep updating camera window so it doesn't freeze
+                self.detect_rectangles(turtle=turtle) 
                 rate.sleep()
 
         cv2.destroyAllWindows()
