@@ -97,6 +97,8 @@ class Ferenc:
             ang_speed = max(min(abs(dist * 0.01), 0.5), 0.1)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
+            print("balls position on camera x ", center_x, "calculated ang speed ", ang_speed)
+
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
