@@ -141,7 +141,7 @@ class Ferenc:
                     target_odo_y = curr_y + local_x * math.sin(curr_theta) + local_y * math.cos(curr_theta)
 
                     print(f"--> Target LOCKED at Odometry: ({target_odo_x:.2f}, {target_odo_y:.2f})")
-                    #state = "DRIVING"
+                    state = "DRIVING"
                 
                 rate.sleep()
                 continue
