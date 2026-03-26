@@ -43,11 +43,11 @@ class Ferenc:
         print(self.saved_odometry)
         self.drive_around_ball(rate)
 
-        while self.saved_odometry.count() != 0:
+        print("drive around completed")
+        while len(self.saved_odometry) != 0:
             point = self.saved_odometry.pop()
             point *= -1
             self.go_ptp(point, rate, False)
-
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
