@@ -14,7 +14,7 @@ class Ferenc:
     def __init__(self):
         self.turtle = Turtlebot(rgb=True, pc=True)
         self.stop = False
-
+        self.saved_odometry = list()
     def main(self):
         """Ferenc exits garage, then drives around the ball and parks back."""
         turtle = self.turtle
@@ -28,6 +28,7 @@ class Ferenc:
         turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
         rate = Rate(10)
 
+
         # until robot finds garage exit spin
         # self.find_exit(rate)
         # space_detect_time = get_time()
@@ -38,6 +39,8 @@ class Ferenc:
         self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
         self.drive_toward_ball(rate, 0.8)
+        #saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
+        print(self.saved_odometry)
         self.drive_around_ball(rate)
 
 
@@ -77,10 +80,13 @@ class Ferenc:
         # reset params
         turtle.cmd_velocity(0, 0)
         rate.sleep()
+        #save this drive to robot
+        self.saved_odometry.append(turtle.get_odometry())
 
     def rotate_toward_ball(self, rate) -> None:
         """Until ferenc finds ball he's spinning"""
         turtle = self.turtle
+        turtle.reset_odometry()
         (center_x, center_y), radius = detect_balls(turtle)
 
         DEAD_CENTER_X = 640 / 2
@@ -101,9 +107,12 @@ class Ferenc:
                 dist = DEAD_CENTER_X - center_x
                 rate.sleep()
 
+
         # reset params
         turtle.cmd_velocity(0, 0)
         rate.sleep()
+        #save this drive to robot
+        self.saved_odometry.append(turtle.get_odometry())
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
@@ -153,8 +162,11 @@ class Ferenc:
                 self.go_forward(lin_speed, turtle.get_odometry()[2], 0)
                 rate.sleep()
 
+
+
         # reset params
         turtle.cmd_velocity(0, 0)
+        rate.sleep()
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
         if dist is None:
@@ -162,7 +174,8 @@ class Ferenc:
             dist = 0
         diff = dist - final_dist
         print("distance achieved is :", dist, "diff is ", diff)
-        rate.sleep()
+        #save this drive to robot
+        self.saved_odometry.append(turtle.get_odometry())
 
 
     def drive_around_ball(self, rate) -> None:
