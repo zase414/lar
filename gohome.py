@@ -12,11 +12,11 @@ import cv2
 import time
 
 class Stage(IntEnum):
-    SEARCHING
-    ALIGNING   # rotate in place
-    DRIVING    # drive forward
-    VERIFYING   # check depth equality
-    ENTERING    # drive through gate
+    SEARCHING = 1
+    ALIGNING =2  # rotate in place
+    DRIVING  =3  # drive forward
+    VERIFYING =4  # check depth equality
+    ENTERING   =5 # drive through gate
 
 STOP_DIST      = 0.8    # metres - desired distance in front of gate
 DEPTH_THRESH   = 0.12   # metres - acceptable depth imbalance
