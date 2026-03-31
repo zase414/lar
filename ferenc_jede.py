@@ -30,19 +30,19 @@ class Ferenc:
 
 
         # until robot finds garage exit spin
-        #self.find_exit(rate)
-        #space_detect_time = get_time()
+        self.find_exit(rate)
+        space_detect_time = get_time()
 #
-        #self.exit_garage(rate, space_detect_time)
+        self.exit_garage(rate, space_detect_time)
 #
         ## find and ball turn on to it
-        #self.rotate_toward_ball(rate)
+        self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
-        #self.drive_toward_ball(rate, 0.8)
-        #saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
-        #print(self.saved_odometry)
-        #self.drive_around_ball(rate)
-        self.test_odometry()
+        self.drive_toward_ball(rate, 0.8)
+        ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
+        print(self.saved_odometry)
+        self.drive_around_ball(rate)
+        #self.test_odometry()
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
@@ -126,28 +126,22 @@ class Ferenc:
         turtle.reset_odometry()
         rate.sleep()
 
-        (center_x, center_y), radius = detect_balls(turtle)
-        dist = get_depth(turtle, center_x, center_y, radius)
-        if dist is None:
-            dist = 0
-            turtle.cmd_velocity(0, 0)
-            rate.sleep()
-
-        diff = dist - final_dist
+        diff = 0
+        dist = 0
 
         while not turtle.is_shutting_down():
             (center_x, center_y), radius = detect_balls(turtle)
-            dist = get_depth(turtle, center_x, center_y, radius)
-
-            if dist is None or dist <= 0.1:  # Catch 0 or None readings
-                print("Ignoring frame: dist {}, detected center of ball {}{}", dist, center_x, center_y )
+            if center_x == 0: #cant find ball
+                print("Ignoring frame")
                 turtle.cmd_velocity(0.007, 0)  # small movement so it is possible to detect again
                 rate.sleep()
                 continue
 
+            dist = get_depth(turtle, center_x, center_y, radius)
+
             diff = dist - final_dist
 
-            if diff <= DISTANCE_TOLERANCE:
+            if abs(diff) <= DISTANCE_TOLERANCE:
                 consecutive_readings += 1
                 if consecutive_readings >= CONSECUTIVE_READS_NEEDED:
                     break
@@ -365,21 +359,27 @@ class Ferenc:
         turtle.cmd_velocity(0, ang_vel)
 
     def test_odometry(self):
-        #go toward by x
-        self.saved_odometry.append({1,0,0})
-        #go toward by y
-        self.saved_odometry.append({0,1,0})
-        #rotate +45
-        self.saved_odometry.append({0,0,pi/2})
-        #rotate -45
-        self.saved_odometry.append({0,0,-pi/2})
+        rate = Rate(10)
+        self.turtle.reset_odometry()
+
         #go 1x 1y
-        self.saved_odometry.append({1,1,0})
+        self.saved_odometry.append([0.5,0.5,0])
+        #go toward by y
+        self.saved_odometry.append([0,0.5,0])
+        #go toward by x
+        self.saved_odometry.append([0.5,0,0])
+
+        #rotate +45
+        self.saved_odometry.append([0,0,pi/4])
+        #rotate -45
+        self.saved_odometry.append([0,0,-pi/4])
 
         while len(self.saved_odometry) != 0:
             point = self.saved_odometry.pop()
-            point *= -1
+#            point *= -1
+            print("going for point", point)
             self.go_ptp(point, rate, False)
+
 
 
 if __name__ == "__main__":
