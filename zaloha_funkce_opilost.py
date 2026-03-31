@@ -82,8 +82,6 @@ def go_ptp(self, point, rate, point_of_return):
     def rotate_to_angle(self, angle_diff):
         """Simple P regulated driving in a straight line"""
         turtle = self.turtle
-        # based on how off course is our robot rotated >>> steer it to go straight
-        Kp = 0.02
+        Kp = 0.5
         ang_vel = Kp * angle_diff
-
         turtle.cmd_velocity(0, ang_vel)

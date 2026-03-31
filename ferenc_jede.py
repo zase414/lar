@@ -323,6 +323,7 @@ class Ferenc:
         # reset params
         turtle.cmd_velocity(0, 0)
 
+
     def drive_closer(self, wanted_distance, starting_distance, rate) -> float:
         """Goes closer to the ball even if it is too close to see"""
         turtle = self.turtle
@@ -381,10 +382,8 @@ class Ferenc:
     def rotate_to_angle(self, angle_diff):
         """Simple P regulated driving in a straight line"""
         turtle = self.turtle
-        # based on how off course is our robot rotated >>> steer it to go straight
-        Kp = 0.02
+        Kp = 0.5
         ang_vel = Kp * angle_diff
-
         turtle.cmd_velocity(0, ang_vel)
 
     def test_odometry(self):
