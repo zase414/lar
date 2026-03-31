@@ -126,28 +126,22 @@ class Ferenc:
         turtle.reset_odometry()
         rate.sleep()
 
-        (center_x, center_y), radius = detect_balls(turtle)
-        dist = get_depth(turtle, center_x, center_y, radius)
-        if dist is None:
-            dist = 0
-            turtle.cmd_velocity(0, 0)
-            rate.sleep()
-
-        diff = dist - final_dist
+        diff = 0
+        dist = 0
 
         while not turtle.is_shutting_down():
             (center_x, center_y), radius = detect_balls(turtle)
-            dist = get_depth(turtle, center_x, center_y, radius)
-
-            if dist is None or dist <= 0.1:  # Catch 0 or None readings
-                print("Ignoring frame: dist {}, detected center of ball {}{}", dist, center_x, center_y )
+            if center_x == 0: #cant find ball
+                print("Ignoring frame")
                 turtle.cmd_velocity(0.007, 0)  # small movement so it is possible to detect again
                 rate.sleep()
                 continue
 
+            dist = get_depth(turtle, center_x, center_y, radius)
+
             diff = dist - final_dist
 
-            if diff <= DISTANCE_TOLERANCE:
+            if abs(diff) <= DISTANCE_TOLERANCE:
                 consecutive_readings += 1
                 if consecutive_readings >= CONSECUTIVE_READS_NEEDED:
                     break
