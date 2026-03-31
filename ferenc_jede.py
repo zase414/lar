@@ -184,6 +184,7 @@ class Ferenc:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
         wanted_distance = 0.27  # 27 cm before ball stop
+        rate.sleep()
 
         dist = self.average_depth()
         if dist is None:
@@ -255,9 +256,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.028
-        angle_thresh = 0.014
-        angle_is_close_thresh = 0.06
+        dist_thresh = 0.02
+        angle_thresh = 0.005
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -269,15 +269,13 @@ class Ferenc:
 
         # while ferenc is not rotated at the calculated angle -> rotate
         angle_diff = self.normalize_angle(angle - cur_coords[2])
+        # self.rotate_to_angle(-0.5, angle_diff, angle_thresh)
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
-
-            elif abs(angle_diff) < angle_is_close_thresh:
-                turtle.cmd_velocity(0, -0.1)
             else:
-                turtle.cmd_velocity(0, -0.5)
+                self.rotate_to_angle(angle_diff)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
@@ -296,29 +294,6 @@ class Ferenc:
             x = point[0] - cur_coords[0]
             y = point[1] - cur_coords[1]
             d = sqrt(x**2 + y**2) # distance from point
-
-            rate.sleep()
-
-        # while ferenc is not rotated at the calculated angle -> rotate
-        angle_diff = self.normalize_angle((point[2] + 0.1) - cur_coords[2])  # little over-rotation so it can spin only in one direction
-        while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
-            if self.stop:
-                turtle.cmd_velocity(0, 0)
-                turtle.play_sound(4)
-
-            elif point_of_return:
-                if abs(angle_diff) < angle_is_close_thresh:
-                    turtle.cmd_velocity(0, -0.1)
-                else:
-                    turtle.cmd_velocity(0, -0.6)
-            else:
-                if abs(angle_diff) < angle_is_close_thresh:
-                    turtle.cmd_velocity(0, 0.1)
-                else:
-                    turtle.cmd_velocity(0, 0.6)
-
-            cur_coords = turtle.get_odometry()
-            angle_diff = self.normalize_angle((point[2]+0.02) - cur_coords[2])   # little over-rotation so it can spin only in one direction
 
             rate.sleep()
 
@@ -380,8 +355,14 @@ class Ferenc:
 
         turtle.cmd_velocity(lin_velocity, angular_velocity)
 
-    def rotate_to_angle(self, ang_vel, current_angle, needed_angle):
+    def rotate_to_angle(self, angle_diff):
+        """Simple P regulated driving in a straight line"""
         turtle = self.turtle
+        # based on how off course is our robot rotated >>> steer it to go straight
+        Kp = 0.02
+        ang_vel = Kp * angle_diff
+
+        turtle.cmd_velocity(0, ang_vel)
 
     def test_odometry(self):
         #go toward by x
