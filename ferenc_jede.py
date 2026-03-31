@@ -148,7 +148,7 @@ class Ferenc:
             else:
                 consecutive_readings = 0  # Reset if we get a reading further away
 
-            lin_speed = max(0.04, min(0.2, diff))
+            lin_speed = max(0.04, min(0.16, diff))
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -382,8 +382,10 @@ class Ferenc:
     def rotate_to_angle(self, angle_diff):
         """Simple P regulated driving in a straight line"""
         turtle = self.turtle
-        Kp = 0.5
+        # based on how off course is our robot rotated >>> steer it to go straight
+        Kp = 0.02
         ang_vel = Kp * angle_diff
+
         turtle.cmd_velocity(0, ang_vel)
 
     def test_odometry(self):
