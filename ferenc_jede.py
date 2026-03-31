@@ -388,16 +388,16 @@ class Ferenc:
         self.turtle.reset_odometry()
 
         #go 1x 1y
-        self.saved_odometry.append([1,1,0])
+        self.saved_odometry.append([0.5,0.5,0])
         #go toward by y
-        self.saved_odometry.append([0,1,0])
+        self.saved_odometry.append([0,0.5,0])
         #go toward by x
-        self.saved_odometry.append([1,0,0])
+        self.saved_odometry.append([0.5,0,0])
 
         #rotate +45
-        self.saved_odometry.append([0,0,pi/2])
+        self.saved_odometry.append([0,0,pi/4])
         #rotate -45
-        self.saved_odometry.append([0,0,-pi/2])
+        self.saved_odometry.append([0,0,-pi/4])
 
         while len(self.saved_odometry) != 0:
             point = self.saved_odometry.pop()
