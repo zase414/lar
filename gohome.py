@@ -1,163 +1,165 @@
-from __future__ import print_function
-from callbacks import callback_bumper_stop, callback_button0_resume
-from enum import IntEnum
-from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
-from datetime import datetime
-from scipy.io import savemat
-from image_proccesing import get_depth
-from typing import Tuple, List
+from enum import IntEnum, auto
+import math
 
-import numpy as np
-import cv2
-import time
+class Stage(IntEnum):
+    SEARCHING  = auto()
+    ALIGNING   = auto()   # rotate in place
+    DRIVING    = auto()   # drive forward
+    VERIFYING  = auto()   # check depth equality
+    ENTERING   = auto()   # drive through gate
 
-Vec3Int = Tuple[int, int, int]
+STOP_DIST      = 0.8    # metres - desired distance in front of gate
+DEPTH_THRESH   = 0.12   # metres - acceptable depth imbalance
+CAMERA_HFOV    = 1.02   # radians - horizontal FOV of your camera (~58°)
+IMAGE_WIDTH    = 640
+ALIGN_SPEED    = 0.25   # rad/s during in-place rotation
+DRIVE_SPEED    = 0.35   # m/s driving toward gate
+ENTER_SPEED    = 0.30
 
 class Ferenc:
     def __init__(self):
         self.turtle = Turtlebot(rgb=True)
-        self.stop = False
+        self.stop   = False
+        self.stage  = Stage.SEARCHING
+        # alignment manoeuvre state
+        self._target_angle   = 0.0
+        self._target_dist    = 0.0
+        self._manoeuvre_done = False
 
+    # ------------------------------------------------------------------ #
     def main(self):
         turtle = self.turtle
-
         sleep(2)
-
-        turtle.register_bumper_event_cb(lambda msge: callback_bumper_stop(self, msge))
-        turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
+        turtle.register_bumper_event_cb(lambda m: callback_bumper_stop(self, m))
+        turtle.register_button_event_cb(lambda m: callback_button0_resume(self, m))
         rate = Rate(10)
 
-        Kp = 0.01
-        Ki = 0.0001
-        Kd = 0.001
-
-        integral = 0
-        prev_error = 0
-        prev_time = get_time()
-
-        TARGET_X = 640 // 2
-
-        while not self.turtle.is_shutting_down():
+        while not turtle.is_shutting_down():
             if self.stop:
                 turtle.cmd_velocity(linear=0, angular=0)
                 rate.sleep()
                 continue
 
-            left, right, center = self.detect_rectangles(turtle=turtle)
+            pylons = self.detect_rectangles(turtle)
 
-            current_time = get_time()
-            dt = current_time - prev_time
+            if self.stage == Stage.SEARCHING:
+                self._do_searching(turtle, pylons)
 
-            if center is not None and dt > 0:
-                center_x, center_y, center_dep = center
-                letf_x, left_y, left_dep = left
-                right_x, right_y, right_dep = right
+            elif self.stage == Stage.ALIGNING:
+                self._do_aligning(turtle)
 
-                distance_err = right_dep - left_dep
+            elif self.stage == Stage.DRIVING:
+                self._do_driving(turtle)
 
-                error = TARGET_X - center_x
+            elif self.stage == Stage.VERIFYING:
+                self._do_verifying(turtle, pylons)
 
-                proportional = Kp * error
-                integral += error * dt
-                derivative = (error - prev_error) / dt
-
-                pid_output = proportional + (Ki * integral) + (Kd * derivative)
-
-                turtle.cmd_velocity(linear=0.4, angular=pid_output)
-
-                prev_error = error
-            else:
-                turtle.cmd_velocity(linear=0.0, angular=0.1)
-                integral = 0
-
-            prev_time = current_time
+            elif self.stage == Stage.ENTERING:
+                turtle.cmd_velocity(linear=ENTER_SPEED, angular=0)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-
             rate.sleep()
 
         cv2.destroyAllWindows()
 
-    def mouse_callback(self, event, x, y, flags, param):
-        if event == cv2.EVENT_MOUSEMOVE:
-            hsv = param
-            h, s, v = hsv[y, x]
-            print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
+    # ------------------------------------------------------------------ #
+    def _do_searching(self, turtle, pylons):
+        """Spin slowly until we see both pylons, then plan the manoeuvre."""
+        if pylons is None:
+            turtle.cmd_velocity(linear=0, angular=0.2)
+            return
 
-    def detect_rectangles(self, turtle) -> Tuple[Vec3Int, Vec3Int, Vec3Int]:
-        HUE_LOW   = 110
-        HUE_HIGH  = 140
-        SAT_MIN   = 40
-        VALUE_MIN = 40
+        left, right, center = pylons
+        depth_L = left[2]
+        depth_R = right[2]
 
-        im = turtle.get_rgb_image()
-        if im is None:
-            return None
-        
-        hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+        if depth_L is None or depth_R is None:
+            turtle.cmd_velocity(linear=0, angular=0.2)
+            return
 
-        lower_bound = np.array([HUE_LOW, SAT_MIN, VALUE_MIN])
-        upper_bound = np.array([HUE_HIGH, 255, 255])
+        avg_depth = (depth_L + depth_R) / 2.0
 
-        kernel = np.ones((5, 5), np.uint8)
-        mask = cv2.inRange(hsv, lower_bound, upper_bound)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        # ── angle to gate centre ──────────────────────────────────────
+        # pixel error of the gate midpoint vs image centre
+        pixel_err = (IMAGE_WIDTH / 2) - center[0]          # +ve = gate is to the right
+        fov_per_px = CAMERA_HFOV / IMAGE_WIDTH
+        angle_to_centre = pixel_err * fov_per_px            # radians to rotate
 
-        filtered = cv2.bitwise_and(im, im, mask=mask)
+        # ── lateral offset from depth asymmetry ──────────────────────
+        # depth_R > depth_L  →  robot is to the LEFT of centre-line
+        depth_diff = depth_R - depth_L                      # metres
+        # lateral offset ≈ depth_diff / 2  (small-angle geometry)
+        lateral_offset = depth_diff / 2.0                   # metres
 
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # angle needed to face gate perpendicularly
+        # atan2(lateral_offset, avg_depth) gives the extra rotation beyond pointing at centre
+        perp_correction = math.atan2(lateral_offset, avg_depth)
 
-        vertical_rects = []
+        self._target_angle = angle_to_centre + perp_correction
+        self._target_dist  = max(0.0, avg_depth - STOP_DIST)
+        self._manoeuvre_done = False
 
-        for c in contours:
-            area = cv2.contourArea(c)
-            if area > 300:  # no noise
+        print(f"[PLAN] rotate {math.degrees(self._target_angle):.1f}°, "
+              f"drive {self._target_dist:.2f} m  "
+              f"(depth_L={depth_L:.2f} depth_R={depth_R:.2f})")
 
-                x, y, w, h = cv2.boundingRect(c)
+        self.stage = Stage.ALIGNING
 
-                if w > 0:
-                    aspect_ratio = float(h) / w
+    # ------------------------------------------------------------------ #
+    def _do_aligning(self, turtle):
+        """Rotate in place by _target_angle, using a simple P-controller on yaw."""
+        # Here we use a timed open-loop approach (simplest that works).
+        # Replace with odometry/IMU integration if available.
+        if not hasattr(self, '_align_start'):
+            self._align_start     = get_time()
+            sign                  = 1 if self._target_angle >= 0 else -1
+            # time = angle / speed
+            self._align_duration  = abs(self._target_angle) / ALIGN_SPEED
+            self._align_direction = sign
 
-                    if aspect_ratio > 1.5:
-                        vertical_rects.append((x, y, w, h))
+        elapsed = get_time() - self._align_start
+        if elapsed < self._align_duration:
+            turtle.cmd_velocity(linear=0,
+                                angular=self._align_direction * ALIGN_SPEED)
+        else:
+            turtle.cmd_velocity(linear=0, angular=0)
+            del self._align_start
+            self._drive_start    = get_time()
+            self._drive_duration = self._target_dist / DRIVE_SPEED
+            self.stage = Stage.DRIVING
 
-        # sort
-        vertical_rects = sorted(vertical_rects, key=lambda r: r[0])
+    # ------------------------------------------------------------------ #
+    def _do_driving(self, turtle):
+        """Drive straight for the planned distance."""
+        elapsed = get_time() - self._drive_start
+        if elapsed < self._drive_duration:
+            turtle.cmd_velocity(linear=DRIVE_SPEED, angular=0)
+        else:
+            turtle.cmd_velocity(linear=0, angular=0)
+            self.stage = Stage.VERIFYING
 
-        if len(vertical_rects) < 2:
-            return None
+    # ------------------------------------------------------------------ #
+    def _do_verifying(self, turtle, pylons):
+        """Check if pylons are equidistant; enter or retry."""
+        if pylons is None:
+            # Can't see pylons - nudge forward a little and retry
+            turtle.cmd_velocity(linear=0.1, angular=0)
+            return
 
-        # first 2 from the left
-        found_pair = vertical_rects[:2]
+        left, right, _ = pylons
+        depth_L, depth_R = left[2], right[2]
 
-        ret: Tuple[Point, Point, Point]
-        # draw boundaries and dots
-        for (i, (x, y, w, h)) in enumerate(found_pair):
-            # box
-            cv2.rectangle(filtered, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        if depth_L is None or depth_R is None:
+            turtle.cmd_velocity(linear=0, angular=0)
+            return
 
-            # center of each rect
-            center_x = x + w // 2
-            center_y = y + h // 2
-            cv2.circle(filtered, (center_x, center_y), 2, (0, 0, 255), 3)
-            ret[i] = (center_x, center_y, get_depth(turtle, center_x, center_y, 2))
-        
-        avg_x = (ret[0][0] + ret[1][0]) // len(found_pair)
-        avg_y = (ret[0][1] + ret[1][1]) // len(found_pair)
-        avg_dep = (ret[0][2] + ret[1][2]) // len(found_pair)
-        ret[2] = (avg_x, avg_y, avg_dep)
+        imbalance = abs(depth_R - depth_L)
+        print(f"[VERIFY] imbalance={imbalance:.3f} m  (threshold={DEPTH_THRESH})")
 
-        cv2.circle(filtered, (avg_x, avg_y), 2, (0, 0, 255), 3)
-        
-        cv2.imshow("CONTOURS", filtered)
-        cv2.imshow("IMAGE", im)
-        # cv2.setMouseCallback("IMAGE", self.mouse_callback, hsv)
-        cv2.waitKey(1)
-
-        return ret
-
-
-if __name__ == "__main__":
-    ferenc = Ferenc()
-    ferenc.main()
+        if imbalance < DEPTH_THRESH:
+            print("[VERIFY] ✓ aligned — entering gate")
+            self.stage = Stage.ENTERING
+        else:
+            print("[VERIFY] ✗ misaligned — retrying from scratch")
+            self.stage = Stage.SEARCHING
