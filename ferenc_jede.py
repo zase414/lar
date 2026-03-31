@@ -179,6 +179,8 @@ class Ferenc:
         turtle = self.turtle
         wanted_distance = 0.27  # 27 cm before ball stop
         rate.sleep()
+        rate.sleep()
+
 
         dist = self.average_depth()
         if dist is None:
