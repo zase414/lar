@@ -384,21 +384,27 @@ class Ferenc:
         turtle = self.turtle
 
     def test_odometry(self):
-        #go toward by x
-        self.saved_odometry.append({1,0,0})
-        #go toward by y
-        self.saved_odometry.append({0,1,0})
-        #rotate +45
-        self.saved_odometry.append({0,0,pi/2})
-        #rotate -45
-        self.saved_odometry.append({0,0,-pi/2})
+        rate = Rate(10)
+        self.turtle.reset_odometry()
+
         #go 1x 1y
-        self.saved_odometry.append({1,1,0})
+        self.saved_odometry.append([1,1,0])
+        #go toward by y
+        self.saved_odometry.append([0,1,0])
+        #go toward by x
+        self.saved_odometry.append([1,0,0])
+
+        #rotate +45
+        self.saved_odometry.append([0,0,pi/2])
+        #rotate -45
+        self.saved_odometry.append([0,0,-pi/2])
 
         while len(self.saved_odometry) != 0:
             point = self.saved_odometry.pop()
-            point *= -1
+#            point *= -1
+            print("going for point", point)
             self.go_ptp(point, rate, False)
+
 
 
 if __name__ == "__main__":
