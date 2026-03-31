@@ -30,19 +30,19 @@ class Ferenc:
 
 
         # until robot finds garage exit spin
-        #self.find_exit(rate)
-        #space_detect_time = get_time()
+        self.find_exit(rate)
+        space_detect_time = get_time()
 #
-        #self.exit_garage(rate, space_detect_time)
+        self.exit_garage(rate, space_detect_time)
 #
         ## find and ball turn on to it
-        #self.rotate_toward_ball(rate)
+        self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
-        #self.drive_toward_ball(rate, 0.8)
-        #saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
-        #print(self.saved_odometry)
-        #self.drive_around_ball(rate)
-        self.test_odometry()
+        self.drive_toward_ball(rate, 0.8)
+        saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
+        print(self.saved_odometry)
+        self.drive_around_ball(rate)
+        #self.test_odometry()
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
