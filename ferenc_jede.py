@@ -362,6 +362,7 @@ class Ferenc:
         Kp_ang = 0.6
         angular_velocity = Kp_ang * angle_diff
 
+        # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.26
         Kp_lin = 2
         if dist_diff is None:
