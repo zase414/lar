@@ -252,7 +252,7 @@ class Ferenc:
 
         # thresholds fo accurate enough stopping in given points
         dist_thresh = 0.026
-        angle_thresh = 0.01
+        angle_thresh = 0.08
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -384,8 +384,8 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
-        min_speed = 0.05
-        Kp = 4.2
+        min_speed = 0.1
+        Kp = 4.5
         ang_vel = Kp * angle_diff
         if 0 < ang_vel < min_speed:
             ang_vel = min_speed
