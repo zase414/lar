@@ -89,7 +89,7 @@ class Ferenc:
         turtle.reset_odometry()
 
         DEAD_CENTER_X = 640 / 2
-        TOLERANCE_PIXEL_BAND = 10
+        TOLERANCE_PIXEL_BAND = 12
         #already seen ball near center, ignore zeros throwed by not seeing ball
         wasSeen = False
 
@@ -186,7 +186,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.27  # 27 cm before ball stop
+        wanted_distance = 0.275  # 27.5 cm before ball stop
         rate.sleep()
         rate.sleep()
 
