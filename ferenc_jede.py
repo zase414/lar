@@ -112,7 +112,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
                 turtle.play_sound(4)
-            elif (abs(dist) > TOLERANCE_PIXEL_BAND):
+            elif (abs(dist) < TOLERANCE_PIXEL_BAND):
                 break
             else:
                 turtle.cmd_velocity(0, ang_speed)
