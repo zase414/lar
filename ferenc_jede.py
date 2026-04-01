@@ -33,7 +33,7 @@ class Ferenc:
         self.find_exit(rate)
         space_detect_time = get_time()
 #
-        self.exit_garage(rate, space_detect_time)
+        # self.exit_garage(rate, space_detect_time)
 #
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
@@ -367,7 +367,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.6
-        Kp = 0.3
+        Kp = 0.75
         ang_vel = Kp * angle_diff
         ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
         turtle.cmd_velocity(0, ang_vel)
