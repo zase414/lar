@@ -96,12 +96,12 @@ class Ferenc:
         while (not turtle.is_shutting_down()):
             (center_x, _), _ = detect_balls(turtle)
             dist = DEAD_CENTER_X - center_x
-            if not wasSeen and abs(dist) < 100:
-                wasSeen = True
+            # if not wasSeen and abs(dist) < 100:
+            #     wasSeen = True
 
-            if wasSeen and (center_x is None or center_x == 0):
-                print("ignoring frame...")
-                continue
+            # if wasSeen and (center_x is None or center_x == 0):
+            #     print("ignoring frame...")
+            #     continue
 
             ang_speed = max(min(abs(dist * 0.01), 0.5), 0.1)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
