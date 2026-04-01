@@ -291,10 +291,6 @@ class Ferenc:
             y = point[1] - cur_coords[1]
             d = sqrt(x ** 2 + y ** 2)  # distance from point
 
-            if x<0 and y<0:
-                d *= -1
-            print("debugging x is ", x, "y is", y, "and distance is ", d)
-
             rate.sleep()
 
         if point_of_return:
