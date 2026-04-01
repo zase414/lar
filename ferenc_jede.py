@@ -74,7 +74,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 # go forward with 5° offset to negate early exit
-                self.go_forward(0.28, turtle.get_odometry()[2], pi/36)
+                self.go_forward(turtle.get_odometry()[2], pi/36, dist_diff = None)
                 rate.sleep()
 
         # reset params
@@ -148,14 +148,14 @@ class Ferenc:
             else:
                 consecutive_readings = 0  # Reset if we get a reading further away
 
-            lin_speed = max(0.04, min(0.16, diff))
+            # lin_speed = max(0.04, min(0.16, diff))
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                self.go_forward(lin_speed, turtle.get_odometry()[2], 0)
+                self.go_forward(turtle.get_odometry()[2], 0, diff)
                 rate.sleep()
 
 
@@ -282,7 +282,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(0.23, cur_coords[2], angle)
+                self.go_forward(cur_coords[2], angle, dist_diff = None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -318,7 +318,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         final_distance = starting_distance - (cur_coords[0] + ball_radius)
         while not turtle.is_shutting_down() and final_distance > wanted_distance:
-            self.go_forward(0.08, cur_coords[2], 0)
+            dist_diff = wanted_distance - final_distance
+            self.go_forward(cur_coords[2], 0, dist_diff)
 
             cur_coords = turtle.get_odometry()
             final_distance = starting_distance - (cur_coords[0] + ball_radius)
@@ -352,22 +353,29 @@ class Ferenc:
         """Normalizes an angle to be strictly within -pi and pi"""
         return (angle + pi) % (2 * pi) - pi
 
-    def go_forward(self, lin_velocity, current_angle, needed_angle):
+    def go_forward(self, current_angle, needed_angle, dist_diff):
         """Simple P regulated driving in a straight line"""
         turtle = self.turtle
         angle_diff = self.normalize_angle(needed_angle - current_angle)
 
         # based on how off course is our robot rotated >>> steer it to go straight
-        Kp = 0.6
-        angular_velocity = Kp * angle_diff
+        Kp_ang = 0.6
+        angular_velocity = Kp_ang * angle_diff
 
+        max_speed = 0.26
+        Kp_lin = 2
+        if dist_diff is None:
+            lin_velocity = 0.2
+        else:
+            lin_velocity = Kp_lin * dist_diff
+        lin_velocity = max(min(lin_velocity, max_speed), -max_speed)   # limit max speed
         turtle.cmd_velocity(lin_velocity, angular_velocity)
 
     def rotate_to_angle(self, angle_diff):
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
-        max_speed = 0.6
-        Kp = 2
+        max_speed = 0.65
+        Kp = 2.67
         ang_vel = Kp * angle_diff
         ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
         turtle.cmd_velocity(0, ang_vel)
