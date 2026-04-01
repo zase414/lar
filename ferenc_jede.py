@@ -251,8 +251,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.02
-        angle_thresh = 0.01
+        dist_thresh = 0.022
+        angle_thresh = 0.011
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -367,8 +367,8 @@ class Ferenc:
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.24
-        Kp_lin = 0.8
+        max_speed = 0.2
+        Kp_lin = 0.4
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
@@ -382,7 +382,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.65
-        Kp = 3
+        Kp = 4
         ang_vel = Kp * angle_diff
         ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
         turtle.cmd_velocity(0, ang_vel)
