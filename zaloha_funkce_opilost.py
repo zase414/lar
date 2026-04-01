@@ -35,7 +35,7 @@ def go_ptp(self, point, rate, point_of_return):
         rate.sleep()
 
     # while ferenc is not located at x,y coords, drive forward:
-    while (not turtle.is_shutting_down()) and (abs(d) > dist_thresh):
+    while (not turtle.is_shutting_down()) and (d > dist_thresh):
         if self.stop:
             turtle.cmd_velocity(0, 0)
             turtle.play_sound(4)
