@@ -251,7 +251,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.022
+        dist_thresh = 0.024
         angle_thresh = 0.008
 
         # current location and distance from goal point
@@ -284,7 +284,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], angle, abs(d)*2, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], angle, abs(d)*2.2, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -365,12 +365,12 @@ class Ferenc:
         angle_diff = self.normalize_angle(needed_angle - current_angle)
 
         # based on how off course is our robot rotated >>> steer it to go straight
-        Kp_ang = 0.8
+        Kp_ang = 0.5
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.2
-        Kp_lin = 0.33
+        max_speed = 0.22
+        Kp_lin = 0.35
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
@@ -384,7 +384,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.65
-        Kp = 4.2
+        Kp = 4.5
         ang_vel = Kp * angle_diff
         ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
         turtle.cmd_velocity(0, ang_vel)
