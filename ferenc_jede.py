@@ -87,13 +87,22 @@ class Ferenc:
         """Until ferenc finds ball he's spinning"""
         turtle = self.turtle
         turtle.reset_odometry()
-        (center_x, center_y), radius = detect_balls(turtle)
 
         DEAD_CENTER_X = 640 / 2
         TOLERANCE_PIXEL_BAND = 10
-        dist = DEAD_CENTER_X - center_x
+        #already seen ball near center, ignore zeros throwed by not seeing ball
+        wasSeen = False
 
-        while (not turtle.is_shutting_down()) and (abs(dist) > TOLERANCE_PIXEL_BAND):
+        while (not turtle.is_shutting_down()):
+            (center_x, _), _ = detect_balls(turtle)
+            dist = DEAD_CENTER_X - center_x
+            if not wasSeen and abs(dist) < 100:
+                wasSeen = True
+
+            if wasSeen and (center_x is None or center_x == 0):
+                print("ignoring frame...")
+                continue
+
             ang_speed = max(min(abs(dist * 0.01), 0.5), 0.1)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
@@ -103,10 +112,10 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
                 turtle.play_sound(4)
+            elif (abs(dist) > TOLERANCE_PIXEL_BAND):
+                break
             else:
                 turtle.cmd_velocity(0, ang_speed)
-                (center_x, center_y), radius = detect_balls(turtle)
-                dist = DEAD_CENTER_X - center_x
                 rate.sleep()
 
 
