@@ -368,8 +368,8 @@ class Ferenc:
         if dist_diff is None:
             lin_velocity = 0.2
         else:
-            lin_velocity = Kp_lin * dist_diff
-        lin_velocity = max(min(lin_velocity, max_speed), -max_speed)   # limit max speed
+            lin_velocity = Kp_lin * abs(dist_diff)
+        lin_velocity = min(lin_velocity, max_speed)   # limit max speed
         turtle.cmd_velocity(lin_velocity, angular_velocity)
 
     def rotate_to_angle(self, angle_diff):
