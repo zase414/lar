@@ -42,7 +42,7 @@ class Ferenc:
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
-        #self.test_odometry()
+        self.return_to_garage_from_odometry()
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
@@ -387,23 +387,11 @@ class Ferenc:
         ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
         turtle.cmd_velocity(0, ang_vel)
 
-    def test_odometry(self):
+    def return_to_garage_from_odometry(self):
         rate = Rate(10)
-        self.turtle.reset_odometry()
-
-        #go 1x 1y
-        self.saved_odometry.append([0.5,0.5,0])
-        #go toward by y
-        self.saved_odometry.append([0,0.5,0])
-        #go toward by x
-        self.saved_odometry.append([0.5,0,0])
-
-        #rotate +45
-        self.saved_odometry.append([0,0,pi/4])
-        #rotate -45
-        self.saved_odometry.append([0,0,-pi/4])
 
         while len(self.saved_odometry) != 0:
+            self.turtle.reset_odometry()
             point = self.saved_odometry.pop()
 #            point *= -1
             print("going for point", point)
