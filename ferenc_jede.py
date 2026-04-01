@@ -103,7 +103,7 @@ class Ferenc:
             #     print("ignoring frame...")
             #     continue
 
-            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.1)
+            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.09)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
             print("balls position on camera x ", center_x, "calculated ang speed ", ang_speed)
@@ -260,8 +260,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.026
-        angle_thresh = 0.08
+        dist_thresh = 0.0245
+        angle_thresh = 0.075
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -378,7 +378,7 @@ class Ferenc:
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.22
+        max_speed = 0.21
         Kp_lin = 0.36
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
