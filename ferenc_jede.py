@@ -74,7 +74,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 # go forward with 5° offset to negate early exit
-                self.go_forward(turtle.get_odometry()[2], pi/36, dist_diff = None)
+                self.go_forward(turtle.get_odometry()[2], pi/36, dist_diff = None, prefered_lin_vel=None)
                 rate.sleep()
 
         # reset params
@@ -155,7 +155,7 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                self.go_forward(turtle.get_odometry()[2], 0, abs(diff))
+                self.go_forward(turtle.get_odometry()[2], 0, abs(diff), prefered_lin_vel=None)
                 rate.sleep()
 
 
@@ -282,7 +282,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], angle, dist_diff = None)
+                self.go_forward(cur_coords[2], angle, dist_diff = None, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -318,8 +318,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         final_distance = starting_distance - (cur_coords[0] + ball_radius)
         while not turtle.is_shutting_down() and final_distance > wanted_distance:
-            dist_diff = wanted_distance - final_distance
-            self.go_forward(cur_coords[2], 0, dist_diff)
+            # dist_diff = wanted_distance - final_distance
+            self.go_forward(cur_coords[2], 0, dist_diff = None, prefered_lin_vel = 0.02)
 
             cur_coords = turtle.get_odometry()
             final_distance = starting_distance - (cur_coords[0] + ball_radius)
@@ -353,7 +353,7 @@ class Ferenc:
         """Normalizes an angle to be strictly within -pi and pi"""
         return (angle + pi) % (2 * pi) - pi
 
-    def go_forward(self, current_angle, needed_angle, dist_diff):
+    def go_forward(self, current_angle, needed_angle, dist_diff, prefered_lin_vel):
         """Simple P regulated driving in a straight line"""
         turtle = self.turtle
         angle_diff = self.normalize_angle(needed_angle - current_angle)
@@ -364,9 +364,9 @@ class Ferenc:
 
         # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.26
-        Kp_lin = 2.67
-        if dist_diff is None:
-            lin_velocity = 0.2
+        Kp_lin = 2.2
+        if dist_diff is None and prefered_lin_vel is not None:
+            lin_velocity = prefered_lin_vel
         else:
             lin_velocity = Kp_lin * abs(dist_diff)
         lin_velocity = min(lin_velocity, max_speed)   # limit max speed
