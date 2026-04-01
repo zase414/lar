@@ -103,7 +103,7 @@ class Ferenc:
             #     print("ignoring frame...")
             #     continue
 
-            ang_speed = max(min(abs(dist * 0.01), 0.5), 0.1)
+            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.1)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
             print("balls position on camera x ", center_x, "calculated ang speed ", ang_speed)
