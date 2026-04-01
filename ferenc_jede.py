@@ -148,7 +148,7 @@ class Ferenc:
             else:
                 consecutive_readings = 0  # Reset if we get a reading further away
 
-            lin_speed = max(0.04, min(0.2, diff))
+            lin_speed = max(0.04, min(0.16, diff))
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -177,7 +177,8 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.27  # 27 cm before ball stop
+        wanted_distance = 0.30  # 30 cm before ball stop
+        rate.sleep()
         rate.sleep()
 
         dist = self.average_depth()
@@ -366,7 +367,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.6
-        Kp = 0.5
+        Kp = 0.3
         ang_vel = Kp * angle_diff
         ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
         turtle.cmd_velocity(0, ang_vel)
