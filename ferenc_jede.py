@@ -323,7 +323,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 # dist_diff = wanted_distance - final_distance
-                self.go_forward(cur_coords[2], 0, dist_diff = None, prefered_lin_vel = 0.02)
+                self.go_forward(cur_coords[2], 0, dist_diff = None , prefered_lin_vel = 0.075)
 
             cur_coords = turtle.get_odometry()
             final_distance = starting_distance - (cur_coords[0] + ball_radius)
