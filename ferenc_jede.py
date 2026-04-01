@@ -384,9 +384,16 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
-        Kp = 6
+        min_speed = 0.05
+        Kp = 4.2
         ang_vel = Kp * angle_diff
-        ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
+        if 0 < ang_vel < min_speed:
+            ang_vel = min_speed
+        elif 0 > ang_vel > -min_speed:
+            ang_vel = -min_speed
+        else:
+            ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
+
         turtle.cmd_velocity(0, ang_vel)
 
     def return_to_garage_from_odometry(self):
