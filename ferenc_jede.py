@@ -318,8 +318,12 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         final_distance = starting_distance - (cur_coords[0] + ball_radius)
         while not turtle.is_shutting_down() and final_distance > wanted_distance:
-            # dist_diff = wanted_distance - final_distance
-            self.go_forward(cur_coords[2], 0, dist_diff = None, prefered_lin_vel = 0.02)
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(4)
+            else:
+                # dist_diff = wanted_distance - final_distance
+                self.go_forward(cur_coords[2], 0, dist_diff = None, prefered_lin_vel = 0.02)
 
             cur_coords = turtle.get_odometry()
             final_distance = starting_distance - (cur_coords[0] + ball_radius)
