@@ -155,7 +155,7 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                self.go_forward(turtle.get_odometry()[2], 0, diff)
+                self.go_forward(turtle.get_odometry()[2], 0, abs(diff))
                 rate.sleep()
 
 
@@ -376,7 +376,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.65
-        Kp = 2.67
+        Kp = 3
         ang_vel = Kp * angle_diff
         ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
         turtle.cmd_velocity(0, ang_vel)
