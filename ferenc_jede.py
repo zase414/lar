@@ -251,8 +251,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.02
-        angle_thresh = 0.01
+        dist_thresh = 0.025
+        angle_thresh = 0.015
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -367,7 +367,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.6
-        Kp = 0.75
+        Kp = 0.5
         ang_vel = Kp * angle_diff
         ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
         turtle.cmd_velocity(0, ang_vel)
