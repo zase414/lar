@@ -67,14 +67,14 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
-        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.7):
+        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.9):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
                 turtle.play_sound(4)
             else:
                 # go forward with 5° offset to negate early exit
-                self.go_forward(turtle.get_odometry()[2], pi/36, dist_diff = None, prefered_lin_vel=None)
+                self.go_forward(turtle.get_odometry()[2], pi/36, dist_diff = None, prefered_lin_vel = 0.25)
                 rate.sleep()
 
         # reset params
