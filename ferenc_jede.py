@@ -261,7 +261,9 @@ class Ferenc:
 
         if x<0 and y<0:
             d *= -1
-        
+        print("debugging x is ", x, "y is", y, "and distance is ", d)
+
+
         # calculate angle to the next point
         angle = atan2(y, x)
 
