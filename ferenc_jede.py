@@ -259,6 +259,9 @@ class Ferenc:
         y = point[1] - cur_coords[1]
         d = sqrt(x ** 2 + y ** 2)
 
+        if x<0 and y<0:
+            d *= -1
+        
         # calculate angle to the next point
         angle = atan2(y, x)
 
