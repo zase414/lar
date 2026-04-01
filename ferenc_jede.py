@@ -177,7 +177,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.265  # 26,5 cm before ball stop
+        wanted_distance = 0.27  # 27 cm before ball stop
         rate.sleep()
         rate.sleep()
 
@@ -251,7 +251,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.022
+        dist_thresh = 0.023
         angle_thresh = 0.01
 
         # current location and distance from goal point
@@ -285,7 +285,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], angle, dist_diff = None, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], angle, d*2.5, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -366,12 +366,12 @@ class Ferenc:
         angle_diff = self.normalize_angle(needed_angle - current_angle)
 
         # based on how off course is our robot rotated >>> steer it to go straight
-        Kp_ang = 0.6
+        Kp_ang = 0.75
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.2
-        Kp_lin = 0.3
+        Kp_lin = 0.33
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
