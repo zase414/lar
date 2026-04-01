@@ -285,7 +285,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], angle, d*2.5, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], angle, abs(d)*2.5, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
