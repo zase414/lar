@@ -259,8 +259,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.024
-        angle_thresh = 0.0125
+        dist_thresh = 0.025
+        angle_thresh = 0.012
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -288,13 +288,13 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
 
         # while ferenc is not located at x,y coords, drive forward:
-        starting_angle = cur_coords[2]
+        initial_angle = cur_coords[2]
         while (not turtle.is_shutting_down()) and (d > dist_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], angle, abs(d)*2.4, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.4, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
