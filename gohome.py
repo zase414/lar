@@ -75,7 +75,7 @@ class Ferenc:
 				if not gate_detected:
 					turtle.cmd_velocity(linear=0.0, angular=0.5)
 				elif not self.stop:
-					center_depth = get_depth(self, TARGET_X, 240, 2)
+					center_depth = get_depth(turtle, TARGET_X, 240, 2)
 					diferenc = center_depth - TARGET_DEPTH
 					if (diferenc > 0.1):
 						turtle.cmd_velocity(linear=diferenc*0.1, angular=0.0)
