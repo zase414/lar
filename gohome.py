@@ -68,8 +68,10 @@ class Ferenc:
 			else:
 				if not gate_detected:
 					turtle.cmd_velocity(linear=0.0, angular=0.5)
-				else:
+				else if not self.stop:
 					turtle.cmd_velocity(linear=0.1, angular=0.0)
+				else:
+					turtle.cmd_velocity(linear=0.0, angular=0.0)
 				integral = 0
 				prev_time = current_time
 
