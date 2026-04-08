@@ -421,6 +421,72 @@ class Ferenc:
             print("reversing drive of:", comment)
             self.go_ptp(point, rate, False)
 
+    def go_home(self, rate):
+      turtle = self.turtle
+
+      Kp = 0.005
+      Ki = 0.0001
+      Kd = 0.001
+
+      integral = 0
+      prev_error = 0
+      prev_time = get_time()
+
+      TARGET_X = 640 // 2
+      TARGET_DEPTH = 0.15
+
+      gate_detected = False
+
+      while not turtle.is_shutting_down():
+        rectangles = detect_rectangles(turtle)
+
+        current_time = get_time()
+        dt = current_time - prev_time
+
+        if rectangles and len(rectangles) == 3 and dt > 0 and not self.stop:
+          gate_detected = True
+
+          left, right, center = rectangles
+
+          center_x, center_y = center
+          left_x, left_y = left
+          right_x, right_y = right
+
+          error = TARGET_X - center_x
+
+          proportional = Kp * error
+          integral += error * dt
+          derivative = (error - prev_error) / dt
+
+          pid_output = proportional + (Ki * integral) + (Kd * derivative)
+
+          turtle.cmd_velocity(linear=0.4, angular=pid_output)
+
+          prev_error = error
+          prev_time = current_time
+        else:
+          if not gate_detected:
+            turtle.cmd_velocity(linear=0.0, angular=0.5)
+          elif not self.stop:
+            center_depth = get_depth(turtle, TARGET_X, 240, 2)
+            diferenc = center_depth - TARGET_DEPTH
+            if (diferenc > 0.1):
+              turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
+            else: 
+              turtle.cmd_velocity(0,0)
+              print("hotovo nigga")
+              break
+          else:
+            turtle.cmd_velocity(linear=0.0, angular=0.0)
+          integral = 0
+          prev_time = current_time
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+          break
+
+        rate.sleep()
+
+      cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
