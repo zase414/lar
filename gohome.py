@@ -31,7 +31,7 @@ class Ferenc:
 		turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
 		rate = Rate(10)
 
-		Kp = 0.01
+		Kp = 0.005
 		Ki = 0.0001
 		Kd = 0.001
 
@@ -40,7 +40,7 @@ class Ferenc:
 		prev_time = get_time()
 
 		TARGET_X = 640 // 2
-		TARGET_DEPTH = 0.3
+		TARGET_DEPTH = 0.15
 
 		gate_detected = False
 
@@ -78,7 +78,7 @@ class Ferenc:
 					center_depth = get_depth(turtle, TARGET_X, 240, 2)
 					diferenc = center_depth - TARGET_DEPTH
 					if (diferenc > 0.1):
-						turtle.cmd_velocity(linear=diferenc*0.1, angular=0.0)
+						turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
 					else: 
 						turtle.cmd_velocity(0,0)
 						print("hotovo nigga")
