@@ -184,7 +184,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.29  # 29 cm before ball stop
+        wanted_distance = 0.285  # 28.5 cm before ball stop
         rate.sleep()
         rate.sleep()
 
@@ -216,7 +216,7 @@ class Ferenc:
     def calculate_points(self, dist, coords) -> list:
         """Calculates coordinates of hexagon to drive around the ball"""
         points = []
-        ball_radius = 0.042 # 4cm radius of ball
+        ball_radius = 0.04 # 4cm radius of ball
 
         # make all the points of a hexagon
         x = 0
@@ -259,7 +259,7 @@ class Ferenc:
 
         # thresholds fo accurate enough stopping in given points
         dist_thresh = 0.026
-        angle_thresh = 0.016
+        angle_thresh = 0.014
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
