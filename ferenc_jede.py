@@ -42,7 +42,7 @@ class Ferenc:
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
-        #self.return_to_garage_from_odometry()
+        self.return_to_garage_from_odometry()
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
@@ -186,7 +186,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.275  # 27.5 cm before ball stop
+        wanted_distance = 0.285  # 28.5 cm before ball stop
         rate.sleep()
         rate.sleep()
 
@@ -260,8 +260,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.021
-        angle_thresh = 0.008
+        dist_thresh = 0.024
+        angle_thresh = 0.013
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -289,12 +289,13 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
 
         # while ferenc is not located at x,y coords, drive forward:
+        starting_angle = cur_coords[2]
         while (not turtle.is_shutting_down()) and (d > dist_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], angle, abs(d)*2.4, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], starting_angle, abs(d)*2.4, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -328,7 +329,7 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
-        ball_radius = 0.04 # 4cm
+        ball_radius = 0.041 # 4,1 cm
 
         cur_coords = turtle.get_odometry()
         final_distance = starting_distance - (cur_coords[0] + ball_radius)
@@ -383,7 +384,7 @@ class Ferenc:
 
         # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.23
-        Kp_lin = 0.325
+        Kp_lin = 0.34
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
@@ -397,8 +398,8 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
-        min_speed = 0.085
-        Kp = 4.3
+        min_speed = 0.1
+        Kp = 4.1
         ang_vel = Kp * angle_diff
         if 0 < ang_vel < min_speed:
             ang_vel = min_speed
