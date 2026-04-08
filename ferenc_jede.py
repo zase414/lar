@@ -262,7 +262,7 @@ class Ferenc:
         
         # thresholds fo accurate enough stopping in given points
         dist_thresh = 0.005
-        angle_thresh = 0.01
+        angle_thresh = 0.012
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -291,7 +291,7 @@ class Ferenc:
         rate.sleep()
 
         # while ferenc is not located at x,y coords, drive forward:
-        starting_angle = cur_coords[2]
+        initial_angle = cur_coords[2]
         start_to_goal = [point[0] - start_coords[0], point[1] - start_coords[1]]
         while (not turtle.is_shutting_down()) and (d > dist_thresh):
             if self.stop:
