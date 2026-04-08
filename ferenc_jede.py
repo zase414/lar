@@ -4,7 +4,7 @@ from __future__ import print_function
 from callbacks import callback_bumper_stop, callback_button0_resume
 from image_proccesing import space_infront, get_depth
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
-from visuals import detect_balls
+from visuals import detect_balls, detect_rectangles
 from math import pi, cos, sqrt, sin, atan2
 from typing import Optional
 
@@ -43,7 +43,7 @@ class Ferenc:
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
-        self.return_to_garage_from_odometry()
+        # self.return_to_garage_from_odometry()
         self.go_home(rate)
 
     def find_exit(self, rate) -> None:
@@ -92,20 +92,12 @@ class Ferenc:
 
         DEAD_CENTER_X = 360
         TOLERANCE_PIXEL_BAND = 6
-        #already seen ball near center, ignore zeros throwed by not seeing ball
-        wasSeen = False
 
         while (not turtle.is_shutting_down()):
             (center_x, _), _ = detect_balls(turtle)
             dist = DEAD_CENTER_X - center_x
-            # if not wasSeen and abs(dist) < 100:
-            #     wasSeen = True
 
-            # if wasSeen and (center_x is None or center_x == 0):
-            #     print("ignoring frame...")
-            #     continue
-
-            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.1)
+            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.12)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
             print("balls position on camera x ", center_x, "calculated ang speed ", ang_speed)
@@ -261,8 +253,8 @@ class Ferenc:
         start_coords = cur_coords
         
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.005
-        angle_thresh = 0.011
+        dist_thresh = 0.0075
+        angle_thresh = 0.012
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -393,7 +385,7 @@ class Ferenc:
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.24
+        max_speed = 0.23
         Kp_lin = 0.4
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
@@ -485,7 +477,7 @@ class Ferenc:
               turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
             else: 
               turtle.cmd_velocity(0,0)
-              print("hotovo nigga")
+              print("hotovo")
               break
           else:
             turtle.cmd_velocity(linear=0.0, angular=0.0)
