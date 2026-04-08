@@ -68,7 +68,7 @@ class Ferenc:
 			else:
 				if not gate_detected:
 					turtle.cmd_velocity(linear=0.0, angular=0.5)
-				else if not self.stop:
+				elif not self.stop:
 					turtle.cmd_velocity(linear=0.1, angular=0.0)
 				else:
 					turtle.cmd_velocity(linear=0.0, angular=0.0)
@@ -144,7 +144,6 @@ class Ferenc:
 		cv2.circle(filtered, (avg_x, avg_y), 2, (0, 255, 0), 3)
 		
 		cv2.imshow("contours", filtered)
-		cv2.waitKey(1)
 
 		return ret
 
