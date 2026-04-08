@@ -42,7 +42,7 @@ class Ferenc:
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
-        #self.return_to_garage_from_odometry()
+        self.return_to_garage_from_odometry()
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
