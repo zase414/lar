@@ -38,7 +38,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
-        self.drive_toward_ball(rate, 0.61)
+        self.drive_toward_ball(rate, 0.58)
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
@@ -184,7 +184,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.275  # 27.5 cm before ball stop
+        wanted_distance = 0.29  # 29 cm before ball stop
         rate.sleep()
         rate.sleep()
 
@@ -216,7 +216,7 @@ class Ferenc:
     def calculate_points(self, dist, coords) -> list:
         """Calculates coordinates of hexagon to drive around the ball"""
         points = []
-        ball_radius = 0.04 # 4cm radius of ball
+        ball_radius = 0.042 # 4cm radius of ball
 
         # make all the points of a hexagon
         x = 0
@@ -258,8 +258,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.025
-        angle_thresh = 0.015
+        dist_thresh = 0.026
+        angle_thresh = 0.016
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
