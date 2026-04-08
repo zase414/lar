@@ -260,8 +260,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.0235
-        angle_thresh = 0.014
+        dist_thresh = 0.024
+        angle_thresh = 0.013
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -289,12 +289,13 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
 
         # while ferenc is not located at x,y coords, drive forward:
+        starting_angle = cur_coords[0]
         while (not turtle.is_shutting_down()) and (d > dist_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], angle, abs(d)*2.4, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], starting_angle, abs(d)*2.4, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -328,7 +329,7 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
-        ball_radius = 0.04 # 4cm
+        ball_radius = 0.041 # 4,1 cm
 
         cur_coords = turtle.get_odometry()
         final_distance = starting_distance - (cur_coords[0] + ball_radius)
@@ -378,12 +379,12 @@ class Ferenc:
         angle_diff = self.normalize_angle(needed_angle - current_angle)
 
         # based on how off course is our robot rotated >>> steer it to go straight
-        Kp_ang = 0.7
+        Kp_ang = 0.8
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.23
-        Kp_lin = 0.325
+        Kp_lin = 0.34
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
@@ -397,7 +398,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
-        min_speed = 0.09
+        min_speed = 0.1
         Kp = 4.1
         ang_vel = Kp * angle_diff
         if 0 < ang_vel < min_speed:
