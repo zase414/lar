@@ -383,7 +383,7 @@ class Ferenc:
 
         # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.22
-        Kp_lin = 0.36
+        Kp_lin = 0.33
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
