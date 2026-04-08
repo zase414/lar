@@ -97,7 +97,7 @@ class Ferenc:
             (center_x, _), _ = detect_balls(turtle)
             dist = DEAD_CENTER_X - center_x
 
-            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.12)
+            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.11)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
             print("balls position on camera x ", center_x, "calculated ang speed ", ang_speed)
@@ -253,8 +253,8 @@ class Ferenc:
         start_coords = cur_coords
         
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.0075
-        angle_thresh = 0.012
+        dist_thresh = 0.007
+        angle_thresh = 0.013
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -289,7 +289,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.5, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.6, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -386,7 +386,7 @@ class Ferenc:
 
         # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.23
-        Kp_lin = 0.4
+        Kp_lin = 0.41
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
@@ -400,8 +400,8 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
-        min_speed = 0.12
-        Kp = 4.6
+        min_speed = 0.11
+        Kp = 4.7
         ang_vel = Kp * angle_diff
         if 0 < ang_vel < min_speed:
             ang_vel = min_speed
@@ -436,7 +436,7 @@ class Ferenc:
       prev_time = get_time()
 
       TARGET_X = 640 // 2
-      TARGET_DEPTH = 0.15
+      TARGET_DEPTH = 0.175
 
       gate_detected = False
 
@@ -463,7 +463,7 @@ class Ferenc:
 
           pid_output = proportional + (Ki * integral) + (Kd * derivative)
 
-          turtle.cmd_velocity(linear=0.4, angular=pid_output)
+          turtle.cmd_velocity(linear=0.24, angular=pid_output)
 
           prev_error = error
           prev_time = current_time
