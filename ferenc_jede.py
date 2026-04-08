@@ -142,7 +142,7 @@ class Ferenc:
             (center_x, center_y), radius = detect_balls(turtle)
             if center_x == 0: #cant find ball
                 print("Ignoring frame")
-                turtle.cmd_velocity(0.007, 0)  # small movement so it is possible to detect again
+                turtle.cmd_velocity(0.01, 0)  # small movement so it is possible to detect again
                 rate.sleep()
                 continue
 
