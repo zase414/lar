@@ -261,7 +261,7 @@ class Ferenc:
         start_coords = cur_coords
         
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.007
+        dist_thresh = 0.005
         angle_thresh = 0.011
 
         # current location and distance from goal point
