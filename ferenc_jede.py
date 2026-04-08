@@ -252,11 +252,12 @@ class Ferenc:
 
         return points
 
-    def go_ptp(self, point, rate, point_of_return):
+    def go_ptp(self, point, rate, point_of_return = False):
         """Function that navigates from one point of a hexagon to the next"""
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
-
+        start_coords = cur_coords
+        
         # thresholds fo accurate enough stopping in given points
         dist_thresh = 0.024
         angle_thresh = 0.0125
@@ -285,9 +286,11 @@ class Ferenc:
 
         # reset params
         turtle.cmd_velocity(0, 0)
+        rate.sleep()
 
         # while ferenc is not located at x,y coords, drive forward:
         starting_angle = cur_coords[2]
+        start_to_goal = [point[0] - start_coords[0], point[1] - start_coords[1]]
         while (not turtle.is_shutting_down()) and (d > dist_thresh):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
@@ -299,11 +302,20 @@ class Ferenc:
             x = point[0] - cur_coords[0]
             y = point[1] - cur_coords[1]
             d = sqrt(x ** 2 + y ** 2)  # distance from point
+            
+            # --- overshoot detection ---
+            cur_to_goal = [x, y]
+            dot = start_to_goal[0] * cur_to_goal[0] + start_to_goal[1] * cur_to_goal[1]
+
+            if dot < 0:
+                print("Overshot target → stopping")
+                break
 
             rate.sleep()
 
         # reset params
         turtle.cmd_velocity(0, 0)
+        rate.sleep()
 
         if point_of_return:
             angle_diff = self.normalize_angle(point[2] - cur_coords[2])
