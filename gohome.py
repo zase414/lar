@@ -1,11 +1,12 @@
+from __future__ import print_function
+from callbacks import callback_bumper_stop, callback_button0_resume
+from image_proccesing import get_depth
+
+
 import numpy as np
 import cv2
 import time
 from scipy.io import savemat
-
-from __future__ import print_function
-from callbacks import callback_bumper_stop, callback_button0_resume
-from image_proccesing import get_depth
 
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
