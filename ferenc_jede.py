@@ -89,7 +89,7 @@ class Ferenc:
         turtle.reset_odometry()
 
         DEAD_CENTER_X = 640 / 2
-        TOLERANCE_PIXEL_BAND = 12
+        TOLERANCE_PIXEL_BAND = 6
         #already seen ball near center, ignore zeros throwed by not seeing ball
         wasSeen = False
 
@@ -103,7 +103,7 @@ class Ferenc:
             #     print("ignoring frame...")
             #     continue
 
-            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.09)
+            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.1)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
             print("balls position on camera x ", center_x, "calculated ang speed ", ang_speed)
@@ -186,7 +186,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.285  # 28.5 cm before ball stop
+        wanted_distance = 0.275  # 27.5 cm before ball stop
         rate.sleep()
         rate.sleep()
 
@@ -260,8 +260,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.024
-        angle_thresh = 0.013
+        dist_thresh = 0.025
+        angle_thresh = 0.015
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -384,7 +384,7 @@ class Ferenc:
 
         # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.23
-        Kp_lin = 0.34
+        Kp_lin = 0.35
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
