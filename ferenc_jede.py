@@ -67,7 +67,7 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
-        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 1.9):
+        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 2):
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
@@ -260,8 +260,8 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.024
-        angle_thresh = 0.06
+        dist_thresh = 0.0225
+        angle_thresh = 0.046
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -378,8 +378,8 @@ class Ferenc:
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.21
-        Kp_lin = 0.34
+        max_speed = 0.22
+        Kp_lin = 0.36
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
