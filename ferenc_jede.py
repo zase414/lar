@@ -44,6 +44,7 @@ class Ferenc:
         print(self.saved_odometry)
         self.drive_around_ball(rate)
         self.return_to_garage_from_odometry()
+        self.go_home(rate)
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
