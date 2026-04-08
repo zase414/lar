@@ -16,7 +16,7 @@ def main():
 
     # takes picture and saves it on launch
     # save_img(turtle)
-    DEAD_CENTER_X = 350
+    DEAD_CENTER_X = 360
     TOLERANCE_PIXEL_BAND = 6
 
     while True:
