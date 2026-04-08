@@ -157,8 +157,6 @@ class Ferenc:
             else:
                 consecutive_readings = 0  # Reset if we get a reading further away
 
-            # lin_speed = max(0.04, min(0.16, diff))
-
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
