@@ -38,7 +38,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
-        self.drive_toward_ball(rate, 0.6)
+        self.drive_toward_ball(rate, 0.62)
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
@@ -128,7 +128,7 @@ class Ferenc:
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
         turtle = self.turtle
-        DISTANCE_TOLERANCE = 0.03 # 3cm
+        DISTANCE_TOLERANCE = 0.02 # 2cm
         CONSECUTIVE_READS_NEEDED = 2
         consecutive_readings = 0
 
