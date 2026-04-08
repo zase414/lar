@@ -16,6 +16,13 @@ from enum import IntEnum
 
 Vec2Int = Tuple[int, int]
 
+#
+# WARNING: DEPRECATED
+# This file has been merged into ferenc_jede and visuals
+#
+
+
+
 class Ferenc:
 	def __init__(self):
 		self.turtle = Turtlebot(rgb=True, pc=True)
