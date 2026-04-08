@@ -37,7 +37,7 @@ class Ferenc:
 #
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
-        ## drives until ball is 1m infront of camera
+        ## drives until ball is 58 cm infront of camera
         self.drive_toward_ball(rate, 0.58)
         self.rotate_toward_ball(rate)
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
@@ -97,7 +97,7 @@ class Ferenc:
             (center_x, _), _ = detect_balls(turtle)
             dist = DEAD_CENTER_X - center_x
 
-            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.11)
+            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.1)
             ang_speed = -1 * ang_speed if dist < 0 else ang_speed
 
             print("balls position on camera x ", center_x, "calculated ang speed ", ang_speed)
@@ -289,7 +289,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.6, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.7, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -386,7 +386,7 @@ class Ferenc:
 
         # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.23
-        Kp_lin = 0.41
+        Kp_lin = 0.4
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
@@ -400,7 +400,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
-        min_speed = 0.11
+        min_speed = 0.1
         Kp = 4.7
         ang_vel = Kp * angle_diff
         if 0 < ang_vel < min_speed:
@@ -436,7 +436,7 @@ class Ferenc:
       prev_time = get_time()
 
       TARGET_X = 640 // 2
-      TARGET_DEPTH = 0.175
+      TARGET_DEPTH = 0.17
 
       gate_detected = False
 
