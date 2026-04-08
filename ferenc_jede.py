@@ -81,7 +81,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
         rate.sleep()
         #save this drive to robot
-        self.saved_odometry.append(turtle.get_odometry())
+        self.saved_odometry.append((turtle.get_odometry(), "exit_garage"))
 
     def rotate_toward_ball(self, rate) -> None:
         """Until ferenc finds ball he's spinning"""
@@ -123,7 +123,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
         rate.sleep()
         #save this drive to robot
-        self.saved_odometry.append(turtle.get_odometry())
+        self.saved_odometry.append((turtle.get_odometry(), "rotate_toward"))
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
@@ -180,7 +180,7 @@ class Ferenc:
         diff = dist - final_dist
         print("distance achieved is :", dist, "diff is ", diff)
         #save this drive to robot
-        self.saved_odometry.append(turtle.get_odometry())
+        self.saved_odometry.append((turtle.get_odometry(), "drive_toward"))
 
 
     def drive_around_ball(self, rate) -> None:
@@ -414,9 +414,9 @@ class Ferenc:
 
         while len(self.saved_odometry) != 0:
             self.turtle.reset_odometry()
-            point = self.saved_odometry.pop()
+            (point, comment) = self.saved_odometry.pop()
 #            point *= -1
-            print("going for point", point)
+            print("reversing drive of:", comment)
             self.go_ptp(point, rate, False)
 
 
