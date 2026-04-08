@@ -1,11 +1,12 @@
+from __future__ import print_function
+from callbacks import callback_bumper_stop, callback_button0_resume
+from image_proccesing import get_depth
+
+
 import numpy as np
 import cv2
 import time
 from scipy.io import savemat
-
-from __future__ import print_function
-from callbacks import callback_bumper_stop, callback_button0_resume
-from image_proccesing import get_depth
 
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from datetime import datetime
@@ -74,7 +75,7 @@ class Ferenc:
 				if not gate_detected:
 					turtle.cmd_velocity(linear=0.0, angular=0.5)
 				elif not self.stop:
-					center_depth = get_depth(self, TARGET_X, 240, 2)
+					center_depth = get_depth(turtle, TARGET_X, 240, 2)
 					diferenc = center_depth - TARGET_DEPTH
 					if (diferenc > 0.1):
 						turtle.cmd_velocity(linear=diferenc*0.1, angular=0.0)

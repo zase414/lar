@@ -12,6 +12,7 @@ import cv2
 def main():
     turtle = Turtlebot(rgb=True, pc=True)
     sleep(2)
+    rate = Rate(10)
 
     # takes picture and saves it on launch
     # save_img(turtle)
