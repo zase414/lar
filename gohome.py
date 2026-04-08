@@ -1,22 +1,26 @@
-from __future__ import print_function
-from callbacks import callback_bumper_stop, callback_button0_resume
-from enum import IntEnum
-from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
-from datetime import datetime
-from scipy.io import savemat
-
-from typing import Tuple, List
-
 import numpy as np
 import cv2
 import time
+from scipy.io import savemat
+
+from __future__ import print_function
+from callbacks import callback_bumper_stop, callback_button0_resume
+from image_proccesing import get_depth
+
+from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
+from datetime import datetime
+
+from typing import Tuple, List
+from enum import IntEnum
 
 Vec2Int = Tuple[int, int]
 
 class Ferenc:
 	def __init__(self):
-		self.turtle = Turtlebot(rgb=True)
+		self.turtle = Turtlebot(rgb=True, pc=True)
 		self.stop = False
+
+		self.turtle.wait_for_point_cloud()
 
 	def main(self):
 		turtle = self.turtle
@@ -35,6 +39,7 @@ class Ferenc:
 		prev_time = get_time()
 
 		TARGET_X = 640 // 2
+		TARGET_DEPTH = 0.3
 
 		gate_detected = False
 
@@ -69,7 +74,13 @@ class Ferenc:
 				if not gate_detected:
 					turtle.cmd_velocity(linear=0.0, angular=0.5)
 				elif not self.stop:
-					turtle.cmd_velocity(linear=0.1, angular=0.0)
+					center_depth = get_depth(self, TARGET_X, 240, 2)
+					diferenc = center_depth - TARGET_DEPTH
+					if (diferenc > 0.1):
+						turtle.cmd_velocity(linear=diferenc*0.1, angular=0.0)
+					else: 
+						turtle.cmd_velocity(0,0)
+						print("hotovo nigga")
 				else:
 					turtle.cmd_velocity(linear=0.0, angular=0.0)
 				integral = 0
