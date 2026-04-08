@@ -88,7 +88,7 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
 
-        DEAD_CENTER_X = 640 / 2
+        DEAD_CENTER_X = 360
         TOLERANCE_PIXEL_BAND = 6
         #already seen ball near center, ignore zeros throwed by not seeing ball
         wasSeen = False
