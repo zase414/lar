@@ -46,7 +46,7 @@ class Ferenc:
 
 			if rectangles and len(rectangles) == 3 and dt > 0 and not self.stop:
 				gate_detected = True
-				
+
 				left, right, center = rectangles
 
 				center_x, center_y = center
@@ -66,7 +66,7 @@ class Ferenc:
 				prev_error = error
 				prev_time = current_time
 			else:
-				if !gate_detected:
+				if not gate_detected:
 					turtle.cmd_velocity(linear=0.0, angular=0.5)
 				else:
 					turtle.cmd_velocity(linear=0.1, angular=0.0)
