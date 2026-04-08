@@ -338,7 +338,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 # dist_diff = wanted_distance - final_distance
-                self.go_forward(cur_coords[2], 0, dist_diff = None , prefered_lin_vel = 0.075)
+                self.go_forward(cur_coords[2], 0, dist_diff = None , prefered_lin_vel = 0.08)
 
             cur_coords = turtle.get_odometry()
             final_distance = starting_distance - (cur_coords[0] + ball_radius)
@@ -382,8 +382,8 @@ class Ferenc:
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.22
-        Kp_lin = 0.33
+        max_speed = 0.23
+        Kp_lin = 0.34
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
