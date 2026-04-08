@@ -39,10 +39,12 @@ class Ferenc:
         self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
         self.drive_toward_ball(rate, 0.58)
+        self.rotate_toward_ball(rate)
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
         self.return_to_garage_from_odometry()
+        self.go_home(rate)
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
@@ -259,8 +261,8 @@ class Ferenc:
         start_coords = cur_coords
         
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.024
-        angle_thresh = 0.0125
+        dist_thresh = 0.025
+        angle_thresh = 0.01
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -296,7 +298,7 @@ class Ferenc:
                 turtle.cmd_velocity(0, 0)
                 turtle.play_sound(4)
             else:
-                self.go_forward(cur_coords[2], angle, abs(d)*2.4, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.4, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -394,7 +396,7 @@ class Ferenc:
 
         # speed dependent on how far from desired destination is ferenc located
         max_speed = 0.23
-        Kp_lin = 0.35
+        Kp_lin = 0.37
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
         elif dist_diff is None and prefered_lin_vel is None:
@@ -408,8 +410,8 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
-        min_speed = 0.1
-        Kp = 4.1
+        min_speed = 0.11
+        Kp = 4.4
         ang_vel = Kp * angle_diff
         if 0 < ang_vel < min_speed:
             ang_vel = min_speed
@@ -432,6 +434,72 @@ class Ferenc:
             print("reversing drive of:", comment)
             self.go_ptp(point, rate, False)
 
+    def go_home(self, rate):
+      turtle = self.turtle
+
+      Kp = 0.005
+      Ki = 0.0001
+      Kd = 0.001
+
+      integral = 0
+      prev_error = 0
+      prev_time = get_time()
+
+      TARGET_X = 640 // 2
+      TARGET_DEPTH = 0.15
+
+      gate_detected = False
+
+      while not turtle.is_shutting_down():
+        rectangles = detect_rectangles(turtle)
+
+        current_time = get_time()
+        dt = current_time - prev_time
+
+        if rectangles and len(rectangles) == 3 and dt > 0 and not self.stop:
+          gate_detected = True
+
+          left, right, center = rectangles
+
+          center_x, center_y = center
+          left_x, left_y = left
+          right_x, right_y = right
+
+          error = TARGET_X - center_x
+
+          proportional = Kp * error
+          integral += error * dt
+          derivative = (error - prev_error) / dt
+
+          pid_output = proportional + (Ki * integral) + (Kd * derivative)
+
+          turtle.cmd_velocity(linear=0.4, angular=pid_output)
+
+          prev_error = error
+          prev_time = current_time
+        else:
+          if not gate_detected:
+            turtle.cmd_velocity(linear=0.0, angular=0.5)
+          elif not self.stop:
+            center_depth = get_depth(turtle, TARGET_X, 240, 2)
+            diferenc = center_depth - TARGET_DEPTH
+            if (diferenc > 0.1):
+              turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
+            else: 
+              turtle.cmd_velocity(0,0)
+              print("hotovo nigga")
+              break
+          else:
+            turtle.cmd_velocity(linear=0.0, angular=0.0)
+          integral = 0
+          prev_time = current_time
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+          break
+
+        rate.sleep()
+
+      cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":

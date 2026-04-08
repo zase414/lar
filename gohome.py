@@ -16,6 +16,13 @@ from enum import IntEnum
 
 Vec2Int = Tuple[int, int]
 
+#
+# WARNING: DEPRECATED
+# This file has been merged into ferenc_jede and visuals
+#
+
+
+
 class Ferenc:
 	def __init__(self):
 		self.turtle = Turtlebot(rgb=True, pc=True)
@@ -25,7 +32,6 @@ class Ferenc:
 
 	def main(self):
 		turtle = self.turtle
-		sleep(2)
 
 		turtle.register_bumper_event_cb(lambda msge: callback_bumper_stop(self, msge))
 		turtle.register_button_event_cb(lambda msge: callback_button0_resume(self, msge))
