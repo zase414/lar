@@ -38,7 +38,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 1m infront of camera
-        self.drive_toward_ball(rate, 0.62)
+        self.drive_toward_ball(rate, 0.61)
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
@@ -261,7 +261,7 @@ class Ferenc:
 
         # thresholds fo accurate enough stopping in given points
         dist_thresh = 0.0225
-        angle_thresh = 0.046
+        angle_thresh = 0.045
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
