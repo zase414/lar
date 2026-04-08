@@ -417,6 +417,8 @@ class Ferenc:
             self.turtle.reset_odometry()
             (point, comment) = self.saved_odometry.pop()
 #            point *= -1
+            #reverse angles
+            point[2] *= -1
             print("reversing drive of:", comment)
             self.go_ptp(point, rate, False)
 
