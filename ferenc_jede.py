@@ -42,7 +42,7 @@ class Ferenc:
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
-        # self.return_to_garage_from_odometry()
+        self.return_to_garage_from_odometry(rate)
         self.go_home(rate)
 
     def find_exit(self, rate) -> None:
@@ -81,8 +81,6 @@ class Ferenc:
         # reset params
         turtle.cmd_velocity(0, 0)
         rate.sleep()
-        #save this drive to robot
-        self.saved_odometry.append((turtle.get_odometry(), "exit_garage"))
 
     def rotate_toward_ball(self, rate) -> None:
         """Until ferenc finds ball he's spinning"""
@@ -129,9 +127,6 @@ class Ferenc:
         turtle.reset_odometry()
         rate.sleep()
 
-        diff = 0
-        dist = 0
-
         while not turtle.is_shutting_down():
             (center_x, center_y), radius = detect_balls(turtle)
             if consecutive_ignores == 10:
@@ -163,8 +158,6 @@ class Ferenc:
             else:
                 self.go_forward(turtle.get_odometry()[2], 0, abs(diff), prefered_lin_vel=None)
                 rate.sleep()
-
-
 
         # reset params
         turtle.cmd_velocity(0, 0)
@@ -417,9 +410,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, ang_vel)
 
-    def return_to_garage_from_odometry(self):
-        rate = Rate(10)
-
+    def return_to_garage_from_odometry(self, rate):
         while len(self.saved_odometry) != 0:
             self.turtle.reset_odometry()
             (point, comment) = self.saved_odometry.pop()
