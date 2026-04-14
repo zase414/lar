@@ -66,6 +66,7 @@ class Ferenc:
 
     def exit_garage(self, rate, space_detect_time) -> None:
         turtle = self.turtle
+        turtle.reset_odometry()
         rate.sleep()
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 2):
             if self.stop:
@@ -74,7 +75,7 @@ class Ferenc:
                 turtle.play_sound(4)
             else:
                 # go forward with 5° offset to negate early exit
-                self.go_forward(turtle.get_odometry()[2], pi/36, dist_diff = None, prefered_lin_vel = 0.25)
+                self.go_forward(turtle.get_odometry()[2], 0, dist_diff = None, prefered_lin_vel = 0.25)
                 rate.sleep()
 
         # reset params
