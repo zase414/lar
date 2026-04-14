@@ -1,6 +1,7 @@
 # Ferenc je robot
 
 from __future__ import print_function
+
 from callbacks import callback_bumper_stop, callback_button0_resume
 from image_proccesing import space_infront, get_depth
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
@@ -32,9 +33,9 @@ class Ferenc:
         # until robot finds garage exit spin
         self.find_exit(rate)
         space_detect_time = get_time()
-#
+
         self.exit_garage(rate, space_detect_time)
-#
+
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
@@ -444,9 +445,8 @@ class Ferenc:
         while len(self.saved_odometry) != 0:
             self.turtle.reset_odometry()
             (point, comment) = self.saved_odometry.pop()
-#            point *= -1
             #reverse angles
-            point[2] *= -1
+            point[2] = self.normalize_angle(point[2] + pi)
             print("reversing drive of:", comment)
             self.go_ptp(point, rate, False)
 
