@@ -103,6 +103,7 @@ class Ferenc:
             # sees nothing, rotate
             if center_x == 0:
                 turtle.cmd_velocity(0, 0.6)
+                print("i don't see ball im rotating")
                 rate.sleep()
                 continue
 
@@ -112,22 +113,27 @@ class Ferenc:
             rate.sleep()
 
 
+            print("i saw ball, im measuring ...")
             measurements = []
             for _ in range(5):
                 (cx, _), _ = detect_balls(turtle)
                 if cx != 0: #append only non zero values
+                    print("measured: ",cx)
                     measurements.append(cx)
                 rate.sleep()
 
             if not measurements:
+                print("no measurement")
                 continue
 
             avg_center = sum(measurements) / len(measurements)
             dist = DEAD_CENTER_X - avg_center
+            print("average center:", avg_center, " distance from center", dist)
 
             # not in tolerance, calc angle and rotate
             if abs(dist) > TOLERANCE_PIXEL_BAND:
                 angle = dist * PIXELS_TO_DEG
+                print("calculated angle: ", angle)
                 self.rotate_to_angle(angle)
             else:
                 turtle.cmd_velocity(0, 0)
