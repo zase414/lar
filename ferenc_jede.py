@@ -386,7 +386,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         rate.sleep()
-        self.garage_ball_dist[1] += starting_distance - final_distance
+        self.garage_ball_dist[1] += starting_distance - final_distance - 0.03  # 3cm
         return final_distance
 
     def average_depth(self) -> Optional[float]:
