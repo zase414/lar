@@ -1,6 +1,9 @@
 # Ferenc je robot
 
 from __future__ import print_function
+
+from numpy.f2py.symbolic import normalize
+
 from callbacks import callback_bumper_stop, callback_button0_resume
 from image_proccesing import space_infront, get_depth
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
@@ -444,9 +447,8 @@ class Ferenc:
         while len(self.saved_odometry) != 0:
             self.turtle.reset_odometry()
             (point, comment) = self.saved_odometry.pop()
-#            point *= -1
             #reverse angles
-            point[2] *= -1
+            point[2] = self.normalize_angle(point[2] + pi)
             print("reversing drive of:", comment)
             self.go_ptp(point, rate, False)
 
