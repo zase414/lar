@@ -152,7 +152,7 @@ class Ferenc:
         rate.sleep()
         #save this drive to robot
         ball_angle = turtle.get_odometry()[2]
-        self.garage_ball_dist[0] = ball_angle
+        self.garage_ball_dist[0] = ball_angle * -1
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
@@ -460,7 +460,7 @@ class Ferenc:
         self.turtle.reset_odometry()
         #rotates back toward garage
         angle = self.garage_ball_dist[0]
-        print("angle it wants to rotate ", angle)
+        print("angle it wants to rotate ", angle, "current angle: ", self.turtle.get_odometry()[2])
         self.go_ptp([0,0,angle], rate)
 
 
