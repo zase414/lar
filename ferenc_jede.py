@@ -67,7 +67,6 @@ class Ferenc:
 
     def exit_garage(self, rate, space_detect_time) -> None:
         turtle = self.turtle
-        turtle.reset_odometry()
         rate.sleep()
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 2):
             if self.stop:
@@ -145,7 +144,8 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
         rate.sleep()
         #save this drive to robot
-        self.saved_odometry.append((turtle.get_odometry(), "rotate_toward"))
+        ball_angle = turtle.get_odometry()[2]
+        self.saved_odometry.append(([0, 0, ball_angle], "rotate_toward"))
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
@@ -201,7 +201,8 @@ class Ferenc:
         diff = dist - final_dist
         print("distance achieved is :", dist, "diff is ", diff)
         #save this drive to robot
-        self.saved_odometry.append((turtle.get_odometry(), "drive_toward"))
+        distance_of_ball = turtle.get_odometry()[0]
+        self.saved_odometry.append(([distance_of_ball, 0, 0], "drive_toward"))
 
 
     def drive_around_ball(self, rate) -> None:
@@ -378,6 +379,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         rate.sleep()
+        self.saved_odometry[1][0] += starting_distance - final_distance
         return final_distance
 
     def average_depth(self) -> Optional[float]:
