@@ -194,7 +194,7 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.8, prefered_lin_vel=None)
+                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.75, prefered_lin_vel=None)
                 rate.sleep()
 
         # reset params
@@ -386,7 +386,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         rate.sleep()
-        self.garage_ball_dist[1] += starting_distance - final_distance - 0.03  # 3cm
+        self.garage_ball_dist[1] += starting_distance - final_distance - 0.04  # 4cm
         return final_distance
 
     def average_depth(self) -> Optional[float]:
