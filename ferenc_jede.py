@@ -39,7 +39,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        self.drive_toward_ball(rate, 0.58)
+        self.drive_toward_ball(rate, 0.6)
 
         self.drive_around_ball(rate)
         self.return_to_garage_from_odometry(rate)
