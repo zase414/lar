@@ -15,7 +15,7 @@ class Ferenc:
     def __init__(self):
         self.turtle = Turtlebot(rgb=True, pc=True)
         self.stop = False
-        self.saved_odometry = list()
+        self.garage_ball_dist = [0, 0] # [angle, dist]
     def main(self):
         """Ferenc exits garage, then drives around the ball and parks back."""
         turtle = self.turtle
@@ -40,8 +40,7 @@ class Ferenc:
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
         self.drive_toward_ball(rate, 0.58)
-        ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
-        print(self.saved_odometry)
+
         self.drive_around_ball(rate)
         self.return_to_garage_from_odometry(rate)
         self.go_home(rate)
@@ -152,7 +151,7 @@ class Ferenc:
         rate.sleep()
         #save this drive to robot
         ball_angle = turtle.get_odometry()[2]
-        self.saved_odometry.append(([0, 0, ball_angle], "rotate_toward"))
+        self.garage_ball_dist[0] = self.normalize_angle(ball_angle + pi)
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
@@ -209,7 +208,7 @@ class Ferenc:
         print("distance achieved is :", dist, "diff is ", diff)
         #save this drive to robot
         distance_of_ball = turtle.get_odometry()[0]
-        self.saved_odometry.append(([distance_of_ball, 0, 0], "drive_toward"))
+        self.garage_ball_dist[1] += distance_of_ball
 
 
     def drive_around_ball(self, rate) -> None:
@@ -386,7 +385,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         rate.sleep()
-        self.saved_odometry[1][0] += starting_distance - final_distance
+        self.garage_ball_dist[1] += starting_distance - final_distance
         return final_distance
 
     def average_depth(self) -> Optional[float]:
@@ -451,13 +450,17 @@ class Ferenc:
         turtle.cmd_velocity(0, ang_vel)
 
     def return_to_garage_from_odometry(self, rate):
-        while len(self.saved_odometry) != 0:
-            self.turtle.reset_odometry()
-            (point, comment) = self.saved_odometry.pop()
-            #reverse angles
-            point[2] = self.normalize_angle(point[2] + pi)
-            print("reversing drive of:", comment)
-            self.go_ptp(point, rate, False)
+        self.turtle.reset_odometry()
+        #drives back the distance
+        dist = self.garage_ball_dist[1]
+        self.go_ptp([dist,0,0], rate)
+
+
+        self.turtle.reset_odometry()
+        #rotates back toward garage
+        angle = self.garage_ball_dist[0]
+        self.go_ptp([0,0,angle], rate)
+
 
     def go_home(self, rate):
       turtle = self.turtle
