@@ -460,6 +460,7 @@ class Ferenc:
         self.turtle.reset_odometry()
         #rotates back toward garage
         angle = self.garage_ball_dist[0]
+        print("angle it wants to rotate ", angle)
         self.go_ptp([0,0,angle], rate)
 
 
