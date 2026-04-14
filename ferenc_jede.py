@@ -2,8 +2,6 @@
 
 from __future__ import print_function
 
-from numpy.f2py.symbolic import normalize
-
 from callbacks import callback_bumper_stop, callback_button0_resume
 from image_proccesing import space_infront, get_depth
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
