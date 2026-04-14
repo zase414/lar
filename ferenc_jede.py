@@ -88,7 +88,7 @@ class Ferenc:
 
         DEAD_CENTER_X = 360
         TOLERANCE_PIXEL_BAND = 6
-        PIXELS_TO_DEG = 45 / 320  # pixels to degrees conversion
+        PIXELS_TO_DEG = 38 / 320  # pixels to degrees conversion
 
         while not turtle.is_shutting_down():
             (center_x, _), _ = detect_balls(turtle)
