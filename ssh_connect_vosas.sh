@@ -1,5 +1,5 @@
 #!/bin/bash
-ssh -X -t vosahond@192.168.65.32
+ssh -X -t vosahond@192.168.65.30
 
 ### next:
 # mount /local

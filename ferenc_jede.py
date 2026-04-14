@@ -41,7 +41,7 @@ class Ferenc:
         self.drive_toward_ball(rate, 0.58)
         self.rotate_toward_ball(rate)
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
-        print(self.saved_odometry)
+        # print(self.saved_odometry)
         self.drive_around_ball(rate)
         # self.return_to_garage_from_odometry()
         self.go_home(rate)
@@ -253,8 +253,8 @@ class Ferenc:
         start_coords = cur_coords
         
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.007
-        angle_thresh = 0.013
+        dist_thresh = 0.0075
+        angle_thresh = 0.018
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -401,7 +401,7 @@ class Ferenc:
         turtle = self.turtle
         max_speed = 0.7
         min_speed = 0.1
-        Kp = 4.7
+        Kp = 4.6
         ang_vel = Kp * angle_diff
         if 0 < ang_vel < min_speed:
             ang_vel = min_speed
