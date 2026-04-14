@@ -141,6 +141,7 @@ class Ferenc:
                     print("rotating -> diff = ", angle_diff)
                     self.rotate_to_angle(angle_diff)
                     angle_diff = wanted_angle - turtle.get_odometry()[2]
+                    rate.sleep()
             else:
                 turtle.cmd_velocity(0, 0)
                 break
