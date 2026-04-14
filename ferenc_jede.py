@@ -86,6 +86,7 @@ class Ferenc:
         """rotates robot toward ball"""
         turtle = self.turtle
         turtle.reset_odometry()
+        rate.sleep()
 
         DEAD_CENTER_X = 360
         TOLERANCE_PIXEL_BAND = 6
@@ -452,12 +453,14 @@ class Ferenc:
 
     def return_to_garage_from_odometry(self, rate):
         self.turtle.reset_odometry()
+        rate.sleep()
         #drives back the distance
         dist = self.garage_ball_dist[1]
         self.go_ptp([dist,0,0], rate)
 
 
         self.turtle.reset_odometry()
+        rate.sleep()
         #rotates back toward garage
         angle = self.garage_ball_dist[0]
         print("angle it wants to rotate ", angle, "current angle: ", self.turtle.get_odometry()[2])
