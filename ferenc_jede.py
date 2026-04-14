@@ -83,31 +83,55 @@ class Ferenc:
         rate.sleep()
 
     def rotate_toward_ball(self, rate) -> None:
-        """Until ferenc finds ball he's spinning"""
+        """rotates robot toward ball"""
         turtle = self.turtle
         turtle.reset_odometry()
 
         DEAD_CENTER_X = 360
         TOLERANCE_PIXEL_BAND = 6
+        PIXELS_TO_DEG = 45 / 320  # pixels to degrees conversion
 
-        while (not turtle.is_shutting_down()):
+        while not turtle.is_shutting_down():
             (center_x, _), _ = detect_balls(turtle)
-            dist = DEAD_CENTER_X - center_x
-
-            ang_speed = max(min(abs(dist * 0.01), 0.6), 0.1)
-            ang_speed = -1 * ang_speed if dist < 0 else ang_speed
-
-            print("balls position on camera x ", center_x, "calculated ang speed ", ang_speed)
 
             if self.stop:
                 turtle.cmd_velocity(0, 0)
                 rate.sleep()
                 turtle.play_sound(4)
-            elif (abs(dist) < TOLERANCE_PIXEL_BAND):
-                break
-            else:
-                turtle.cmd_velocity(0, ang_speed)
+                continue
+
+            # sees nothing, rotate
+            if center_x == 0:
+                turtle.cmd_velocity(0, 0.6)
                 rate.sleep()
+                continue
+
+            # sees something - measure
+            turtle.cmd_velocity(0, 0)
+            rate.sleep()
+            rate.sleep()
+
+
+            measurements = []
+            for _ in range(5):
+                (cx, _), _ = detect_balls(turtle)
+                if cx != 0: #append only non zero values
+                    measurements.append(cx)
+                rate.sleep()
+
+            if not measurements:
+                continue
+
+            avg_center = sum(measurements) / len(measurements)
+            dist = DEAD_CENTER_X - avg_center
+
+            # not in tolerance, calc angle and rotate
+            if abs(dist) > TOLERANCE_PIXEL_BAND:
+                angle = dist * PIXELS_TO_DEG
+                self.rotate_to_angle(angle)
+            else:
+                turtle.cmd_velocity(0, 0)
+                break
 
 
         # reset params
