@@ -152,7 +152,7 @@ class Ferenc:
         rate.sleep()
         #save this drive to robot
         ball_angle = turtle.get_odometry()[2]
-        self.garage_ball_dist[0] = ball_angle * -1
+        self.garage_ball_dist[0] = (ball_angle * -1)/pi
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
