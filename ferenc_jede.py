@@ -132,7 +132,7 @@ class Ferenc:
 
             # not in tolerance, calc angle and rotate
             if abs(dist) > TOLERANCE_PIXEL_BAND:
-                angle = dist * PIXELS_TO_DEG
+                angle = dist * PIXELS_TO_DEG * (pi/180)
                 print("calculated angle: ", angle)
                 self.rotate_to_angle(angle)
             else:
