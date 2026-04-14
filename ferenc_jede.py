@@ -41,7 +41,7 @@ class Ferenc:
         self.drive_toward_ball(rate, 0.58)
         self.rotate_toward_ball(rate)
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
-        # print(self.saved_odometry)
+        print(self.saved_odometry)
         self.drive_around_ball(rate)
         # self.return_to_garage_from_odometry()
         self.go_home(rate)
