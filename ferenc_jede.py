@@ -89,7 +89,7 @@ class Ferenc:
 
         DEAD_CENTER_X = 360
         TOLERANCE_PIXEL_BAND = 6
-        PIXELS_TO_DEG = 45 / 320  # pixels to degrees conversion
+        PIXELS_TO_DEG = 38 / 320  # pixels to degrees conversion
 
         while not turtle.is_shutting_down():
             (center_x, _), _ = detect_balls(turtle)
@@ -152,7 +152,7 @@ class Ferenc:
         rate.sleep()
         #save this drive to robot
         ball_angle = turtle.get_odometry()[2]
-        self.garage_ball_dist[0] = self.normalize_angle(ball_angle + pi)
+        self.garage_ball_dist[0] = self.normalize_angle(-1 * ball_angle)
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
