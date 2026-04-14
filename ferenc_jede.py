@@ -43,7 +43,7 @@ class Ferenc:
 
         self.drive_around_ball(rate)
         self.return_to_garage_from_odometry(rate)
-        self.go_home(rate)
+        # self.go_home(rate)
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
@@ -139,7 +139,7 @@ class Ferenc:
                 angle_diff = wanted_angle - turtle.get_odometry()[2]
                 while abs(angle_diff) > angle_threshold:
                     print("rotating -> diff = ", angle_diff)
-                    self.rotate_to_angle(angle_diff)
+                    self.rotate_to_angle(angle_diff*1.2)
                     angle_diff = wanted_angle - turtle.get_odometry()[2]
                     rate.sleep()
             else:
