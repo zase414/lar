@@ -137,9 +137,9 @@ class Ferenc:
                 wanted_angle = turtle.get_odometry()[2] + angle
                 angle_threshold = 0.018
                 angle_diff = wanted_angle - turtle.get_odometry()[2]
-                while abs(angle_diff) > angle_threshold:
+                while (not turtle.is_shutting_down()) and abs(angle_diff) > angle_threshold:
                     print("rotating -> diff = ", angle_diff)
-                    self.rotate_to_angle(angle_diff*1.2)
+                    self.rotate_to_angle(angle_diff)
                     angle_diff = wanted_angle - turtle.get_odometry()[2]
                     rate.sleep()
             else:
@@ -194,7 +194,7 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.75, prefered_lin_vel=None)
+                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.7, prefered_lin_vel=None)
                 rate.sleep()
 
         # reset params
