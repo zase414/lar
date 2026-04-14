@@ -39,7 +39,6 @@ class Ferenc:
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
         self.drive_toward_ball(rate, 0.58)
-        self.rotate_toward_ball(rate)
         ##saved odometry contains 1. exiting garage movement 2. rotation toward balls 3. distance driven towards ball, also should contain the final closure in drive_around_ball
         print(self.saved_odometry)
         self.drive_around_ball(rate)
@@ -125,6 +124,7 @@ class Ferenc:
         DISTANCE_TOLERANCE = 0.03 # 3cm
         CONSECUTIVE_READS_NEEDED = 2
         consecutive_readings = 0
+        consecutive_ignores = 0
 
         turtle.reset_odometry()
         rate.sleep()
@@ -134,8 +134,13 @@ class Ferenc:
 
         while not turtle.is_shutting_down():
             (center_x, center_y), radius = detect_balls(turtle)
-            if center_x == 0: #cant find ball
+            if consecutive_ignores == 10:
+                self.rotate_toward_ball(rate)
+                consecutive_ignores = 0
+
+            elif center_x == 0: #cant find ball
                 print("Ignoring frame")
+                consecutive_ignores += 1
                 turtle.cmd_velocity(0.01, 0)  # small movement so it is possible to detect again
                 rate.sleep()
                 continue
