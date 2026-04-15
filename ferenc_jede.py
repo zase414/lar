@@ -39,7 +39,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        self.drive_toward_ball(rate, 0.53)
+        self.drive_toward_ball(rate, 0.54)
         # self.rotate_toward_ball(rate)
 
         self.drive_around_ball(rate)
@@ -368,7 +368,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         rate.sleep()
-        self.garage_ball_dist[1] += starting_distance - final_distance - 0.08  # 8cm
+        self.garage_ball_dist[1] += starting_distance - final_distance - 0.065  # 6.5cm
         return final_distance
 
     def average_depth(self) -> Optional[float]:
