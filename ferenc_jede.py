@@ -39,7 +39,7 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        self.drive_toward_ball(rate, 0.55)
+        self.drive_toward_ball(rate, 0.53)
         self.rotate_toward_ball(rate)
 
         self.drive_around_ball(rate)
@@ -200,7 +200,7 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.6, prefered_lin_vel=None)
+                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.55, prefered_lin_vel=None)
                 rate.sleep()
 
         # reset params
