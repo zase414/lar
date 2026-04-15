@@ -185,6 +185,9 @@ class Ferenc:
 
             diff = dist - final_dist
 
+            if abs(diff) < 0.05:   # 5cm away
+                CONSECUTIVE_READS_NEEDED = 1
+
             if diff <= DISTANCE_TOLERANCE:
                 consecutive_readings += 1
                 if consecutive_readings >= CONSECUTIVE_READS_NEEDED:
