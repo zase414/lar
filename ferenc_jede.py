@@ -90,7 +90,7 @@ class Ferenc:
         rate.sleep()
 
         DEAD_CENTER_X = 360
-        TOLERANCE_PIXEL_BAND = 6
+        TOLERANCE_PIXEL_BAND = 1
         PIXELS_TO_DEG = 38 / 320  # pixels to degrees conversion
 
         while not turtle.is_shutting_down():
