@@ -18,24 +18,11 @@ def main():
 
     # takes picture and saves it on launch
     # save_img(turtle)
-    DEAD_CENTER_X = 360
-    TOLERANCE_PIXEL_BAND = 6
 
     while True:
         (center_x, _), _ = detect_balls(turtle=turtle)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-        dist = DEAD_CENTER_X - center_x
-
-        ang_speed = max(min(abs(dist * 0.01), 0.6), 0.09)
-        ang_speed = -1 * ang_speed if dist < 0 else ang_speed
-
-        print("balls position on camera x ", center_x, "calculated ang speed ", ang_speed)
-        if (abs(dist) < TOLERANCE_PIXEL_BAND):
-            print("centered")
-        else:
-            turtle.cmd_velocity(0, ang_speed)
-            rate.sleep()
 
 
     cv2.destroyAllWindows()
@@ -97,10 +84,10 @@ def detect_balls(turtle) -> Tuple[Tuple[int, int], int]:
                 cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
                 cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 
-    #cv2.imshow("CONTOURS", filtered)
-    #cv2.imshow("IMAGE", im)
-    #cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
-    #cv2.waitKey(1)
+    cv2.imshow("CONTOURS", filtered)
+    cv2.imshow("IMAGE", im)
+    cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
+    cv2.waitKey(1)
     return center, radius
 
 def detect_rectangles(turtle) -> List[Vec2Int]:
