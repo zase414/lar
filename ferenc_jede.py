@@ -137,7 +137,7 @@ class Ferenc:
                 angle = dist * PIXELS_TO_DEG * (pi/180)
                 print("calculated angle: ", angle)
                 wanted_angle = turtle.get_odometry()[2] + angle
-                angle_threshold = 0.018
+                angle_threshold = 0.019
                 angle_diff = wanted_angle - turtle.get_odometry()[2]
                 while (not turtle.is_shutting_down()) and abs(angle_diff) > angle_threshold:
                     print("rotating -> diff = ", angle_diff)
@@ -221,7 +221,7 @@ class Ferenc:
     def drive_around_ball(self, rate) -> None:
         """When close enough to the ball drive around it from point to point of calculated hexagon"""
         turtle = self.turtle
-        wanted_distance = 0.275  # 27.5 cm before ball stop
+        wanted_distance = 0.28  # 28 cm before ball stop
         rate.sleep()
         rate.sleep()
 
@@ -297,7 +297,7 @@ class Ferenc:
 
         # thresholds fo accurate enough stopping in given points
         dist_thresh = 0.0075
-        angle_thresh = 0.018
+        angle_thresh = 0.019
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -395,7 +395,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         rate.sleep()
-        self.garage_ball_dist[1] += starting_distance - final_distance - 0.04  # 4cm
+        self.garage_ball_dist[1] += starting_distance - final_distance - 0.06  # 6cm
         return final_distance
 
     def average_depth(self) -> Optional[float]:
