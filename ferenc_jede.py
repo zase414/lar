@@ -112,8 +112,6 @@ class Ferenc:
             # sees something - measure
             turtle.cmd_velocity(0, 0)
             rate.sleep()
-            rate.sleep()
-
 
             print("i saw ball, im measuring ...")
             measurements = []
@@ -122,7 +120,6 @@ class Ferenc:
                 if cx != 0: #append only non zero values
                     print("measured: ",cx)
                     measurements.append(cx)
-                rate.sleep()
 
             if not measurements:
                 print("no measurement")
