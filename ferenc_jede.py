@@ -47,7 +47,7 @@ class Ferenc:
         # self.go_home(rate)
         turtle.reset_odometry()
         rate.sleep()
-        self.go_ptp([0, 0, pi/3], rate)
+        self.go_ptp([0.1, 0.1, pi/3], rate)
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
