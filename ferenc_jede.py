@@ -31,23 +31,20 @@ class Ferenc:
 
 
         # until robot finds garage exit spin
-        # self.find_exit(rate)
-        # space_detect_time = get_time()
+        self.find_exit(rate)
+        space_detect_time = get_time()
 
-        # self.exit_garage(rate, space_detect_time)
+        self.exit_garage(rate, space_detect_time)
 
         ## find and ball turn on to it
-        # self.rotate_toward_ball(rate)
+        self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        # self.drive_toward_ball(rate, 0.55)
-        # self.rotate_toward_ball(rate)
+        self.drive_toward_ball(rate, 0.55)
+        self.rotate_toward_ball(rate)
 
-        # self.drive_around_ball(rate)
-        # self.return_to_garage_from_odometry(rate)
+        self.drive_around_ball(rate)
+        self.return_to_garage_from_odometry(rate)
         # self.go_home(rate)
-        turtle.reset_odometry()
-        rate.sleep()
-        self.go_ptp([0, 0, pi/3], rate)
 
     def find_exit(self, rate) -> None:
         """Until robot finds garage exit spin"""
@@ -297,8 +294,7 @@ class Ferenc:
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
         start_coords = cur_coords
-        print("moving ptp ", point, cur_coords)
-        
+
         # thresholds fo accurate enough stopping in given points
         dist_thresh = 0.0075
         angle_thresh = 0.018
@@ -476,7 +472,7 @@ class Ferenc:
         rate.sleep()
         #rotates back toward garage
         angle = self.garage_ball_dist[0]
-        print("angle it wants to rotate ", angle, "current angle: ", self.turtle.get_odometry()[2]) # 180°
+        print("angle it wants to rotate ", angle, "current angle: ", self.turtle.get_odometry()[2])
         self.go_ptp([0,0,angle], rate)
 
 
