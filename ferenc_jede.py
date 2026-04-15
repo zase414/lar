@@ -136,14 +136,7 @@ class Ferenc:
             if abs(dist) > TOLERANCE_PIXEL_BAND:
                 angle = dist * PIXELS_TO_DEG * (pi/180)
                 print("calculated angle: ", angle)
-                wanted_angle = turtle.get_odometry()[2] + angle
-                angle_threshold = 0.017
-                angle_diff = wanted_angle - turtle.get_odometry()[2]
-                while (not turtle.is_shutting_down()) and abs(angle_diff) > angle_threshold:
-                    print("rotating -> diff = ", angle_diff)
-                    self.angular_P_reg(angle_diff)
-                    angle_diff = wanted_angle - turtle.get_odometry()[2]
-                    rate.sleep()
+                self.rotate_to_angle(angle, rate)
             else:
                 turtle.cmd_velocity(0, 0)
                 break
