@@ -464,7 +464,7 @@ class Ferenc:
         rate.sleep()
         #rotates back toward garage
         angle = self.garage_ball_dist[0]
-        print("angle it wants to rotate ", angle, "current angle: ", self.turtle.get_odometry()[2])
+        print("angle it wants to rotate ", angle, "current angle: ", self.turtle.get_odometry()[2]) # 180°
         self.go_ptp([0,0,angle], rate)
 
 
