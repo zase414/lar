@@ -310,6 +310,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
 
         # while ferenc is not located at x,y coords, drive forward:
+        cur_coords = turtle.get_odometry()
         initial_angle = cur_coords[2]
         start_to_goal = [point[0] - start_coords[0], point[1] - start_coords[1]]
         while (not turtle.is_shutting_down()) and (d > dist_thresh):
