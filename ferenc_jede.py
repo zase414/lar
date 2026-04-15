@@ -305,14 +305,7 @@ class Ferenc:
         d = sqrt(x ** 2 + y ** 2)
 
         # calculate angle to the next point
-        if x != 0 and y != 0:
-            angle = atan2(y, x)
-        else:
-            angle = point[2]   # for rotation on spot
-            print("coords: ", cur_coords)
-            x = 0
-            y = 0
-            d = 0
+        angle = atan2(y, x)
 
         # while ferenc is not rotated at the calculated angle -> rotate
         angle_diff = self.normalize_angle(angle - cur_coords[2])
