@@ -39,7 +39,8 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        self.drive_toward_ball(rate, 0.6)
+        self.drive_toward_ball(rate, 0.55)
+        self.rotate_toward_ball(rate)
 
         self.drive_around_ball(rate)
         self.return_to_garage_from_odometry(rate)
@@ -196,7 +197,7 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.7, prefered_lin_vel=None)
+                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.6, prefered_lin_vel=None)
                 rate.sleep()
 
         # reset params
@@ -453,14 +454,15 @@ class Ferenc:
         turtle.cmd_velocity(0, ang_vel)
 
     def return_to_garage_from_odometry(self, rate):
-        self.turtle.reset_odometry()
+        turtle = self.turtle
+        turtle.reset_odometry()
         rate.sleep()
         #drives back the distance
         dist = self.garage_ball_dist[1]
         self.go_ptp([dist,0,0], rate)
 
 
-        self.turtle.reset_odometry()
+        turtle.reset_odometry()
         rate.sleep()
         #rotates back toward garage
         angle = self.garage_ball_dist[0]
