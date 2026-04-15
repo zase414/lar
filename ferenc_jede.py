@@ -433,7 +433,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
-        min_speed = 0.11
+        min_speed = 0.1
         Kp = 4.6
         ang_vel = Kp * angle_diff
         if 0 < ang_vel < min_speed:
