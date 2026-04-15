@@ -89,7 +89,7 @@ class Ferenc:
         turtle.reset_odometry()
         rate.sleep()
 
-        DEAD_CENTER_X = 358
+        DEAD_CENTER_X = 362
         TOLERANCE_PIXEL_BAND = 3
         PIXELS_TO_DEG = 38 / 320  # pixels to degrees conversion
 
