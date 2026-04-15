@@ -334,7 +334,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
 
         if point_of_return:
-            self.rotate_to_angle(angle_thresh, point[2], rate)
+            self.rotate_to_angle(point[2], rate)
 
         # reset params
         turtle.cmd_velocity(0, 0)
@@ -452,7 +452,6 @@ class Ferenc:
         #drives back the distance
         dist = self.garage_ball_dist[1]
         self.go_ptp([dist,0,0], rate)
-
 
         turtle.reset_odometry()
         rate.sleep()
