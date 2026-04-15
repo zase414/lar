@@ -131,7 +131,8 @@ class Ferenc:
 
             # not in tolerance, calc angle and rotate
             if abs(dist) > TOLERANCE_PIXEL_BAND:
-                angle = dist * PIXELS_TO_DEG * (pi/180)
+                current_angle = turtle.get_odometry()[2]
+                angle = self.normalize_angle(dist * PIXELS_TO_DEG * (pi/180) + current_angle) 
                 print("calculated angle: ", angle)
                 self.rotate_to_angle(angle, rate)
             else:
