@@ -84,6 +84,10 @@ def detect_balls(turtle) -> Tuple[Tuple[int, int], int]:
                 cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
                 cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 
+    cv2.imshow("CONTOURS", filtered)
+    cv2.imshow("IMAGE", im)
+    cv2.setMouseCallback("IMAGE", mouse_callback, hsv)
+    cv2.waitKey(1)
     return center, radius
 
 def detect_rectangles(turtle) -> List[Vec2Int]:
