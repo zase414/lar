@@ -368,7 +368,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, 0)
         rate.sleep()
-        self.garage_ball_dist[1] += starting_distance - final_distance - 0.06  # 6cm
+        self.garage_ball_dist[1] += starting_distance - final_distance - 0.08  # 8cm
         return final_distance
 
     def average_depth(self) -> Optional[float]:
@@ -438,7 +438,7 @@ class Ferenc:
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
-        min_speed = 0.1
+        min_speed = 0.11
         Kp = 4.75
         ang_vel = Kp * angle_diff
         if 0 < ang_vel < min_speed:
