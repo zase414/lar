@@ -290,7 +290,6 @@ class Ferenc:
 
         # thresholds fo accurate enough stopping in given points
         dist_thresh = 0.0075
-        angle_thresh = 0.017
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
@@ -301,7 +300,7 @@ class Ferenc:
         angle = atan2(y, x)
 
         # while ferenc is not rotated at the calculated angle -> rotate
-        self.rotate_to_angle(angle_thresh, angle, rate)
+        self.rotate_to_angle(angle, rate)
 
         # reset params
         turtle.cmd_velocity(0, 0)
@@ -412,7 +411,8 @@ class Ferenc:
         lin_velocity = min(lin_velocity, max_speed)   # limit max speed
         turtle.cmd_velocity(lin_velocity, angular_velocity)
 
-    def rotate_to_angle(self, angle_thresh, angle, rate):
+    def rotate_to_angle(self, angle, rate):
+        angle_thresh = 0.017
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
@@ -459,7 +459,7 @@ class Ferenc:
         #rotates back toward garage
         angle = self.garage_ball_dist[0]
         print("angle it wants to rotate ", angle, "current angle: ", self.turtle.get_odometry()[2])
-        self.go_ptp([0,0,angle], rate)
+        self.rotate_to_angle(angle, rate)
 
 
     def go_home(self, rate):
