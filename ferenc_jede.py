@@ -150,7 +150,7 @@ class Ferenc:
     def drive_toward_ball(self, rate, final_dist) -> None:
         """until distance to ball is final_dist"""
         turtle = self.turtle
-        DISTANCE_TOLERANCE = 0.03 # 3cm
+        DISTANCE_TOLERANCE = 0.04 # 4cm
         CONSECUTIVE_READS_NEEDED = 2
         consecutive_readings = 0
         consecutive_ignores = 0
