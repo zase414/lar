@@ -50,7 +50,7 @@ def mouse_callback(event, x, y, flags, param):
 def detect_balls(turtle) -> Tuple[Tuple[int, int], int]:
     HUE_LOW = 25
     HUE_HIGH = 65
-    SAT_MIN = 37
+    SAT_MIN = 40
     VALUE_MIN = 40
 
     im = turtle.get_rgb_image()
