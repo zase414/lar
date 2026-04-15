@@ -141,7 +141,7 @@ class Ferenc:
                 angle_diff = wanted_angle - turtle.get_odometry()[2]
                 while (not turtle.is_shutting_down()) and abs(angle_diff) > angle_threshold:
                     print("rotating -> diff = ", angle_diff)
-                    self.rotate_to_angle(angle_diff)
+                    self.angular_P_reg(angle_diff)
                     angle_diff = wanted_angle - turtle.get_odometry()[2]
                     rate.sleep()
             else:
@@ -308,18 +308,7 @@ class Ferenc:
         angle = atan2(y, x)
 
         # while ferenc is not rotated at the calculated angle -> rotate
-        angle_diff = self.normalize_angle(angle - cur_coords[2])
-        while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
-            if self.stop:
-                turtle.cmd_velocity(0, 0)
-                turtle.play_sound(4)
-            else:
-                self.rotate_to_angle(angle_diff)
-
-            cur_coords = turtle.get_odometry()
-            angle_diff = self.normalize_angle(angle - cur_coords[2])
-
-            rate.sleep()
+        self.rotate_to_angle(angle_thresh, angle, rate)
 
         # reset params
         turtle.cmd_velocity(0, 0)
@@ -353,17 +342,7 @@ class Ferenc:
         turtle.cmd_velocity(0, 0)
 
         if point_of_return:
-            angle_diff = self.normalize_angle(point[2] - cur_coords[2])
-            while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
-                if self.stop:
-                    turtle.cmd_velocity(0, 0)
-                    turtle.play_sound(4)
-                else:
-                    self.rotate_to_angle(angle_diff)
-                cur_coords = turtle.get_odometry()
-                angle_diff = self.normalize_angle(point[2] - cur_coords[2])
-
-                rate.sleep()
+            self.rotate_to_angle(angle_thresh, point[2], rate)
 
         # reset params
         turtle.cmd_velocity(0, 0)
@@ -440,7 +419,24 @@ class Ferenc:
         lin_velocity = min(lin_velocity, max_speed)   # limit max speed
         turtle.cmd_velocity(lin_velocity, angular_velocity)
 
-    def rotate_to_angle(self, angle_diff):
+    def rotate_to_angle(self, angle_thresh, angle, rate):
+        turtle = self.turtle
+        cur_coords = turtle.get_odometry()
+        angle_diff = self.normalize_angle(angle - cur_coords[2])
+        while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
+            if self.stop:
+                turtle.cmd_velocity(0, 0)
+                turtle.play_sound(4)
+            else:
+                self.angular_P_reg(angle_diff)
+
+            cur_coords = turtle.get_odometry()
+            angle_diff = self.normalize_angle(angle - cur_coords[2])
+
+            rate.sleep()
+
+
+    def angular_P_reg(self, angle_diff):
         """Simple P regulated rotating to wanted angle"""
         turtle = self.turtle
         max_speed = 0.7
