@@ -89,7 +89,7 @@ class Ferenc:
         turtle.reset_odometry()
         rate.sleep()
 
-        DEAD_CENTER_X = 362
+        DEAD_CENTER_X = 364
         TOLERANCE_PIXEL_BAND = 3
         PIXELS_TO_DEG = 38 / 320  # pixels to degrees conversion
 
@@ -464,6 +464,7 @@ class Ferenc:
         angle = self.garage_ball_dist[0]
         print("angle it wants to rotate ", angle, "current angle: ", self.turtle.get_odometry()[2])
         self.rotate_to_angle(angle, rate)
+        self.go_in(rate)
 
 
     def go_home(self, rate):
@@ -533,6 +534,25 @@ class Ferenc:
 
       cv2.destroyAllWindows()
 
+
+    def go_in(self, rate):
+        turtle = self.turtle
+        TARGET_X = 640 // 2
+        TARGET_DEPTH = 0.17
+        while not turtle.is_shutting_down():
+          if not self.stop:
+            center_depth = get_depth(turtle, TARGET_X, 240, 2)
+            diff = center_depth - TARGET_DEPTH
+            if (diff > 0.1):
+              turtle.cmd_velocity(linear=diff*0.15, angular=0.0)
+            else:
+              turtle.cmd_velocity(0,0)
+              print("hotovo")
+              break
+          else:
+            turtle.cmd_velocity(linear=0.0, angular=0.0)
+
+          rate.sleep()
 
 if __name__ == "__main__":
     ferenc = Ferenc()
