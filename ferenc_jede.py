@@ -197,7 +197,7 @@ class Ferenc:
                 rate.sleep()
                 turtle.play_sound(4)
             else:
-                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.55, prefered_lin_vel=None)
+                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.65, prefered_lin_vel=None)
                 rate.sleep()
 
         # reset params
