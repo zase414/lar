@@ -294,6 +294,7 @@ class Ferenc:
 
     def go_ptp(self, point, rate, point_of_return = False):
         """Function that navigates from one point of a hexagon to the next"""
+        print("moving ptp")
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
         start_coords = cur_coords
