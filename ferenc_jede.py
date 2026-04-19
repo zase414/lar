@@ -2,22 +2,119 @@
 
 from __future__ import print_function
 
-from callbacks import callback_bumper_stop, callback_button0_resume
-from image_proccesing import space_infront, get_depth
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
-from visuals import detect_balls, detect_rectangles
 from math import pi, cos, sqrt, sin, atan2
-from typing import Optional
-
+from typing import Optional, Tuple, List
 import cv2
 
+from image_proccesing import space_infront, get_depth
+from callbacks import callback_bumper_stop, callback_button0_resume
+from visuals import detect_balls, detect_rectangles
+
+BALL_RADIUS = 0.041 # 4,1 cm
+
+AROUND_BALL_WANTED_DISTANCE = 0.2775  # 27,75 cm before ball stop
+
+BALL_ROTATION_TOLERANCE_PIXEL_BAND = 3
+BALL_ROTATION_CAMERA_CENTER_X = 364
+BALL_ROTATION_ANGLE_THRESHOLD = 0.017
+
+PIXELS_TO_DEG = 38 / 320  # pixels to degrees conversion
+
+BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
+BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
+
+P_ANGULAR_MAX_SPEED = 0.7
+P_ANGULAR_MIN_SPEED = 0.11
+P_ANGULAR_KP = 4.75
+
+RETURN_PID_KP = 0.005
+RETURN_PID_KI = 0.0001
+RETURN_PID_KD = 0.001
+RETURN_TARGET_SCREEN_CENTER = 640 // 2
+RETURN_TARGET_DEPTH = 0.17
+
 class Ferenc:
+    
     def __init__(self):
+        """
+        Initialize the Ferenc robot controller.
+        
+        Sets up the Turtlebot with RGB and point cloud sensors, initializes
+        the stop flag, and sets return navigation parameters to zero.
+        """
         self.turtle = Turtlebot(rgb=True, pc=True)
         self.stop = False
-        self.garage_ball_dist = [0, 0] # [angle, dist]
+        self.return_angle = 0.0
+        self.return_distance = 0.0
+
+    def _handle_stop(self) -> bool:
+        """
+        Check the stop flag and halt the robot if it is set.
+        
+        Sends zero velocity and plays a sound when stopped.
+        
+        Returns:
+            bool: True if the robot is stopped, False otherwise.
+        """
+        if self.stop:
+            self.turtle.cmd_velocity(0, 0)
+            self.turtle.play_sound(4)
+            return True
+        return False
+
+    def _get_pose(self) -> Tuple[float,float,float]:
+        """
+        Retrieve the robot's current odometry pose.
+        
+        Returns:
+            tuple[float, float, float]: The (x, y, theta) position and heading.
+        """
+        x, y, theta = self.turtle.get_odometry()
+        return x, y, theta
+    def _get_x(self) -> float:
+        """
+        Retrieve the robot's current odometry x position.
+        
+        Returns:
+            float: The x coordinate
+        """
+        return self._get_pose()[0]
+    def _get_y(self) -> float:
+        """
+        Retrieve the robot's current odometry y position.
+        
+        Returns:
+            float: The y coordinate
+        """
+        return self._get_pose()[1]
+    def _get_angle(self) -> float:
+        """
+        Retrieve the robot's current odometry angle.
+        
+        Returns:
+            float: The angle
+        """
+        return self._get_pose()[2]
+
+    def _stop_and_wait(self, rate):
+        """
+        Stop the robot and sleep for one cycle.
+        
+        Args:
+            rate: A Rate object to control timing.
+        """
+        self.turtle.cmd_velocity(0, 0)
+        rate.sleep()
+
     def main(self):
-        """Ferenc exits garage, then drives around the ball and parks back."""
+        """
+        Execute the full sequence.
+        
+        Initializes sensors and callbacks, then runs the robot through its
+        complete mission: exiting the garage, locating and circling the ball,
+        and returning to the starting position.
+        """
         turtle = self.turtle
 
         print("Main started")
@@ -27,10 +124,11 @@ class Ferenc:
         # initialize bumber and buttons
         turtle.register_bumper_event_cb(lambda msge : callback_bumper_stop(self, msge))
         turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
+
+        # rate
         rate = Rate(10)
 
-
-        # until robot finds garage exit spin
+        # spin until robot finds garage exit
         self.find_exit(rate)
         space_detect_time = get_time()
 
@@ -47,59 +145,73 @@ class Ferenc:
         # self.go_home(rate)
 
     def find_exit(self, rate) -> None:
-        """Until robot finds garage exit spin"""
+        """
+        Spin in place until an open space is detected in front of the robot.
+        
+        Rotates continuously at a fixed angular velocity, polling the point
+        cloud on each cycle, and stops as soon as a clear path is found.
+        
+        Args:
+            rate: A Rate object used to control timing.
+        """
         turtle = self.turtle
         space = space_infront(turtle=turtle)
         while (not turtle.is_shutting_down()) and (not space):
             print("Finding exit")
-            if self.stop:
-                print("Stopped")
-                turtle.cmd_velocity(0, 0)
-                turtle.play_sound(4)
+            if self._handle_stop():
+                continue
             else:
                 turtle.cmd_velocity(0, 0.5)
             space = space_infront(turtle=turtle)
             rate.sleep()
 
-        # reset params
-        turtle.cmd_velocity(0, 0)
-        rate.sleep()
+        self._stop_and_wait(rate)
 
     def exit_garage(self, rate, space_detect_time) -> None:
+        """
+        Drive forward out of the garage for a fixed time after exit detection.
+        
+        Resets odometry, then moves forward with a small angular offset for
+        2 seconds to clear the garage entrance cleanly.
+        
+        Args:
+            rate: A Rate object used to control timing.
+            space_detect_time (float): Timestamp (from get_time()) at which
+                the open space was first detected.
+        """
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
         while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 2):
-            if self.stop:
-                turtle.cmd_velocity(0, 0)
-                rate.sleep()
-                turtle.play_sound(4)
+            if self._handle_stop():
+                continue
             else:
                 # go forward with 5° offset to negate early exit
-                self.go_forward(turtle.get_odometry()[2], pi/36, dist_diff = None, prefered_lin_vel = 0.25)
+                self.go_forward(_get_angle(), pi/36, dist_diff = None, prefered_lin_vel = 0.25)
                 rate.sleep()
 
-        # reset params
-        turtle.cmd_velocity(0, 0)
-        rate.sleep()
+        self._stop_and_wait(rate)
 
     def rotate_toward_ball(self, rate) -> None:
-        """rotates robot toward ball"""
+        """
+        Rotate the robot until the detected ball is centered in the camera frame.
+        
+        Repeatedly detects the ball, averages several center-x readings,
+        computes the angular correction needed to center it, and applies P-regulated
+        rotation until the ball falls within the pixel tolerance band.
+        Saves the final heading as the return angle for later navigation.
+        
+        Args:
+            rate: A Rate object used to control timing.
+        """
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
 
-        DEAD_CENTER_X = 364
-        TOLERANCE_PIXEL_BAND = 3
-        PIXELS_TO_DEG = 38 / 320  # pixels to degrees conversion
-
         while not turtle.is_shutting_down():
             (center_x, _), _ = detect_balls(turtle)
 
-            if self.stop:
-                turtle.cmd_velocity(0, 0)
-                rate.sleep()
-                turtle.play_sound(4)
+            if self._handle_stop():
                 continue
 
             # sees nothing, rotate
@@ -126,20 +238,19 @@ class Ferenc:
                 continue
 
             avg_center = sum(measurements) / len(measurements)
-            dist = DEAD_CENTER_X - avg_center
+            dist = BALL_ROTATION_CAMERA_CENTER_X - avg_center
             print("average center:", avg_center, " distance from center", dist)
 
             # not in tolerance, calc angle and rotate
-            if abs(dist) > TOLERANCE_PIXEL_BAND:
+            if abs(dist) > BALL_ROTATION_TOLERANCE_PIXEL_BAND:
                 angle = dist * PIXELS_TO_DEG * (pi/180)
                 print("calculated angle: ", angle)
-                wanted_angle = turtle.get_odometry()[2] + angle
-                angle_threshold = 0.017
-                angle_diff = wanted_angle - turtle.get_odometry()[2]
-                while (not turtle.is_shutting_down()) and abs(angle_diff) > angle_threshold:
+                wanted_angle = self._get_angle() + angle
+                angle_diff = wanted_angle - self._get_angle()
+                while (not turtle.is_shutting_down()) and abs(angle_diff) > BALL_ROTATION_ANGLE_THRESHOLD:
                     print("rotating -> diff = ", angle_diff)
                     self.angular_P_reg(angle_diff)
-                    angle_diff = wanted_angle - turtle.get_odometry()[2]
+                    angle_diff = wanted_angle - self._get_angle()
                     rate.sleep()
             else:
                 turtle.cmd_velocity(0, 0)
@@ -147,20 +258,31 @@ class Ferenc:
 
 
         # reset params
-        turtle.cmd_velocity(0, 0)
-        rate.sleep()
-        #save this drive to robot
-        ball_angle = turtle.get_odometry()[2]
+        self._stop_and_wait(rate)
+
+        # save this drive to robot
+        ball_angle = self._get_angle()
         print("angle i drove : ", self.normalize_angle(ball_angle))
-        self.garage_ball_dist[0] = -1*self.normalize_angle(ball_angle)
+        self.return_angle = -1*self.normalize_angle(ball_angle)
 
     def drive_toward_ball(self, rate, final_dist) -> None:
-        """until distance to ball is final_dist"""
+        """
+        Drive forward until the ball is approximately final_dist metres away.
+        
+        Uses depth readings from the point cloud to measure distance to the
+        ball and applies P-regulated linear velocity. Falls back to
+        rotate_toward_ball if the ball is lost for too many consecutive frames.
+        Accumulates the distance driven into self.return_distance.
+        
+        Args:
+            rate: A Rate object used to control timing.
+            final_dist (float): Target stopping distance from the ball in metres.
+        """
         turtle = self.turtle
-        DISTANCE_TOLERANCE = 0.04 # 4cm
-        CONSECUTIVE_READS_NEEDED = 2
         consecutive_readings = 0
         consecutive_ignores = 0
+
+        reads_needed = BALL_APPROACH_CONSECUTIVE_READS_NEEDED
 
         turtle.reset_odometry()
         rate.sleep()
@@ -180,29 +302,31 @@ class Ferenc:
 
             dist = get_depth(turtle, center_x, center_y, radius)
 
+            if (dist == None):
+                rate.sleep()
+                continue
+
             diff = dist - final_dist
 
             if abs(diff) < 0.05:   # 5cm away
-                CONSECUTIVE_READS_NEEDED = 1
+                reads_needed = 1
 
-            if diff <= DISTANCE_TOLERANCE:
+            if diff <= reads_needed:
                 consecutive_readings += 1
-                if consecutive_readings >= CONSECUTIVE_READS_NEEDED:
+                if consecutive_readings >= reads_needed:
                     break
             else:
                 consecutive_readings = 0  # Reset if we get a reading further away
 
-            if self.stop:
-                turtle.cmd_velocity(0, 0)
-                rate.sleep()
-                turtle.play_sound(4)
+            if self._handle_stop():
+                continue
             else:
-                self.go_forward(turtle.get_odometry()[2], 0, abs(diff)*0.65, prefered_lin_vel=None)
+                self.go_forward(self._get_angle(), 0, abs(diff)*0.65, prefered_lin_vel=None)
                 rate.sleep()
 
         # reset params
-        turtle.cmd_velocity(0, 0)
-        rate.sleep()
+        self._stop_and_wait(rate)
+
         (center_x, center_y), radius = detect_balls(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
         if dist is None:
@@ -211,14 +335,22 @@ class Ferenc:
         diff = dist - final_dist
         print("distance achieved is :", dist, "diff is ", diff)
         #save this drive to robot
-        distance_of_ball = turtle.get_odometry()[0]
-        self.garage_ball_dist[1] += distance_of_ball
+        distance_of_ball = self._get_x()
+        self.return_distance += distance_of_ball
 
 
     def drive_around_ball(self, rate) -> None:
-        """When close enough to the ball drive around it from point to point of calculated hexagon"""
+        """
+        Drive around the ball along a hexagonal path.
+        
+        Measures the current distance to the ball, drives to the desired
+        stand-off distance, computes hexagon waypoints centred on the ball,
+        and visits each waypoint in sequence using go_ptp.
+        
+        Args:
+            rate: A Rate object used to control timing.
+        """
         turtle = self.turtle
-        wanted_distance = 0.2775  # 27,75 cm before ball stop
         rate.sleep()
         rate.sleep()
 
@@ -229,7 +361,7 @@ class Ferenc:
 
         print("This is average dist: ", dist)
 
-        final_dist = self.drive_closer(wanted_distance, dist, rate)
+        final_dist = self.drive_closer(AROUND_BALL_WANTED_DISTANCE, dist, rate)
 
         turtle.reset_odometry()
         rate.sleep()
@@ -247,10 +379,18 @@ class Ferenc:
                 point_of_return = True
             self.go_ptp(point, rate, point_of_return)
 
-    def calculate_points(self, dist, coords) -> list:
-        """Calculates coordinates of hexagon to drive around the ball"""
+    def calculate_points(self, dist, coords) -> List[List[float]]:
+        """
+        Compute the waypoints of a hexagon encircling the ball (counterclockwise).
+        
+        Args:
+            dist (float): Stand-off distance from the ball centre to the robot.
+            coords (tuple): Current odometry pose (x, y, theta).
+        
+        Returns:
+            list[list[float]]: A list of [x, y, angle] waypoints.
+        """
         points = []
-        ball_radius = 0.04 # 4cm radius of ball
 
         # make all the points of a hexagon
         x = 0
@@ -260,22 +400,22 @@ class Ferenc:
             angle = i * (pi / 3)
             if i == 0:
                 # pythagoras theorem
-                y = -(cos(pi / 6) * (dist + ball_radius))
-                x = sqrt(((dist + ball_radius) ** 2) - (y ** 2))
+                y = -(cos(pi / 6) * (dist + BALL_RADIUS))
+                x = sqrt(((dist + BALL_RADIUS) ** 2) - (y ** 2))
 
             if i == 1:
-                x += dist + ball_radius
+                x += dist + BALL_RADIUS
 
             if i == 2:
                 y = coords[1]
-                x += sin(pi / 6) * (dist + ball_radius)
+                x += sin(pi / 6) * (dist + BALL_RADIUS)
 
             if i == 3:
-                y = cos(pi / 6) * (dist + ball_radius)
-                x -= sin(pi / 6) * (dist + ball_radius)
+                y = cos(pi / 6) * (dist + BALL_RADIUS)
+                x -= sin(pi / 6) * (dist + BALL_RADIUS)
 
             if i == 4:
-                x -= dist + ball_radius
+                x -= dist + BALL_RADIUS
                 angle = -2 * (pi / 3)
 
             points.append([x, y, angle])
@@ -287,7 +427,14 @@ class Ferenc:
         return points
 
     def go_ptp(self, point, rate, point_of_return = False):
-        """Function that navigates from one point of a hexagon to the next"""
+        """
+        Navigate to a single waypoint using rotate-then-drive control.
+        
+        Args:
+            point (list[float]): Target waypoint as [x, y, angle].
+            rate: A Rate object used to control loop timing.
+            point_of_return (bool): If True, rotate to point[2] after arriving.
+        """
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
         start_coords = cur_coords
@@ -314,9 +461,8 @@ class Ferenc:
         initial_angle = cur_coords[2]
         start_to_goal = [point[0] - start_coords[0], point[1] - start_coords[1]]
         while (not turtle.is_shutting_down()) and (d > dist_thresh):
-            if self.stop:
-                turtle.cmd_velocity(0, 0)
-                turtle.play_sound(4)
+            if self._handle_stop():
+                continue
             else:
                 self.go_forward(cur_coords[2], initial_angle, abs(d)*2.7, prefered_lin_vel=None)
 
@@ -335,44 +481,62 @@ class Ferenc:
 
             rate.sleep()
 
-        # reset params
-        turtle.cmd_velocity(0, 0)
+        self._stop_and_wait(rate)
 
         if point_of_return:
             self.rotate_to_angle(point[2], rate)
 
-        # reset params
-        turtle.cmd_velocity(0, 0)
+        self._stop_and_wait(rate)
 
 
     def drive_closer(self, wanted_distance, starting_distance, rate) -> float:
-        """Goes closer to the ball even if it is too close to see"""
+        """
+        Drive forward until the robot is wanted_distance from the ball.
+        
+        Uses odometry to infer remaining distance when the ball may be too
+        close for reliable depth sensing. Accumulates the distance driven into
+        self.return_distance.
+        
+        Args:
+            wanted_distance (float): Desired final stand-off distance in metres.
+            starting_distance (float): Measured distance to the ball before closing.
+            rate: A Rate object used to control loop timing.
+        
+        Returns:
+            float: The final computed distance to the ball after closing.
+        """
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
-        ball_radius = 0.041 # 4,1 cm
 
         cur_coords = turtle.get_odometry()
-        final_distance = starting_distance - (cur_coords[0] + ball_radius)
+        final_distance = starting_distance - (cur_coords[0] + BALL_RADIUS)
         while not turtle.is_shutting_down() and final_distance > wanted_distance:
-            if self.stop:
-                turtle.cmd_velocity(0, 0)
-                turtle.play_sound(4)
+            if self._handle_stop():
+                continue
             else:
                 # dist_diff = wanted_distance - final_distance
                 self.go_forward(cur_coords[2], 0, dist_diff = None , prefered_lin_vel = 0.08)
 
             cur_coords = turtle.get_odometry()
-            final_distance = starting_distance - (cur_coords[0] + ball_radius)
+            final_distance = starting_distance - (cur_coords[0] + BALL_RADIUS)
             rate.sleep()
 
-        turtle.cmd_velocity(0, 0)
-        rate.sleep()
-        self.garage_ball_dist[1] += starting_distance - final_distance - 0.065  # 6.5cm
+        self._stop_and_wait(rate)
+        self.return_distance += starting_distance - final_distance - 0.065  # 6.5cm
         return final_distance
 
     def average_depth(self) -> Optional[float]:
-        """Calculates average depth of the object so it can more accurately drive close to object"""
+        """
+        Compute an averaged depth reading to the ball over three samples.
+        
+        Ignores frames where the ball is not detected. Returns None if no
+        valid depth reading is obtained.
+        
+        Returns:
+            float or None: Average distance to the ball in metres, or None
+                if the ball could not be seen in any sample.
+        """
         turtle = self.turtle
         distance_sum = 0
         avg_den = 0
@@ -391,12 +555,34 @@ class Ferenc:
         actual_dist = distance_sum / avg_den
         return actual_dist
 
-    def normalize_angle(self, angle):
-        """Normalizes an angle to be strictly within -pi and pi"""
+    def normalize_angle(self, angle) -> float:
+        """
+        Wrap an angle into the range (-pi, pi].
+        
+        Args:
+            angle (float): Angle in radians.
+        
+        Returns:
+            float: Equivalent angle in (-pi, pi].
+        """
         return (angle + pi) % (2 * pi) - pi
 
     def go_forward(self, current_angle, needed_angle, dist_diff, prefered_lin_vel):
-        """Simple P regulated driving in a straight line"""
+        """
+        Apply P-regulated forward motion with heading correction.
+        
+        Computes angular velocity to correct heading error and linear velocity
+        either from a P-controller on dist_diff or from a preferred constant
+        speed, capping both at their respective maxima.
+        
+        Args:
+            current_angle (float): Robot's current heading in radians.
+            needed_angle (float): Desired heading in radians.
+            dist_diff (float or None): Remaining distance to target; if None,
+                prefered_lin_vel is used instead.
+            prefered_lin_vel (float or None): Constant linear speed override;
+                used when dist_diff is None.
+        """
         turtle = self.turtle
         angle_diff = self.normalize_angle(needed_angle - current_angle)
 
@@ -417,14 +603,22 @@ class Ferenc:
         turtle.cmd_velocity(lin_velocity, angular_velocity)
 
     def rotate_to_angle(self, angle, rate):
-        angle_thresh = 0.017
+        """
+        Rotate in place until the robot's heading matches the target angle.
+        
+        Uses P-regulated angular velocity and stops when the heading error
+        falls within BALL_ROTATION_ANGLE_THRESHOLD.
+        
+        Args:
+            angle (float): Target heading in radians.
+            rate: A Rate object used to control loop timing.
+        """
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
-        while (not turtle.is_shutting_down()) and (abs(angle_diff) > angle_thresh):
-            if self.stop:
-                turtle.cmd_velocity(0, 0)
-                turtle.play_sound(4)
+        while (not turtle.is_shutting_down()) and (abs(angle_diff) > BALL_ROTATION_ANGLE_THRESHOLD):
+            if self._handle_stop():
+                continue
             else:
                 self.angular_P_reg(angle_diff)
 
@@ -433,57 +627,78 @@ class Ferenc:
 
             rate.sleep()
 
-
     def angular_P_reg(self, angle_diff):
-        """Simple P regulated rotating to wanted angle"""
+        """
+        P-regulated angular velocity rotation.
+        
+        Clamps the output to [P_ANGULAR_MIN_SPEED, P_ANGULAR_MAX_SPEED] to
+        avoid stalling at small errors or overshooting at large ones.
+        
+        Args:
+            angle_diff (float): Signed angular error in radians.
+        """
         turtle = self.turtle
-        max_speed = 0.7
-        min_speed = 0.11
-        Kp = 4.75
-        ang_vel = Kp * angle_diff
-        if 0 < ang_vel < min_speed:
-            ang_vel = min_speed
-        elif 0 > ang_vel > -min_speed:
-            ang_vel = -min_speed
+        
+        ang_vel = P_ANGULAR_KP * angle_diff
+        if 0 < ang_vel < P_ANGULAR_MIN_SPEED:
+            ang_vel = P_ANGULAR_MIN_SPEED
+        elif 0 > ang_vel > -P_ANGULAR_MIN_SPEED:
+            ang_vel = -P_ANGULAR_MIN_SPEED
         else:
-            ang_vel = max(min(ang_vel, max_speed), -max_speed)   # limit max speed
+            ang_vel = max(min(ang_vel, P_ANGULAR_MAX_SPEED), -P_ANGULAR_MAX_SPEED)   # limit max speed
 
         turtle.cmd_velocity(0, ang_vel)
 
     def return_to_garage_from_odometry(self, rate):
+        """
+        Return the robot to its garage starting position using dead reckoning.
+        
+        Drives back the accumulated return_distance along the x-axis, then
+        rotates to the saved return_angle and calls go_in to complete parking.
+        
+        Args:
+            rate: A Rate object used to control loop timing.
+        """
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
         #drives back the distance
-        dist = self.garage_ball_dist[1]
+        dist = self.return_distance
         self.go_ptp([dist,0,0], rate)
 
         turtle.reset_odometry()
         rate.sleep()
         #rotates back toward garage
-        angle = self.garage_ball_dist[0]
-        print("angle it wants to rotate ", angle, "current angle: ", self.turtle.get_odometry()[2])
+        angle = self.return_angle
+        print("angle it wants to rotate ", angle, "current angle: ", self._get_angle())
         self.rotate_to_angle(angle, rate)
         self.go_in(rate)
 
 
     def go_home(self, rate):
+      """
+      Navigate back to the garage using visual detection of the gate markers.
+      
+      Applies a PID controller on the horizontal error between the detected
+      gate centre marker and the screen centre to steer toward the garage.
+      Rotates in place if the gate is not yet visible. Once the gate fills
+      the frame, switches to depth-based forward control to complete parking.
+      
+      Args:
+          rate: A Rate object used to control loop timing.
+      """
       turtle = self.turtle
-
-      Kp = 0.005
-      Ki = 0.0001
-      Kd = 0.001
 
       integral = 0
       prev_error = 0
       prev_time = get_time()
 
-      TARGET_X = 640 // 2
-      TARGET_DEPTH = 0.17
 
       gate_detected = False
 
       while not turtle.is_shutting_down():
+        if self._handle_stop():
+            continue
         rectangles = detect_rectangles(turtle)
 
         current_time = get_time()
@@ -498,13 +713,13 @@ class Ferenc:
           left_x, left_y = left
           right_x, right_y = right
 
-          error = TARGET_X - center_x
+          error = RETURN_TARGET_SCREEN_CENTER - center_x
 
-          proportional = Kp * error
+          proportional = RETURN_PID_KP * error
           integral += error * dt
           derivative = (error - prev_error) / dt
 
-          pid_output = proportional + (Ki * integral) + (Kd * derivative)
+          pid_output = proportional + (RETURN_PID_KI * integral) + (RETURN_PID_KD * derivative)
 
           turtle.cmd_velocity(linear=0.24, angular=pid_output)
 
@@ -514,8 +729,8 @@ class Ferenc:
           if not gate_detected:
             turtle.cmd_velocity(linear=0.0, angular=0.5)
           elif not self.stop:
-            center_depth = get_depth(turtle, TARGET_X, 240, 2)
-            diferenc = center_depth - TARGET_DEPTH
+            center_depth = get_depth(turtle, RETURN_TARGET_SCREEN_CENTER, 240, 2)
+            diferenc = center_depth - RETURN_TARGET_DEPTH
             if (diferenc > 0.1):
               turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
             else: 
@@ -532,15 +747,28 @@ class Ferenc:
 
         rate.sleep()
 
+      self._stop_and_wait(rate)
       cv2.destroyAllWindows()
 
 
     def go_in(self, rate):
+        """
+        Drive forward into the garage until the robot reaches the target depth.
+        
+        Uses a centre-screen depth reading to compute remaining distance and
+        applies proportional linear velocity until the robot is within
+        TARGET_DEPTH of the back wall.
+        
+        Args:
+            rate: A Rate object used to control loop timing.
+        """
         turtle = self.turtle
         TARGET_X = 640 // 2
         TARGET_DEPTH = 0.17
         while not turtle.is_shutting_down():
-          if not self.stop:
+          if self._handle_stop():
+                continue
+          else:
             center_depth = get_depth(turtle, TARGET_X, 240, 2)
             diff = center_depth - TARGET_DEPTH
             if (diff > 0.1):
@@ -549,9 +777,6 @@ class Ferenc:
               turtle.cmd_velocity(0,0)
               print("hotovo")
               break
-          else:
-            turtle.cmd_velocity(linear=0.0, angular=0.0)
-
           rate.sleep()
 
 if __name__ == "__main__":
