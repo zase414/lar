@@ -143,8 +143,8 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        print("im goona drive toward ball")
         self.drive_toward_ball(rate, 0.54)
+        self.rotate_toward_ball(rate)
 
         self.drive_around_ball(rate)
         self.return_to_garage_from_odometry(rate)
@@ -198,129 +198,193 @@ class Ferenc:
 
         self._stop_and_wait(rate)
 
-    def navigate_to_ball(self, rate, final_dist) -> None:
+    def approach_ball(self, rate, final_dist: float) -> None:
         """
-        Simultaneously drives and rotates toward the ball until it is centered 
-        and at the target distance.
-        
-        Uses a continuous control loop to calculate both linear P-regulation 
-        and angular PID regulation frame-by-frame, applying them simultaneously.
-        Saves final heading and distance driven for later navigation.
-        
+        Simultaneously drive toward and stay aligned with the ball using a
+        combined angular + linear PID controller.
+
+        At each control tick the robot:
+        1. Detects the ball and optionally measures depth.
+        2. Runs a heading PID from pixel-offset → angular velocity.
+        3. Runs a distance PID from depth error → linear velocity.
+        4. Issues a single cmd_velocity so both corrections happen together.
+
+        If the ball is lost for BALL_APPROACH_LOST_FRAMES consecutive frames
+        the robot stops, re-centres with a pure rotation scan, then resumes.
+        Because all motion is gated through a single heading-corrected forward
+        command the odometry path stays roughly straight, making return
+        navigation reliable.
+
         Args:
-            rate: A Rate object used to control timing.
-            final_dist (float): Target stopping distance from the ball in metres.
+            rate:       ROS Rate object controlling loop timing.
+            final_dist: Target stopping distance from the ball in metres.
         """
-        print("navigate_to_ball started: driving and computing simultaneously")
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
 
-        # --- State and Tuning Parameters ---
-        consecutive_readings = 0
         consecutive_ignores = 0
-        reads_needed = BALL_APPROACH_CONSECUTIVE_READS_NEEDED
-        
-        # PID state for angular rotation
-        integral_error_ang = 0.0
-        previous_error_ang = 0.0
-        
-        # You may need to tune these for the combined continuous movement
-        KP_ANG = 1.0  # Proportional gain for angular
-        KI_ANG = 0.0  # Integral gain for angular
-        KD_ANG = 0.1  # Derivative gain for angular
-        KP_LIN = 0.65 # Proportional gain for linear (from your original code)
-        
-        # Optional: Rolling average for X center to smooth out noisy detections 
-        # without stopping the robot.
-        center_x_history = deque(maxlen=3) 
+        consecutive_close   = 0
+        reads_needed        = BALL_APPROACH_CONSECUTIVE_READS_NEEDED
+
+        # ── PID state ──────────────────────────────────────────────────────────
+        ang_integral  = 0.0
+        ang_prev_err  = 0.0
+        lin_integral  = 0.0
+        lin_prev_err  = 0.0
+
+        # ── Gains (tune these) ─────────────────────────────────────────────────
+        ANG_KP, ANG_KI, ANG_KD = 0.003, 0.0001, 0.001   # pixel-error → rad/s
+        LIN_KP, LIN_KI, LIN_KD = 0.55,  0.005,  0.08    # metre-error → m/s
+
+        MAX_LIN = 0.35          # m/s  – cap forward speed
+        MAX_ANG = 1.2           # rad/s
+        LIN_DEADBAND = 0.05     # m  – "close enough" window
+        ANG_DEADBAND = BALL_ROTATION_TOLERANCE_PIXEL_BAND   # px
 
         while not turtle.is_shutting_down():
+
             if self._handle_stop():
+                rate.sleep()
                 continue
 
-            (center_x, center_y), radius = detect_balls(turtle)
+            # ── 1. Perceive ────────────────────────────────────────────────────
+            (cx, cy), radius = detect_balls(turtle)
 
-            # 1. Handle Lost Ball (Search Behavior)
-            if center_x == 0:
+            if cx == 0:
                 consecutive_ignores += 1
-                if consecutive_ignores >= 10:
-                    print("Lost ball, spinning to search...")
-                    turtle.cmd_velocity(0, 0.6) # Blind rotation
+                print(f"Ball lost ({consecutive_ignores}/{BALL_APPROACH_LOST_FRAMES})")
+                if consecutive_ignores >= BALL_APPROACH_LOST_FRAMES:
+                    # Creep forward a little so the camera angle changes, then
+                    # fall back to a dedicated scan if still nothing.
+                    turtle.cmd_velocity(0.01, 0)
+                    rate.sleep()
+                    if consecutive_ignores >= BALL_APPROACH_LOST_FRAMES + 5:
+                        print("Too many misses – re-centering on ball")
+                        self._scan_for_ball(rate)          # pure-rotation helper (see below)
+                        turtle.reset_odometry()
+                        ang_integral = ang_prev_err = lin_integral = lin_prev_err = 0.0
+                        consecutive_ignores = 0
                 else:
-                    # Small movement to help re-detect
-                    turtle.cmd_velocity(0.01, 0) 
-                rate.sleep()
+                    turtle.cmd_velocity(0.01, 0)
+                    rate.sleep()
                 continue
-            
-            # We see the ball, reset ignore counter
+
             consecutive_ignores = 0
-            center_x_history.append(center_x)
-            avg_center_x = sum(center_x_history) / len(center_x_history)
 
-            # 2. Compute Angular Error (PID)
-            dist_x_pixels = BALL_ROTATION_CAMERA_CENTER_X - avg_center_x
-            angle_error = dist_x_pixels * PIXELS_TO_RAD
-            
-            angular_vel = 0.0
-            if abs(dist_x_pixels) > BALL_ROTATION_TOLERANCE_PIXEL_BAND:
-                integral_error_ang += angle_error
-                derivative_ang = angle_error - previous_error_ang
-                angular_vel = (KP_ANG * angle_error) + (KI_ANG * integral_error_ang) + (KD_ANG * derivative_ang)
-                previous_error_ang = angle_error
-            else:
-                # Ball is within tolerance band, reset integral to prevent windup
-                integral_error_ang = 0.0
+            # ── 2. Heading error (pixels → normalised) ─────────────────────────
+            px_err  = BALL_ROTATION_CAMERA_CENTER_X - cx   # positive → ball is left
 
-            # 3. Compute Linear Error (P-Regulator)
-            dist = get_depth(turtle, center_x, center_y, radius)
+            # ── 3. Depth (optional – skip frame if unavailable) ────────────────
+            dist = get_depth(turtle, cx, cy, radius)
             if dist is None:
+                # We can still correct heading while waiting for a depth reading.
+                ang_integral += px_err
+                ang_integral  = max(-500, min(500, ang_integral))
+                ang_vel = (ANG_KP * px_err
+                        + ANG_KI * ang_integral
+                        + ANG_KD * (px_err - ang_prev_err))
+                ang_vel = max(-MAX_ANG, min(MAX_ANG, ang_vel))
+                ang_prev_err = px_err
+                turtle.cmd_velocity(0.0, ang_vel)
                 rate.sleep()
                 continue
 
-            linear_diff = dist - final_dist
-            linear_vel = 0.0
+            dist_err = dist - final_dist      # positive → too far away
+            print(f"cx={cx}  px_err={px_err:.1f}  dist={dist:.3f}m  err={dist_err:.3f}m")
 
-            # 4. Check Termination Conditions
-            # We only succeed if we are both at the right distance AND pointing at the ball
-            is_distance_reached = abs(linear_diff) < 0.05
-            is_angle_reached = abs(dist_x_pixels) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND
-
-            if is_distance_reached and is_angle_reached:
-                consecutive_readings += 1
-                if consecutive_readings >= reads_needed:
-                    print(f"Target reached! Dist: {dist:.3f}, Center offset: {dist_x_pixels:.1f}")
+            # ── 4. Stopping condition ──────────────────────────────────────────
+            if abs(dist_err) < LIN_DEADBAND:
+                consecutive_close += 1
+                if consecutive_close >= reads_needed:
+                    print("Target distance reached.")
                     break
             else:
-                consecutive_readings = 0
+                consecutive_close = 0
+                reads_needed = BALL_APPROACH_CONSECUTIVE_READS_NEEDED
 
-            # Calculate linear velocity only if we haven't reached the distance
-            if not is_distance_reached and linear_diff > 0:
-                linear_vel = linear_diff * KP_LIN
+            # ── 5. Angular PID ─────────────────────────────────────────────────
+            ang_integral += px_err
+            ang_integral  = max(-500, min(500, ang_integral))          # anti-windup
+            ang_vel = (ANG_KP * px_err
+                    + ANG_KI * ang_integral
+                    + ANG_KD * (px_err - ang_prev_err))
+            ang_vel  = max(-MAX_ANG, min(MAX_ANG, ang_vel))
+            ang_prev_err = px_err
 
-            # 5. Apply Simultaneous Command
-            # If the angle error is massive, you might want to cap the linear velocity 
-            # so it doesn't drive off-course while correcting its heading.
-            if abs(angle_error) > 0.5: # radians
-                linear_vel *= 0.5 # Slow down forward speed during heavy turns
-                
-            turtle.cmd_velocity(linear_vel, angular_vel)
+            # ── 6. Linear PID (scale down near target or while correcting angle) ─
+            #      Reduce forward speed proportionally to how far off-centre the
+            #      ball is so the robot doesn't overshoot while turning.
+            angle_penalty = max(0.0, 1.0 - abs(px_err) / (3.0 * ANG_DEADBAND))
+
+            if dist_err > 0:                                           # need to advance
+                lin_integral += dist_err
+                lin_integral  = max(-5, min(5, lin_integral))
+                lin_vel = (LIN_KP * dist_err
+                        + LIN_KI * lin_integral
+                        + LIN_KD * (dist_err - lin_prev_err))
+                lin_vel  = max(0.0, min(MAX_LIN, lin_vel)) * angle_penalty
+            else:                                                      # overshot
+                lin_vel      = 0.0
+                lin_integral = 0.0
+            lin_prev_err = dist_err
+
+            # ── 7. Command ─────────────────────────────────────────────────────
+            turtle.cmd_velocity(lin_vel, ang_vel)
             rate.sleep()
 
-        # --- Cleanup & Save Odometry ---
-        turtle.cmd_velocity(0, 0)
+        # ── Wrap-up ────────────────────────────────────────────────────────────
+        self._stop_and_wait(rate)
+        self.integral_error  = 0.0
+        self.previous_error  = 0.0
+
+        # Accumulate odometry for return trip
+        distance_of_ball = self._get_x()
+        self.return_distance += distance_of_ball
+
+        ball_angle = self._get_angle()
+        print(f"Final odometry  x={distance_of_ball:.3f}m  θ={self.normalize_angle(ball_angle):.3f}rad")
+        self.return_angle = -1.0 * self.normalize_angle(ball_angle)
+
+
+    # ── Helper extracted from the old rotate_toward_ball ──────────────────────────
+    def _scan_for_ball(self, rate) -> None:
+        """
+        Rotate in place until the ball is centred in the frame.
+        Called only as a recovery manoeuvre from approach_ball.
+        Resets odometry so the forward-distance accumulator is not corrupted.
+        """
+        turtle = self.turtle
+        while not turtle.is_shutting_down():
+            (cx, _), _ = detect_balls(turtle)
+            if self._handle_stop():
+                rate.sleep()
+                continue
+            if cx == 0:
+                turtle.cmd_velocity(0, 0.6)
+                rate.sleep()
+                continue
+            # Brief multi-frame average to avoid reacting to a single noisy hit
+            turtle.cmd_velocity(0, 0)
+            rate.sleep()
+            samples = [detect_balls(turtle)[0][0] for _ in range(5)]
+            samples = [s for s in samples if s != 0]
+            if not samples:
+                continue
+            avg_cx  = sum(samples) / len(samples)
+            px_err  = BALL_ROTATION_CAMERA_CENTER_X - avg_cx
+            if abs(px_err) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND:
+                break
+            # Rotate by the implied angle
+            target = self._get_angle() + px_err * PIXELS_TO_RAD
+            diff   = target - self._get_angle()
+            while not turtle.is_shutting_down() and abs(diff) > BALL_ROTATION_ANGLE_THRESHOLD:
+                self.angular_PID_reg(diff, 0.1)
+                diff = target - self._get_angle()
+                rate.sleep()
+            self.integral_error = self.previous_error = 0.0
         self._stop_and_wait(rate)
 
-        # Save navigation data
-        ball_angle = self._get_angle()
-        distance_of_ball = self._get_x()
-        
-        print(f"Final Angle Driven: {self.normalize_angle(ball_angle)}")
-        print(f"Final Distance Driven: {distance_of_ball}")
-        
-        self.return_angle = -1 * self.normalize_angle(ball_angle)
-        self.return_distance += distance_of_ball
-        
     def rotate_toward_ball(self, rate) -> None:
         """
         Rotate the robot until the detected ball is centered in the camera frame.
@@ -392,7 +456,7 @@ class Ferenc:
 
         # save this drive to robot
         ball_angle = self._get_angle()
-        print("angle i drove : ", self.normalize_angle(ball_angle), "before normalization", ball_angle)
+        print("angle i drove : ", self.normalize_angle(ball_angle))
         self.return_angle = -1*self.normalize_angle(ball_angle)
 
     def drive_toward_ball(self, rate, final_dist) -> None:
