@@ -11,9 +11,9 @@ import numpy as np
 import cv2
 
 # --- Ball detection constants ---
-BALL_HUE_LOW   = 25
+BALL_HUE_LOW   = 34
 BALL_HUE_HIGH  = 65
-BALL_SAT_MIN   = 40
+BALL_SAT_MIN   = 50
 BALL_VALUE_MIN = 40
 BALL_MIN_AREA  = 200
 BALL_CIRCULARITY_THRESH = 0.7
