@@ -343,7 +343,7 @@ class Ferenc:
 
             # sees nothing, rotate
             if center_x == 0:
-                turtle.cmd_velocity(0, 0.6)
+                turtle.cmd_velocity(0, 0.5)
                 rate.sleep()
                 continue
 
