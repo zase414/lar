@@ -249,7 +249,6 @@ class Ferenc:
                 wanted_angle = self._get_angle() + angle
                 angle_diff = wanted_angle - self._get_angle()
                 while (not turtle.is_shutting_down()) and abs(angle_diff) > BALL_ROTATION_ANGLE_THRESHOLD:
-                    print("rotating -> diff = ", angle_diff)
                     self.angular_PI_reg(angle_diff, 0.1)
                     angle_diff = wanted_angle - self._get_angle()
                     rate.sleep()
@@ -640,8 +639,8 @@ class Ferenc:
         turtle = self.turtle
 
         # Define your constants (these could also be class variables)
-        P_ANGULAR_KP = 0.5
-        P_ANGULAR_KI = 0.05
+        P_ANGULAR_KP = 0.1
+        P_ANGULAR_KI = 0.01
         MAX_I_TERM = 0.2  # Max speed the integral term is allowed to contribute
 
         # 2. Calculate Proportional term
