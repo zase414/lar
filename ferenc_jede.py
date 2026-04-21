@@ -27,8 +27,8 @@ BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
 P_ANGULAR_MAX_SPEED = 0.7
 P_ANGULAR_MIN_SPEED = 0.05
 
-P_ANGULAR_KP = 1.8
-P_ANGULAR_KI = 0.06
+P_ANGULAR_KP = 2.5
+P_ANGULAR_KI = 0.07
 P_ANGULAR_KD = 0.1
 MAX_I_TERM = 0.2
 
@@ -123,7 +123,7 @@ class Ferenc:
         """
         turtle = self.turtle
 
-        print("Main started")
+        print("Ferenc jede!")
 
         turtle.wait_for_point_cloud()
 
@@ -143,7 +143,6 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        print("im goona drive toward ball")
         self.drive_toward_ball(rate, 0.54)
 
         self.drive_around_ball(rate)
@@ -163,7 +162,6 @@ class Ferenc:
         turtle = self.turtle
         space = space_infront(turtle=turtle)
         while (not turtle.is_shutting_down()) and (not space):
-            print("Finding exit")
             if self._handle_stop():
                 continue
             else:
@@ -346,7 +344,6 @@ class Ferenc:
             # sees nothing, rotate
             if center_x == 0:
                 turtle.cmd_velocity(0, 0.6)
-                print("i don't see ball im rotating")
                 rate.sleep()
                 continue
 
@@ -354,12 +351,11 @@ class Ferenc:
             turtle.cmd_velocity(0, 0)
             rate.sleep()
 
-            print("i saw ball, im measuring ...")
             measurements = []
             for _ in range(5):
                 (cx, _), _ = detect_balls(turtle)
                 if cx != 0: #append only non zero values
-                    print("measured: ",cx)
+                    print("measured pixels: ",cx)
                     measurements.append(cx)
 
             if not measurements:
@@ -368,7 +364,6 @@ class Ferenc:
 
             avg_center = sum(measurements) / len(measurements)
             dist = BALL_ROTATION_CAMERA_CENTER_X - avg_center
-            print("average center:", avg_center, " distance from center", dist)
 
             # not in tolerance, calc angle and rotate
             if abs(dist) > BALL_ROTATION_TOLERANCE_PIXEL_BAND:
@@ -392,7 +387,6 @@ class Ferenc:
 
         # save this drive to robot
         ball_angle = self._get_angle()
-        print("angle i drove : ", self.normalize_angle(ball_angle), "before normalization", ball_angle)
         self.return_angle = -1*self.normalize_angle(ball_angle)
 
     def drive_toward_ball(self, rate, final_dist) -> None:
@@ -408,7 +402,6 @@ class Ferenc:
             rate: A Rate object used to control timing.
             final_dist (float): Target stopping distance from the ball in metres.
         """
-        print("drivetoward se spousti")
         turtle = self.turtle
         consecutive_readings = 0
         consecutive_ignores = 0
@@ -440,7 +433,6 @@ class Ferenc:
                 continue
 
             diff = dist - final_dist
-            print("distance is ", diff)
 
             if abs(diff) < 0.05:   # 5cm away
                 reads_needed = 1
@@ -456,7 +448,6 @@ class Ferenc:
             else:
                 self.go_forward(self._get_angle(), 0, abs(diff)*0.65, prefered_lin_vel=None)
                 rate.sleep()
-            print("Objekt je daleko: ", diff)
 
         # reset params
         self._stop_and_wait(rate)
@@ -467,7 +458,6 @@ class Ferenc:
             print("NO DISTANCE!!!")
             dist = 0
         diff = dist - final_dist
-        print("distance achieved is :", dist, "diff is ", diff)
         #save this drive to robot
         distance_of_ball = self._get_x()
         self.return_distance += distance_of_ball
@@ -608,7 +598,6 @@ class Ferenc:
             dot = start_to_goal[0] * cur_to_goal[0] + start_to_goal[1] * cur_to_goal[1]
 
             if dot < 0:
-                print("Overshot target → stopping")
                 break
 
             rate.sleep()
@@ -640,7 +629,6 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
-        print("DRIVE CLOSEEEEEEEEEEEEEEEEEEEEEER")
 
         cur_coords = turtle.get_odometry()
         final_distance = starting_distance - (cur_coords[0] + BALL_RADIUS)
@@ -828,7 +816,7 @@ class Ferenc:
         rate.sleep()
         #rotates back toward garage
         angle = self.return_angle
-        print("angle it wants to rotate ", angle, "current angle: ", self._get_angle())
+        print("angle it wants to rotate to garage: ", angle, "current angle: ", self._get_angle())
         self.rotate_to_angle(angle, rate)
         self.go_in(rate)
 
@@ -893,7 +881,7 @@ class Ferenc:
               turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
             else: 
               turtle.cmd_velocity(0,0)
-              print("hotovo")
+              print("Ferenc is home :)")
               break
           else:
             turtle.cmd_velocity(linear=0.0, angular=0.0)
@@ -922,20 +910,21 @@ class Ferenc:
         """
         turtle = self.turtle
         TARGET_X = 640 // 2
-        TARGET_DEPTH = 0.17
+        TARGET_DEPTH = 0.2
         while not turtle.is_shutting_down():
-          if self._handle_stop():
+            angle = self._get_angle()
+            if self._handle_stop():
                 continue
-          else:
-            center_depth = get_depth(turtle, TARGET_X, 240, 2)
-            diff = center_depth - TARGET_DEPTH
-            if (diff > 0.1):
-              turtle.cmd_velocity(linear=diff*0.15, angular=0.0)
             else:
-              turtle.cmd_velocity(0,0)
-              print("hotovo")
-              break
-          rate.sleep()
+                center_depth = get_depth(turtle, TARGET_X, 240, 2)
+                diff = center_depth - TARGET_DEPTH
+                if (diff > 0.1):
+                    self.go_forward(angle, 0, dist_diff=None, prefered_lin_vel=diff*0.15)
+                else:
+                    turtle.cmd_velocity(0,0)
+                    print("Ferenc is home :)")
+                    break
+            rate.sleep()
 
 if __name__ == "__main__":
     ferenc = Ferenc()
