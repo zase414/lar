@@ -285,6 +285,7 @@ class Ferenc:
             rate: A Rate object used to control timing.
             final_dist (float): Target stopping distance from the ball in metres.
         """
+        print("drivetoward se spousti")
         turtle = self.turtle
         consecutive_readings = 0
         consecutive_ignores = 0
@@ -296,6 +297,8 @@ class Ferenc:
 
         while not turtle.is_shutting_down():
             (center_x, center_y), radius = detect_balls(turtle)
+            print("Objekt vidim: ", center_x, center_y, radius)
+
             if consecutive_ignores == 10:
                 self.rotate_toward_ball(rate)
                 consecutive_ignores = 0
@@ -309,11 +312,12 @@ class Ferenc:
 
             dist = get_depth(turtle, center_x, center_y, radius)
 
-            if (dist == None):
+            if dist is None:
                 rate.sleep()
                 continue
 
             diff = dist - final_dist
+            print("distance is ", dist)
 
             if abs(diff) < 0.05:   # 5cm away
                 reads_needed = 1
