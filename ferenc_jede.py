@@ -25,9 +25,9 @@ BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
 BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
 
 P_ANGULAR_MAX_SPEED = 0.7
-P_ANGULAR_MIN_SPEED = 0.11
+P_ANGULAR_MIN_SPEED = 0.05
 
-P_ANGULAR_KP = 1
+P_ANGULAR_KP = 1.2
 P_ANGULAR_KI = 0.025
 P_ANGULAR_KD = 0.1
 MAX_I_TERM = 0.2
@@ -135,19 +135,19 @@ class Ferenc:
         rate = Rate(10)
 
         # spin until robot finds garage exit
-        # self.find_exit(rate)
+        self.find_exit(rate)
         space_detect_time = get_time()
 
-        # self.exit_garage(rate, space_detect_time)
+        self.exit_garage(rate, space_detect_time)
 
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        # self.drive_toward_ball(rate, 0.54)
-        # self.rotate_toward_ball(rate)
+        self.drive_toward_ball(rate, 0.54)
+        self.rotate_toward_ball(rate)
 
-        # self.drive_around_ball(rate)
-        # self.return_to_garage_from_odometry(rate)
+        self.drive_around_ball(rate)
+        self.return_to_garage_from_odometry(rate)
         # self.go_home(rate)
 
     def find_exit(self, rate) -> None:
