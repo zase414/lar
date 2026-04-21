@@ -29,6 +29,7 @@ P_ANGULAR_MIN_SPEED = 0.11
 
 P_ANGULAR_KP = 0.9
 P_ANGULAR_KI = 0.025
+P_ANGULAR_KD = 0.1
 MAX_I_TERM = 0.2
 
 RETURN_PID_KP = 0.005
@@ -51,6 +52,7 @@ class Ferenc:
         self.return_angle = 0.0
         self.return_distance = 0.0
         self.integral_error = 0.0
+        self.previous_error = 0.0
 
     def _handle_stop(self) -> bool:
         """
@@ -252,10 +254,11 @@ class Ferenc:
                 wanted_angle = self._get_angle() + angle
                 angle_diff = wanted_angle - self._get_angle()
                 while (not turtle.is_shutting_down()) and abs(angle_diff) > BALL_ROTATION_ANGLE_THRESHOLD:
-                    self.angular_PI_reg(angle_diff, 0.1)
+                    self.angular_PID_reg(angle_diff, 0.1)
                     angle_diff = wanted_angle - self._get_angle()
                     rate.sleep()
                 self.integral_error = 0.0
+                self.previous_error = 0.0
             else:
                 turtle.cmd_velocity(0, 0)
                 break
@@ -623,41 +626,51 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                self.angular_PI_reg(angle_diff, 0.1)
+                self.angular_PID_reg(angle_diff, 0.1)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
 
             rate.sleep()
         self.integral_error = 0.0
+        self.previous_error = 0.0
 
-    def angular_PI_reg(self, angle_diff, dt):
+    def angular_PID_reg(self, angle_diff, dt):
         """
-        PI-regulated angular velocity rotation.
+        PID-regulated angular velocity rotation.
 
         Args:
-            angle_diff (float): Signed angular error in radians.
-            dt (float): Delta time (seconds) since the last control loop.
+        angle_diff (float): Signed angular error in radians.
+        dt (float): Delta time (seconds) since the last control loop.
         """
         turtle = self.turtle
 
-        # 2. Calculate Proportional term
+        # --- P Term ---
         p_term = P_ANGULAR_KP * angle_diff
 
-        # 3. Calculate Integral term
+        # --- I Term ---
         self.integral_error += (angle_diff * dt)
-
-        # 4. Anti-Windup: Prevent the integral error from growing infinitely
-        # if the robot gets stuck or takes a long time to turn.
-        max_i_accumulated = MAX_I_TERM / P_ANGULAR_KI
+        max_i_accumulated = MAX_I_TERM / (P_ANGULAR_KI if P_ANGULAR_KI > 0 else 1)  # Prevent div by zero
         self.integral_error = max(min(self.integral_error, max_i_accumulated), -max_i_accumulated)
-
         i_term = P_ANGULAR_KI * self.integral_error
 
-        # 5. Combine P and I terms
-        ang_vel = p_term + i_term
+        # --- D Term ---
+        # 2. Calculate the rate of change of the error
+        if dt > 0:
+            derivative = (angle_diff - self.previous_error) / dt
+        else:
+            derivative = 0.0
 
-        # 6. Clamp the total output (your existing logic)
+        d_term = P_ANGULAR_KD * derivative
+
+        # 3. Update previous error for the NEXT loop
+        self.previous_error = angle_diff
+
+        # --- Combine PID ---
+        # 4. Add all three terms together
+        ang_vel = p_term + i_term + d_term
+
+        # --- Output Clamping ---
         if 0 < ang_vel < P_ANGULAR_MIN_SPEED:
             ang_vel = P_ANGULAR_MIN_SPEED
         elif 0 > ang_vel > -P_ANGULAR_MIN_SPEED:
