@@ -16,10 +16,10 @@ BALL_RADIUS = 0.041 # 4,1 cm
 AROUND_BALL_WANTED_DISTANCE = 0.2775  # 27,75 cm before ball stop
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 3
-BALL_ROTATION_CAMERA_CENTER_X = 370
+BALL_ROTATION_CAMERA_CENTER_X = 355
 BALL_ROTATION_ANGLE_THRESHOLD = 0.008
 
-PIXELS_TO_RAD = 38 / 320 * (pi/180)  # pixels to degrees  to radian conversion
+PIXELS_TO_RAD = 34 / 320 * (pi/180)  # pixels to degrees  to radian conversion
 
 BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
 BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
@@ -639,8 +639,8 @@ class Ferenc:
         turtle = self.turtle
 
         # Define your constants (these could also be class variables)
-        P_ANGULAR_KP = 0.4
-        P_ANGULAR_KI = 0.01
+        P_ANGULAR_KP = 0.6
+        P_ANGULAR_KI = 0.015
         MAX_I_TERM = 0.2  # Max speed the integral term is allowed to contribute
 
         # 2. Calculate Proportional term
