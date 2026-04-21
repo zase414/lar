@@ -43,23 +43,6 @@ def main() -> None:
     cv2.destroyAllWindows()
 
 
-# def save_img(turtle) -> None:
-#     """Captures an RGB image, converts it to HSV, and saves both to a .mat file.
-
-#     Args:
-#         turtle: Turtlebot instance with an active RGB camera.
-#     """
-#     sleep(2)
-#     im = turtle.get_rgb_image()
-#     data = {
-#         'image_rgb': im,
-#         'image_hsv': cv2.cvtColor(im, cv2.COLOR_BGR2HSV),
-#     }
-#     filename = datetime.today().strftime("%Y-%m-%d-%H-%M-%S") + ".mat"
-#     savemat(filename, data)
-#     print('Data saved in {}'.format(filename))
-
-
 def mouse_callback(event, x, y, flags, param) -> None:
     """OpenCV mouse callback that prints HSV values at the cursor position.
 
