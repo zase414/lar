@@ -129,19 +129,19 @@ class Ferenc:
         rate = Rate(10)
 
         # spin until robot finds garage exit
-        self.find_exit(rate)
+        # self.find_exit(rate)
         space_detect_time = get_time()
 
-        self.exit_garage(rate, space_detect_time)
+        # self.exit_garage(rate, space_detect_time)
 
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        self.drive_toward_ball(rate, 0.54)
+        # self.drive_toward_ball(rate, 0.54)
         # self.rotate_toward_ball(rate)
 
-        self.drive_around_ball(rate)
-        self.return_to_garage_from_odometry(rate)
+        # self.drive_around_ball(rate)
+        # self.return_to_garage_from_odometry(rate)
         # self.go_home(rate)
 
     def find_exit(self, rate) -> None:
