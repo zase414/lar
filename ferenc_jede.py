@@ -47,6 +47,7 @@ class Ferenc:
         self.stop = False
         self.return_angle = 0.0
         self.return_distance = 0.0
+        self.integral_error = 0.0
 
     def _handle_stop(self) -> bool:
         """
@@ -249,9 +250,10 @@ class Ferenc:
                 angle_diff = wanted_angle - self._get_angle()
                 while (not turtle.is_shutting_down()) and abs(angle_diff) > BALL_ROTATION_ANGLE_THRESHOLD:
                     print("rotating -> diff = ", angle_diff)
-                    self.angular_P_reg(angle_diff)
+                    self.angular_PI_reg(angle_diff, 0.1)
                     angle_diff = wanted_angle - self._get_angle()
                     rate.sleep()
+                self.integral_error = 0.0
             else:
                 turtle.cmd_velocity(0, 0)
                 break
@@ -619,32 +621,52 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                self.angular_P_reg(angle_diff)
+                self.angular_PI_reg(angle_diff, 0.1)
 
             cur_coords = turtle.get_odometry()
             angle_diff = self.normalize_angle(angle - cur_coords[2])
 
             rate.sleep()
+        self.integral_error = 0.0
 
-    def angular_P_reg(self, angle_diff):
+    def angular_PI_reg(self, angle_diff, dt):
         """
-        P-regulated angular velocity rotation.
-        
-        Clamps the output to [P_ANGULAR_MIN_SPEED, P_ANGULAR_MAX_SPEED] to
-        avoid stalling at small errors or overshooting at large ones.
-        
+        PI-regulated angular velocity rotation.
+
         Args:
             angle_diff (float): Signed angular error in radians.
+            dt (float): Delta time (seconds) since the last control loop.
         """
         turtle = self.turtle
-        
-        ang_vel = P_ANGULAR_KP * angle_diff
+
+        # Define your constants (these could also be class variables)
+        P_ANGULAR_KP = 0.5
+        P_ANGULAR_KI = 0.05
+        MAX_I_TERM = 0.2  # Max speed the integral term is allowed to contribute
+
+        # 2. Calculate Proportional term
+        p_term = P_ANGULAR_KP * angle_diff
+
+        # 3. Calculate Integral term
+        self.integral_error += (angle_diff * dt)
+
+        # 4. Anti-Windup: Prevent the integral error from growing infinitely
+        # if the robot gets stuck or takes a long time to turn.
+        max_i_accumulated = MAX_I_TERM / P_ANGULAR_KI
+        self.integral_error = max(min(self.integral_error, max_i_accumulated), -max_i_accumulated)
+
+        i_term = P_ANGULAR_KI * self.integral_error
+
+        # 5. Combine P and I terms
+        ang_vel = p_term + i_term
+
+        # 6. Clamp the total output (your existing logic)
         if 0 < ang_vel < P_ANGULAR_MIN_SPEED:
             ang_vel = P_ANGULAR_MIN_SPEED
         elif 0 > ang_vel > -P_ANGULAR_MIN_SPEED:
             ang_vel = -P_ANGULAR_MIN_SPEED
         else:
-            ang_vel = max(min(ang_vel, P_ANGULAR_MAX_SPEED), -P_ANGULAR_MAX_SPEED)   # limit max speed
+            ang_vel = max(min(ang_vel, P_ANGULAR_MAX_SPEED), -P_ANGULAR_MAX_SPEED)
 
         turtle.cmd_velocity(0, ang_vel)
 
