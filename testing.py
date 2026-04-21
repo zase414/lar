@@ -5,8 +5,10 @@ from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 
 def main():
     ferenc = Ferenc()
+    rate = Rate(10)
     while True:
-        ferenc.rotate_toward_ball()
+
+        ferenc.rotate_toward_ball(rate)
         print("i see the ball")
         time.sleep(10)
 
