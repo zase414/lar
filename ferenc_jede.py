@@ -19,7 +19,7 @@ BALL_ROTATION_TOLERANCE_PIXEL_BAND = 3
 BALL_ROTATION_CAMERA_CENTER_X = 348
 BALL_ROTATION_ANGLE_THRESHOLD = 0.01
 
-PIXELS_TO_RAD = 34 / 320 * (pi/180)  # pixels to degrees  to radian conversion
+PIXELS_TO_RAD = (34 / 320) * (pi/180)  # pixels to degrees  to radian conversion
 
 BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
 BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
@@ -300,8 +300,8 @@ class Ferenc:
             print("Objekt vidim: ", center_x, center_y, radius)
 
             if consecutive_ignores == 10:
-                self.rotate_toward_ball(rate)
-                consecutive_ignores = 0
+                print("Object not seen")
+                break
 
             elif center_x == 0: #cant find ball
                 print("Ignoring frame")
@@ -317,15 +317,14 @@ class Ferenc:
                 continue
 
             diff = dist - final_dist
-            print("distance is ", dist)
+            print("distance is ", diff)
 
             if abs(diff) < 0.05:   # 5cm away
                 reads_needed = 1
 
-            if diff <= reads_needed:
-                consecutive_readings += 1
-                if consecutive_readings >= reads_needed:
-                    break
+            consecutive_readings += 1
+            if consecutive_readings >= reads_needed:
+                break
             else:
                 consecutive_readings = 0  # Reset if we get a reading further away
 
@@ -518,6 +517,7 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         sleep(0.1)
+        print("DRIVE CLOSEEEEEEEEEEEEEEEEEEEEEER")
 
         cur_coords = turtle.get_odometry()
         final_distance = starting_distance - (cur_coords[0] + BALL_RADIUS)
