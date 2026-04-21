@@ -143,8 +143,8 @@ class Ferenc:
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
+        print("im goona drive toward ball")
         self.drive_toward_ball(rate, 0.54)
-        self.rotate_toward_ball(rate)
 
         self.drive_around_ball(rate)
         self.return_to_garage_from_odometry(rate)
@@ -269,7 +269,7 @@ class Ferenc:
 
         # save this drive to robot
         ball_angle = self._get_angle()
-        print("angle i drove : ", self.normalize_angle(ball_angle))
+        print("angle i drove : ", self.normalize_angle(ball_angle), "before normalization", ball_angle)
         self.return_angle = -1*self.normalize_angle(ball_angle)
 
     def drive_toward_ball(self, rate, final_dist) -> None:
