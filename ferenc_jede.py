@@ -909,6 +909,8 @@ class Ferenc:
             rate: A Rate object used to control loop timing.
         """
         turtle = self.turtle
+        turtle.reset_odometry()
+        rate.sleep()
         TARGET_X = 640 // 2
         TARGET_DEPTH = 0.2
         while not turtle.is_shutting_down():
