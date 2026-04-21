@@ -639,7 +639,7 @@ class Ferenc:
         turtle = self.turtle
 
         # Define your constants (these could also be class variables)
-        P_ANGULAR_KP = 0.1
+        P_ANGULAR_KP = 0.4
         P_ANGULAR_KI = 0.01
         MAX_I_TERM = 0.2  # Max speed the integral term is allowed to contribute
 
