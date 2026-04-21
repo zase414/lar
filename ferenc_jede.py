@@ -19,7 +19,7 @@ BALL_ROTATION_TOLERANCE_PIXEL_BAND = 3
 BALL_ROTATION_CAMERA_CENTER_X = 364
 BALL_ROTATION_ANGLE_THRESHOLD = 0.017
 
-PIXELS_TO_DEG = 38 / 320  # pixels to degrees conversion
+PIXELS_TO_RAD = 38 / 320 * (pi/180)  # pixels to degrees  to radian conversion
 
 BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
 BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
@@ -243,7 +243,7 @@ class Ferenc:
 
             # not in tolerance, calc angle and rotate
             if abs(dist) > BALL_ROTATION_TOLERANCE_PIXEL_BAND:
-                angle = dist * PIXELS_TO_DEG * (pi/180)
+                angle = dist * PIXELS_TO_RAD
                 print("calculated angle: ", angle)
                 wanted_angle = self._get_angle() + angle
                 angle_diff = wanted_angle - self._get_angle()
