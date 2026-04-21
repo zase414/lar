@@ -323,6 +323,7 @@ class Ferenc:
             else:
                 self.go_forward(self._get_angle(), 0, abs(diff)*0.65, prefered_lin_vel=None)
                 rate.sleep()
+            print("Objekt je daleko: ", diff)
 
         # reset params
         self._stop_and_wait(rate)
@@ -358,8 +359,6 @@ class Ferenc:
         if dist is None:
             print("Object not seen")
             return
-
-        print("This is average dist: ", dist)
 
         final_dist = self.drive_closer(AROUND_BALL_WANTED_DISTANCE, dist, rate)
 
