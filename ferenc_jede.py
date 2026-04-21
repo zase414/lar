@@ -187,7 +187,7 @@ class Ferenc:
                 continue
             else:
                 # go forward with 5° offset to negate early exit
-                self.go_forward(_get_angle(), pi/36, dist_diff = None, prefered_lin_vel = 0.25)
+                self.go_forward(self._get_angle(), pi / 36, dist_diff = None, prefered_lin_vel = 0.25)
                 rate.sleep()
 
         self._stop_and_wait(rate)
@@ -523,7 +523,7 @@ class Ferenc:
             rate.sleep()
 
         self._stop_and_wait(rate)
-        self.return_distance += starting_distance - final_distance - 0.065  # 6.5cm
+        self.return_distance += starting_distance - final_distance - 0.075  # 7.5cm
         return final_distance
 
     def average_depth(self) -> Optional[float]:
