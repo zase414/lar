@@ -11,6 +11,9 @@ from image_proccesing import space_infront, get_depth
 from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_balls, detect_rectangles
 
+BALL_DISTANCE_TO_SKIP_EXIT = 0.6
+
+
 BALL_RADIUS = 0.041 # 4,1 cm
 
 AROUND_BALL_WANTED_DISTANCE = 0.28  # 28 cm before ball stop
@@ -137,8 +140,10 @@ class Ferenc:
         # spin until robot finds garage exit
         self.find_exit(rate)
         space_detect_time = get_time()
-
-        self.exit_garage(rate, space_detect_time)
+        
+        distance = self.average_depth()
+        if(distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT):
+            self.exit_garage(rate, space_detect_time)
 
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
