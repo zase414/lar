@@ -25,7 +25,6 @@ BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
 BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
 
 P_ANGULAR_MAX_SPEED = 0.7
-P_ANGULAR_MIN_SPEED = 0.05
 
 P_ANGULAR_KP = 2
 P_ANGULAR_KI = 0.06
@@ -36,7 +35,7 @@ RETURN_PID_KP = 0.005
 RETURN_PID_KI = 0.0001
 RETURN_PID_KD = 0.001
 RETURN_TARGET_SCREEN_CENTER = 640 // 2
-RETURN_TARGET_DEPTH = 0.17
+RETURN_TARGET_DEPTH = 0.2
 
 class Ferenc:
     
@@ -770,7 +769,6 @@ class Ferenc:
         i_term = P_ANGULAR_KI * self.integral_error
 
         # --- D Term ---
-        # 2. Calculate the rate of change of the error
         if dt > 0:
             derivative = (angle_diff - self.previous_error) / dt
         else:
@@ -778,20 +776,13 @@ class Ferenc:
 
         d_term = P_ANGULAR_KD * derivative
 
-        # 3. Update previous error for the NEXT loop
+        # Update previous error for the NEXT loop
         self.previous_error = angle_diff
 
         # --- Combine PID ---
-        # 4. Add all three terms together
         ang_vel = p_term + i_term + d_term
 
-        # --- Output Clamping ---
-        if 0 < ang_vel < P_ANGULAR_MIN_SPEED:
-            ang_vel = P_ANGULAR_MIN_SPEED
-        elif 0 > ang_vel > -P_ANGULAR_MIN_SPEED:
-            ang_vel = -P_ANGULAR_MIN_SPEED
-        else:
-            ang_vel = max(min(ang_vel, P_ANGULAR_MAX_SPEED), -P_ANGULAR_MAX_SPEED)
+        ang_vel = max(min(ang_vel, P_ANGULAR_MAX_SPEED), -P_ANGULAR_MAX_SPEED)
 
         turtle.cmd_velocity(0, ang_vel)
 
