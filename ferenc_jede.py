@@ -11,7 +11,7 @@ from image_proccesing import space_infront, get_depth
 from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_balls, detect_rectangles
 
-BALL_DISTANCE_TO_SKIP_EXIT = 0.75
+BALL_DISTANCE_TO_SKIP_EXIT = 0.7
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
@@ -26,10 +26,10 @@ BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
 BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
 
 P_ANGULAR_MAX_SPEED = 0.7
-P_ANGULAR_MIN_SPEED = 0.05
+P_ANGULAR_MIN_SPEED = 0.075
 
 P_ANGULAR_KP = 2.1
-P_ANGULAR_KI = 0.065
+P_ANGULAR_KI = 0.067
 P_ANGULAR_KD = 0.11
 MAX_I_TERM = 0.2
 
