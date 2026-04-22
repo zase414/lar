@@ -141,8 +141,8 @@ class Ferenc:
         self.find_exit(rate)
         
         distance = self.average_depth()
-        space_detect_time = get_time()
         if(distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT):
+            space_detect_time = get_time()
             self.exit_garage(rate, space_detect_time)
         else:
             print("skipping exit garage function")
