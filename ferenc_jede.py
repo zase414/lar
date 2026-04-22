@@ -139,9 +139,9 @@ class Ferenc:
 
         # spin until robot finds garage exit
         self.find_exit(rate)
-        space_detect_time = get_time()
         
         distance = self.average_depth()
+        space_detect_time = get_time()
         if(distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT):
             self.exit_garage(rate, space_detect_time)
         else:
@@ -266,6 +266,7 @@ class Ferenc:
                 self.integral_error = 0.0
                 self.previous_error = 0.0
                 if abs(angle) < BALL_ROTATION_ANGLE_THRESHOLD:
+                    print("calculated angle: ", angle, "breaking loop")
                     turtle.cmd_velocity(0, 0)
                     break
             else:
