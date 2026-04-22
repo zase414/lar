@@ -259,7 +259,7 @@ class Ferenc:
                     rate.sleep()
                 self.integral_error = 0.0
                 self.previous_error = 0.0
-                if abs(angle_diff) < BALL_ROTATION_ANGLE_THRESHOLD:
+                if abs(angle) < BALL_ROTATION_ANGLE_THRESHOLD:
                     turtle.cmd_velocity(0, 0)
                     break
             else:
