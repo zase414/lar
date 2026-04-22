@@ -11,7 +11,7 @@ from image_proccesing import space_infront, get_depth
 from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_balls, detect_rectangles
 
-BALL_DISTANCE_TO_SKIP_EXIT = 0.7
+BALL_DISTANCE_TO_SKIP_EXIT = 0.75
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
@@ -144,7 +144,7 @@ class Ferenc:
             self.exit_garage(rate, space_detect_time)
             final_ball_distance = 0.32  # 32 cm before ball stop
         else:
-            final_ball_distance = 0.27
+            final_ball_distance = 0.28
             print("skipping exit garage function")
 
         ## find and ball turn on to it
