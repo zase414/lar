@@ -11,7 +11,7 @@ from image_proccesing import space_infront, get_depth
 from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_balls, detect_rectangles
 
-BALL_DISTANCE_TO_SKIP_EXIT = 0.6
+BALL_DISTANCE_TO_SKIP_EXIT = 0.75
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
