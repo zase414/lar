@@ -30,9 +30,9 @@ BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
 P_ANGULAR_MAX_SPEED = 0.7
 P_ANGULAR_MIN_SPEED = 0.05
 
-P_ANGULAR_KP = 2
-P_ANGULAR_KI = 0.06
-P_ANGULAR_KD = 0.1
+P_ANGULAR_KP = 2.1
+P_ANGULAR_KI = 0.065
+P_ANGULAR_KD = 0.11
 MAX_I_TERM = 0.2
 
 RETURN_PID_KP = 0.005
@@ -447,7 +447,7 @@ class Ferenc:
         start_coords = cur_coords
 
         # thresholds fo accurate enough stopping in given points
-        dist_thresh = 0.01
+        dist_thresh = 0.012
 
         # current location and distance from goal point
         x = point[0] - cur_coords[0]
