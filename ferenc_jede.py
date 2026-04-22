@@ -18,7 +18,7 @@ BALL_RADIUS = 0.041 # 4,1 cm
 
 AROUND_BALL_WANTED_DISTANCE = 0.32  # 32 cm before ball stop
 
-BALL_ROTATION_TOLERANCE_PIXEL_BAND = 5
+BALL_ROTATION_TOLERANCE_PIXEL_BAND = 4
 BALL_ROTATION_CAMERA_CENTER_X = 348
 BALL_ROTATION_ANGLE_THRESHOLD = 0.01
 
@@ -536,7 +536,7 @@ class Ferenc:
             rate.sleep()
 
         self._stop_and_wait(rate)
-        self.return_distance += starting_distance - final_distance - 0.06  # 6 cm
+        self.return_distance += starting_distance - final_distance - 0.064  # 6.4 cm
         return final_distance
 
     def average_depth(self) -> Optional[float]:
