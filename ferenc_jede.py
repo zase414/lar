@@ -19,7 +19,7 @@ BALL_RADIUS = 0.041 # 4,1 cm
 AROUND_BALL_WANTED_DISTANCE = 0.32  # 32 cm before ball stop
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 4
-BALL_ROTATION_CAMERA_CENTER_X = 348
+BALL_ROTATION_CAMERA_CENTER_X = 346
 BALL_ROTATION_ANGLE_THRESHOLD = 0.01
 
 PIXELS_TO_RAD = (29 / 320) * (pi/180)  # pixels to degrees  to radian conversion
@@ -702,14 +702,15 @@ class Ferenc:
         rate.sleep()
         #drives back the distance
         dist = self.return_distance
-        self.go_ptp([dist,0,0], rate)
-
-        turtle.reset_odometry()
-        rate.sleep()
-        #rotates back toward garage
-        angle = self.return_angle
-        print("angle it wants to rotate to garage: ", angle, "current angle: ", self._get_angle())
         if not turtle.is_shutting_down():
+            self.go_ptp([dist,0,0], rate)
+
+        if not turtle.is_shutting_down():
+            turtle.reset_odometry()
+            rate.sleep()
+            # rotates back toward garage
+            angle = self.return_angle
+            print("angle it wants to rotate to garage: ", angle, "current angle: ", self._get_angle())
             self.rotate_to_angle(angle, rate)
             self.go_in(rate)
 
