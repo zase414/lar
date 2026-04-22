@@ -252,12 +252,15 @@ class Ferenc:
                 print("calculated angle: ", angle)
                 wanted_angle = self._get_angle() + angle
                 angle_diff = wanted_angle - self._get_angle()
-                while (not turtle.is_shutting_down()):
+                while not turtle.is_shutting_down() and abs(angle_diff) >= BALL_ROTATION_ANGLE_THRESHOLD:
                     self.angular_PID_reg(angle_diff, 0.1)
                     angle_diff = wanted_angle - self._get_angle()
                     rate.sleep()
                 self.integral_error = 0.0
                 self.previous_error = 0.0
+                if abs(angle_diff) < BALL_ROTATION_ANGLE_THRESHOLD:
+                    turtle.cmd_velocity(0, 0)
+                    break
             else:
                 turtle.cmd_velocity(0, 0)
                 break
