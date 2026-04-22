@@ -141,7 +141,7 @@ class Ferenc:
         space_detect_time = get_time()
         
         distance = self.average_depth()
-        if(distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT):
+        if distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             self.exit_garage(rate, space_detect_time)
 
         ## find and ball turn on to it
