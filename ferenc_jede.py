@@ -144,6 +144,8 @@ class Ferenc:
         distance = self.average_depth()
         if(distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT):
             self.exit_garage(rate, space_detect_time)
+        else:
+            print("skipping exit garage function")
 
         ## find and ball turn on to it
         self.rotate_toward_ball(rate)
