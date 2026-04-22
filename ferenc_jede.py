@@ -604,7 +604,7 @@ class Ferenc:
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.23
+        max_speed = 0.2
         Kp_lin = 0.4
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
