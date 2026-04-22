@@ -16,8 +16,6 @@ BALL_DISTANCE_TO_SKIP_EXIT = 0.75
 
 BALL_RADIUS = 0.041 # 4,1 cm
 
-AROUND_BALL_WANTED_DISTANCE = 0.32  # 32 cm before ball stop
-
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 4
 BALL_ROTATION_CAMERA_CENTER_X = 340
 BALL_ROTATION_ANGLE_THRESHOLD = 0.01
@@ -144,7 +142,9 @@ class Ferenc:
         if(distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT):
             space_detect_time = get_time()
             self.exit_garage(rate, space_detect_time)
+            final_ball_distance = 0.32  # 32 cm before ball stop
         else:
+            final_ball_distance = 0.27
             print("skipping exit garage function")
 
         ## find and ball turn on to it
@@ -155,7 +155,7 @@ class Ferenc:
             self.drive_toward_ball(rate, 0.54)
 
         if not turtle.is_shutting_down():
-            self.drive_around_ball(rate)
+            self.drive_around_ball(rate, final_ball_distance)
         if not turtle.is_shutting_down():
             self.return_to_garage_from_odometry(rate)
         # self.go_home(rate)
@@ -355,7 +355,7 @@ class Ferenc:
         self.return_distance += distance_of_ball
 
 
-    def drive_around_ball(self, rate) -> None:
+    def drive_around_ball(self, rate, final_ball_dist) -> None:
         """
         Drive around the ball along a hexagonal path.
         
@@ -365,6 +365,7 @@ class Ferenc:
         
         Args:
             rate: A Rate object used to control timing.
+            final_ball_dist: Distance in front of the ball
         """
         turtle = self.turtle
         rate.sleep()
@@ -375,7 +376,7 @@ class Ferenc:
             print("Object not seen")
             return
 
-        final_dist = self.drive_closer(AROUND_BALL_WANTED_DISTANCE, dist, rate)
+        final_dist = self.drive_closer(final_ball_dist, dist, rate)
 
         turtle.reset_odometry()
         rate.sleep()
