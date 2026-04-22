@@ -709,8 +709,9 @@ class Ferenc:
         #rotates back toward garage
         angle = self.return_angle
         print("angle it wants to rotate to garage: ", angle, "current angle: ", self._get_angle())
-        self.rotate_to_angle(angle, rate)
-        self.go_in(rate)
+        if not turtle.is_shutting_down():
+            self.rotate_to_angle(angle, rate)
+            self.go_in(rate)
 
 
     def go_home(self, rate):
