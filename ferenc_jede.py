@@ -146,12 +146,16 @@ class Ferenc:
             self.exit_garage(rate, space_detect_time)
 
         ## find and ball turn on to it
-        self.rotate_toward_ball(rate)
+        if not turtle.is_shutting_down():
+            self.rotate_toward_ball(rate)
         ## drives until ball is 58 cm infront of camera
-        self.drive_toward_ball(rate, 0.54)
+        if not turtle.is_shutting_down():
+            self.drive_toward_ball(rate, 0.54)
 
-        self.drive_around_ball(rate)
-        self.return_to_garage_from_odometry(rate)
+        if not turtle.is_shutting_down():
+            self.drive_around_ball(rate)
+        if not turtle.is_shutting_down():
+            self.return_to_garage_from_odometry(rate)
         # self.go_home(rate)
 
     def find_exit(self, rate) -> None:
