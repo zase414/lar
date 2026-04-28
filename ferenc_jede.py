@@ -39,6 +39,7 @@ RETURN_PID_KD = 0.001
 RETURN_TARGET_SCREEN_CENTER = 640 // 2
 RETURN_TARGET_DEPTH = 0.2
 RETURN_CLOSER_CONST = 0.054
+HOME_SOUND = 1
 
 class Ferenc:
     
@@ -138,20 +139,24 @@ class Ferenc:
 
         # spin until robot finds garage exit
         self.find_exit(rate)
-        
+
+        final_ball_distance = 0.28
         distance = self.average_depth()
-        if(distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT):
+        if distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             space_detect_time = get_time()
             self.exit_garage(rate, space_detect_time)
-            final_ball_distance = 0.31  # 31 cm before ball stop
         else:
-            final_ball_distance = 0.28
             print("skipping exit garage function")
 
         ## find and ball turn on to it
         if not turtle.is_shutting_down():
             #self.rotate_toward_ball(rate)
             self.rotate_toward_ball2(rate)
+
+        distance = self.average_depth()
+        if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
+            final_ball_distance = 0.31  # 31 cm before ball stop
+
         ## drives until ball is 58 cm infront of camera
         if not turtle.is_shutting_down():
             self.drive_toward_ball(rate, 0.54)
@@ -896,7 +901,7 @@ class Ferenc:
                     print("Ferenc is home :)")
                     home_time = get_time()
                     while not turtle.is_shutting_down() and (get_time()-home_time)<4:
-                        turtle.play_sound(3)
+                        turtle.play_sound(HOME_SOUND)
                         rate.sleep()
                     break
             rate.sleep()
