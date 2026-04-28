@@ -38,7 +38,7 @@ RETURN_PID_KI = 0.0001
 RETURN_PID_KD = 0.001
 RETURN_TARGET_SCREEN_CENTER = 640 // 2
 RETURN_TARGET_DEPTH = 0.2
-RETURN_CLOSER_CONST = 0.054
+RETURN_CLOSER_CONST = 0.048
 HOME_SOUND = 0
 
 class Ferenc:
@@ -52,6 +52,7 @@ class Ferenc:
         """
         self.turtle = Turtlebot(rgb=True, pc=True)
         self.stop = False
+        self.start = False
         self.return_angle = 0.0
         self.return_distance = 0.0
         self.integral_error = 0.0
@@ -150,8 +151,7 @@ class Ferenc:
 
         ## find and ball turn on to it
         if not turtle.is_shutting_down():
-            #self.rotate_toward_ball(rate)
-            self.rotate_toward_ball2(rate)
+            self.rotate_toward_ball(rate)
 
         distance = self.average_depth()
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
@@ -214,7 +214,7 @@ class Ferenc:
 
         self._stop_and_wait(rate)
 
-    def rotate_toward_ball2(self, rate) -> None:
+    def rotate_toward_ball(self, rate) -> None:
         """
         Rotate the robot until the detected ball is centered in the camera frame.
         
@@ -278,81 +278,6 @@ class Ferenc:
                     turtle.cmd_velocity(0, -2.5* P_ANGULAR_MIN_SPEED)
                 rate.sleep()
             
-        # reset params
-        self._stop_and_wait(rate)
-
-        # save this drive to robot
-        ball_angle = self._get_angle()
-        self.return_angle = -1*self.normalize_angle(ball_angle)
-
-
-    def rotate_toward_ball(self, rate) -> None:
-        """
-        Rotate the robot until the detected ball is centered in the camera frame.
-        
-        Repeatedly detects the ball, averages several center-x readings,
-        computes the angular correction needed to center it, and applies P-regulated
-        rotation until the ball falls within the pixel tolerance band.
-        Saves the final heading as the return angle for later navigation.
-        
-        Args:
-            rate: A Rate object used to control timing.
-        """
-        turtle = self.turtle
-        turtle.reset_odometry()
-        rate.sleep()
-
-        while not turtle.is_shutting_down():
-            (center_x, _), _ = detect_balls(turtle)
-
-            if self._handle_stop():
-                continue
-
-            # sees nothing, rotate
-            if center_x == 0:
-                turtle.cmd_velocity(0, 0.5)
-                rate.sleep()
-                continue
-
-            # sees something - measure
-            turtle.cmd_velocity(0, 0)
-            rate.sleep()
-
-            measurements = []
-            for _ in range(5):
-                (cx, _), _ = detect_balls(turtle)
-                if cx != 0: #append only non zero values
-                    print("measured pixels: ",cx)
-                    measurements.append(cx)
-
-            if not measurements:
-                print("no measurement")
-                continue
-
-            avg_center = sum(measurements) / len(measurements)
-            dist = BALL_ROTATION_CAMERA_CENTER_X - avg_center
-
-            # not in tolerance, calc angle and rotate
-            if abs(dist) > BALL_ROTATION_TOLERANCE_PIXEL_BAND:
-                angle = dist * PIXELS_TO_RAD
-                print("calculated angle: ", angle)
-                wanted_angle = self._get_angle() + angle
-                angle_diff = wanted_angle - self._get_angle()
-                while not turtle.is_shutting_down() and abs(angle_diff) >= BALL_ROTATION_ANGLE_THRESHOLD:
-                    self.angular_PID_reg(angle_diff, 0.1)
-                    angle_diff = wanted_angle - self._get_angle()
-                    rate.sleep()
-                self.integral_error = 0.0
-                self.previous_error = 0.0
-                if abs(angle) < BALL_ROTATION_ANGLE_THRESHOLD:
-                    print("calculated angle: ", angle, "breaking loop")
-                    turtle.cmd_velocity(0, 0)
-                    break
-            else:
-                turtle.cmd_velocity(0, 0)
-                break
-
-
         # reset params
         self._stop_and_wait(rate)
 

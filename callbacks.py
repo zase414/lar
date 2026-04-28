@@ -5,6 +5,7 @@ def callback_button0_resume(ferenc, msg):
 
     if (msg.state == State.PRESSED) and (msg.button == Button.BUTTON0):
         ferenc.stop = False
+        ferenc.start = True
 
     button_state = msg.state
     button = msg.button
