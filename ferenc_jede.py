@@ -36,7 +36,7 @@ RETURN_PID_KI = 0.0001
 RETURN_PID_KD = 0.001
 RETURN_TARGET_SCREEN_CENTER = 640 // 2
 RETURN_TARGET_DEPTH = 0.2
-RETURN_CLOSER_CONST = 0.048
+RETURN_CLOSER_CONST = 0.052
 HOME_SOUND = 0
 
 class Ferenc:
@@ -124,6 +124,10 @@ class Ferenc:
         and returning to the starting position.
         """
         turtle = self.turtle
+
+        # waiting for start button
+        while not turtle.is_shutting_down() and self.start:
+            continue
 
         print("Ferenc jede!")
 
