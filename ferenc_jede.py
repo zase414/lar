@@ -36,7 +36,6 @@ RETURN_PID_KI = 0.0001
 RETURN_PID_KD = 0.001
 RETURN_TARGET_SCREEN_CENTER = 640 // 2
 RETURN_TARGET_DEPTH = 0.185
-RETURN_CLOSER_CONST = 0.048
 HOME_SOUND = 0
 
 class Ferenc:
@@ -158,12 +157,15 @@ class Ferenc:
         distance = self.average_depth()
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.31  # 31 cm before ball stop
-            ## drives until ball is 54 cm infront of camera
+            ball_return_closer_dist = 0.55
+            ## drives until ball is 55 cm infront of camera
             if not turtle.is_shutting_down():
-                self.drive_toward_ball(rate, 0.54)
+                self.drive_toward_ball(rate, 0.55)
+        else:
+            ball_return_closer_dist = 0.35
 
         if not turtle.is_shutting_down():
-            self.drive_around_ball(rate, final_ball_distance)
+            self.drive_around_ball(rate, final_ball_distance, ball_return_closer_dist)
         if not turtle.is_shutting_down():
             self.return_to_garage_from_odometry(rate)
 
@@ -357,7 +359,7 @@ class Ferenc:
         self.return_distance += distance_of_ball
 
 
-    def drive_around_ball(self, rate, final_ball_dist) -> None:
+    def drive_around_ball(self, rate, final_ball_dist, ball_return_closer_dist) -> None:
         """
         Drive around the ball along a hexagonal path.
         
@@ -368,6 +370,7 @@ class Ferenc:
         Args:
             rate: A Rate object used to control timing.
             final_ball_dist: Distance in front of the ball
+            ball_return_closer_dist: how far from garage return point ferenc should stop
         """
         turtle = self.turtle
         rate.sleep()
@@ -378,7 +381,7 @@ class Ferenc:
             print("Object not seen")
             return
 
-        final_dist = self.drive_closer(final_ball_dist, dist, rate)
+        final_dist = self.drive_closer(final_ball_dist, dist, rate, ball_return_closer_dist)
         print("Finální vzdálenost Ference od míčku je: ",final_dist)
 
         turtle.reset_odometry()
@@ -505,7 +508,7 @@ class Ferenc:
         self._stop_and_wait(rate)
 
 
-    def drive_closer(self, wanted_distance, starting_distance, rate) -> float:
+    def drive_closer(self, wanted_distance, starting_distance, rate, ball_return_closer_dist) -> float:
         """
         Drive forward until the robot is wanted_distance from the ball.
         
@@ -517,7 +520,7 @@ class Ferenc:
             wanted_distance (float): Desired final stand-off distance in metres.
             starting_distance (float): Measured distance to the ball before closing.
             rate: A Rate object used to control loop timing.
-        
+            ball_return_closer_dist: how far from garage return point ferenc should stop
         Returns:
             float: The final computed distance to the ball after closing.
         """
@@ -539,7 +542,7 @@ class Ferenc:
             rate.sleep()
 
         self._stop_and_wait(rate)
-        self.return_distance += starting_distance - final_distance - RETURN_CLOSER_CONST
+        self.return_distance += starting_distance - final_distance - ball_return_closer_dist
         return final_distance
 
     def average_depth(self) -> Optional[float]:
