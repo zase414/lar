@@ -252,7 +252,7 @@ class Ferenc:
                 print("no measurement")
                 continue
 
-            while not turtle.is_shutting_down() and not self._handle_stop:
+            while not turtle.is_shutting_down() and not self._handle_stop():
                 (cx, _), _ = detect_balls(turtle)
                 dist = BALL_ROTATION_CAMERA_CENTER_X - cx
 
