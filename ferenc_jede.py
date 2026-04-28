@@ -307,7 +307,6 @@ class Ferenc:
 
         while not turtle.is_shutting_down():
             (center_x, center_y), radius = detect_ball(turtle)
-            print("Objekt vidim: ", center_x, center_y, radius)
 
             if consecutive_ignores == 10:
                 print("Object not seen")
@@ -383,7 +382,6 @@ class Ferenc:
         turtle.reset_odometry()
         rate.sleep()
         current_coords = turtle.get_odometry()
-        print("\nThis is final distance: ", final_dist)
         # hexagon trajectory
         points = self.calculate_points(final_dist, current_coords)
 
@@ -713,7 +711,6 @@ class Ferenc:
             rate.sleep()
             # rotates back toward garage
             angle = self.return_angle
-            print("angle it wants to rotate to garage: ", angle, "current angle: ", self._get_angle())
             self.rotate_to_angle(angle, rate)
             self.go_in(rate)
 
@@ -744,7 +741,7 @@ class Ferenc:
                     self.go_forward(angle, 0, dist_diff=None, prefered_lin_vel=diff*0.15)
                 else:
                     turtle.cmd_velocity(0,0)
-                    print("Ferenc is home :)")
+                    print("Ferenc je doma :)")
                     home_time = get_time()
                     while not turtle.is_shutting_down() and (get_time()-home_time)<4:
                         turtle.play_sound(HOME_SOUND)
