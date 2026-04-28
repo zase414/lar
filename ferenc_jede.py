@@ -216,12 +216,12 @@ class Ferenc:
 
     def rotate_toward_ball(self, rate) -> None:
         """
-        Rotate the robot until the detected ball is centered in the camera frame.
+        Rotates the robot until the center of ball is in BALL_ROTATION_CAMERA_CENTER_X within BALL_ROTATION_TOLERANCE_PIXEL_BAND.
         
-        Repeatedly detects the ball, averages several center-x readings,
-        computes the angular correction needed to center it, and applies P-regulated
-        rotation until the ball falls within the pixel tolerance band.
-        Saves the final heading as the return angle for later navigation.
+        Rotates at constant speed while camera can't see ball. When ball is saw it constantly rotates at 2 times of our minimal angular speed
+        this goes until the ball is in the right position, there is a slight chance of overshoot, due to increasing speed of rotation,
+        this is quickly solved by repeated measurement.
+        takes around 20-30 sec to center
         
         Args:
             rate: A Rate object used to control timing.
