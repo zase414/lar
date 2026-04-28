@@ -1,0 +1,382 @@
+% ============================================================
+%  Technická zpráva – šablona
+%  Robotika / Robolab, FEE ČVUT (nebo jiný ústav)
+%  Formát: A4, jednostranný tisk
+% ============================================================
+\documentclass[12pt, a4paper, oneside]{article}
+
+% ── Kódování a jazyk ─────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[czech]{babel}
+
+% ── Písmo ────────────────────────────────────────────────────
+\usepackage{lmodern}          % Moderní Latin Modern
+
+% ── Geometrie stránky ────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=25mm, bottom=25mm,
+  left=30mm, right=25mm
+]{geometry}
+
+% ── Matematika ───────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% ── Grafika a tabulky ────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{float}            % Přesné umístění obrázků [H]
+\usepackage{booktabs}         % Profesionální tabulky
+\usepackage{caption}
+\usepackage{subcaption}       % Vedlejší obrázky / tabulky
+
+% ── Kód a pseudokód ─────────────────────────────────────────
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{teal},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=6pt,
+  breaklines=true,
+  frame=single,
+  captionpos=b,
+  showstringspaces=false,
+}
+
+% ── Algoritmy ────────────────────────────────────────────────
+\usepackage[ruled, vlined, linesnumbered]{algorithm2e}
+\SetKwInput{KwIn}{Vstup}
+\SetKwInput{KwOut}{Výstup}
+
+% ── Hypertextové odkazy ──────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue
+]{hyperref}
+
+% ── Záhlaví a zápatí ────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\leftmark}
+\fancyhead[R]{\small Technická zpráva}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Řádkování ────────────────────────────────────────────────
+\usepackage{setspace}
+\onehalfspacing
+
+% ── Bibliografie ─────────────────────────────────────────────
+\usepackage[
+  backend=biber,
+  style=numeric,
+  sorting=none
+]{biblatex}
+\addbibresource{references.bib}   % Soubor s literaturou
+
+% ── Pomocné balíčky ──────────────────────────────────────────
+\usepackage{microtype}        % Lepší zalamování řádků
+\usepackage{parskip}          % Mezera mezi odstavci místo odsazení
+\usepackage{enumitem}         % Přizpůsobení seznamů
+
+% ============================================================
+%  VLASTNÍ PŘÍKAZY – vyplňte před tiskem
+% ============================================================
+\newcommand{\NazevPrace}{Autonomní robot Ferenc}
+\newcommand{\Autorka}{Jakub Kecek}
+\newcommand{\AutorB}{Václav Kučera}
+\newcommand{\AutorC}{Ondřej Vosáhlo}
+\newcommand{\DatumOdevzdani}{\today}
+\newcommand{\Ustav}{Fakulta elektrotechnická, ČVUT v Praze}
+
+% ============================================================
+\begin{document}
+
+% ── Titulní strana ───────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  {\Large \Ustav \par}
+  \vspace{0.5cm}
+  {\large \Predmet \par}
+
+  \vspace{3cm}
+
+  {\Huge \bfseries \NazevPrace \par}
+
+  \vspace{2cm}
+
+  {\large
+    \begin{tabular}{ll}
+      \textbf{Autoři:}   & \Autorka \\
+                         & \AutorB  \\
+                         & \AutorC  \\[6pt]
+      \textbf{Datum:}    & \DatumOdevzdani \\
+    \end{tabular}
+  }
+
+  \vfill
+
+  {\small Zpráva vysázena pomocí \LaTeX{} na stránkách formátu A4.}
+\end{titlepage}
+
+% ── Obsah ────────────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ============================================================
+%  1. POPIS PROBLÉMU
+% ============================================================
+\section{Popis řešeného problému}
+\label{sec:popis}
+
+% TODO: Stručně popište zadání úlohy. Co je cílem robota?
+%       Co musí robot detekovat, jaké úkony provést a v jakém pořadí?
+
+Robot \textit{Ferenc} má za úkol autonomně opustit garáž, lokalizovat míček
+v prostoru, objíždět jej po předdefinované trajektorii a poté se vrátit
+do výchozí pozice. Celý systém je implementován na platformě Turtlebot využitím RGB kamery a 3D hloubkového senzoru (point cloud).
+
+% ============================================================
+%  2. ROZBOR PROBLÉMU A NÁVRH ŘEŠENÍ (SPECIFIKACE)
+% ============================================================
+\section{Rozbor problému, návrh řešení a očekávaná funkčnost}
+\label{sec:specifikace}
+
+\subsection{Analýza vstupů a výstupů}
+
+% TODO: Popište, jaké senzory jsou k dispozici a jaké výstupy je třeba
+%       produkovat (příkazy rychlosti, navigační rozhodnutí apod.).
+
+\subsection{Dekompozice úlohy}
+
+Celou úlohu lze rozdělit do následujících kroků:
+
+\begin{enumerate}[label=\arabic*.]
+  \item Detekce výjezdu z garáže a vyjetí do volného prostoru.
+  \item Lokalizace míčku pomocí barevné segmentace v obraze kamery.
+  \item Přiblížení k míčku na požadovanou vzdálenost.
+  \item Objezd míčku po hexagonální trajektorii.
+  \item Návrat do výchozí pozice pomocí odometrické navigace.
+\end{enumerate}
+
+\subsection{Očekávaná funkčnost}
+
+% TODO: Popište, jak by měl hotový systém fungovat za ideálních podmínek.
+
+\subsection{Matematický popis a algoritmy}
+\label{sec:matematika}
+
+\subsubsection{Detekce míčku}
+
+Detekce je prováděna v barevném prostoru HSV. Pixel $(u, v)$ je označen jako
+součást míčku, platí-li:
+
+\begin{equation}
+  H_{\min} \le H(u,v) \le H_{\max}, \quad
+  S(u,v) \ge S_{\min}, \quad
+  V(u,v) \ge V_{\min}.
+  \label{eq:hsv_threshold}
+\end{equation}
+
+Kruhovitost každého nalezeného konturu $C$ je definována jako:
+
+\begin{equation}
+  \kappa(C) = \frac{4\pi \cdot A(C)}{P(C)^2},
+  \label{eq:circularity}
+\end{equation}
+
+kde $A(C)$ je plocha a $P(C)$ obvod konturu. Kontur je přijat jako míček,
+splňuje-li $\kappa(C) > \kappa_{\min}$.
+
+\subsubsection{Odhad vzdálenosti}
+
+Vzdálenost k míčku je odhadována ze středních hodnot hloubkového senzoru
+v okolí středu detekovaného konturu:
+
+\begin{equation}
+  d = \frac{1}{|W|} \sum_{(u,v)\in W} z(u,v),
+  \label{eq:depth_estimate}
+\end{equation}
+
+kde $W$ je okno velikosti $(2r+1) \times (2r+1)$ se středem v $(u_0, v_0)$
+a $r \in \{1, 2\}$ závisí na poloměru detekovaného míčku v pixelech.
+
+\subsubsection{PID regulátor otáčení}
+
+Úhlová odchylka $e_\theta(t)$ je regulována PID regulátorem:
+
+\begin{equation}
+  u(t) = K_p\, e_\theta(t)
+         + K_i \int_0^t e_\theta(\tau)\,\mathrm{d}\tau
+         + K_d \frac{\mathrm{d}e_\theta}{\mathrm{d}t}.
+  \label{eq:pid}
+\end{equation}
+
+Použité konstanty jsou $K_p = 2{,}1$, $K_i = 0{,}067$, $K_d = 0{,}18$.
+
+\subsubsection{Hexagonální trajektorie}
+
+Střed míčku v souřadnicích odometrie je označen jako $\mathbf{b} = (b_x, b_y)$.
+$i$-tý uzel hexagonu (pro $i = 0, 1, \ldots, 5$) leží na kružnici
+o poloměru $r_h = d_{\text{stop}} + r_{\text{míček}}$:
+
+\begin{equation}
+  \mathbf{w}_i = \mathbf{b} +
+    r_h \begin{pmatrix} \cos\!\left(\dfrac{i\pi}{3}\right) \\[4pt]
+                        \sin\!\left(\dfrac{i\pi}{3}\right) \end{pmatrix}.
+  \label{eq:hexagon}
+\end{equation}
+
+% ============================================================
+%  3. ZMĚNY SPECIFIKACE
+% ============================================================
+\section{Změny specifikace v průběhu řešení}
+\label{sec:zmeny}
+
+% TODO: Uveďte, co se od původního plánu změnilo, proč a jaký to mělo dopad.
+
+\begin{itemize}
+  \item \textbf{Změna~1:} \ldots
+  \item \textbf{Změna~2:} \ldots
+\end{itemize}
+
+% ============================================================
+%  4. IMPLEMENTACE
+% ============================================================
+\section{Implementace a způsob spuštění}
+\label{sec:implementace}
+
+\subsection{Struktura projektu}
+
+Projekt je rozdělen do tří modulů:
+
+\begin{description}
+  \item[\texttt{ferenc.py}] Hlavní řídicí logika robota – třída \texttt{Ferenc}.
+  \item[\texttt{visuals.py}] Detekce míčku a obdélníkových značek.
+  \item[\texttt{image\_processing.py}] Zpracování hloubkového obrazu a detekce volného prostoru.
+\end{description}
+
+\subsection{Způsob spuštění}
+
+% TODO: Doplňte konkrétní příkazy nebo kroky pro spuštění.
+
+Robot se spustí příkazem:
+
+\begin{lstlisting}[language=bash, caption={Spuštění robota.}]
+python3 ferenc.py
+\end{lstlisting}
+
+Vyžaduje prostředí \texttt{robolab\_turtlebot}, OpenCV a NumPy.
+
+% ============================================================
+%  5. EXPERIMENTÁLNÍ VÝSLEDKY
+% ============================================================
+\section{Experimentální výsledky}
+\label{sec:vysledky}
+
+% TODO: Doplňte tabulku s výsledky pro jednotlivé pokusy / scénáře.
+%       Uveďte podmínky experimentu (osvětlení, poloha míčku apod.).
+
+\begin{table}[H]
+  \centering
+  \caption{Výsledky experimentů – přiblížení k míčku a objezd.}
+  \label{tab:vysledky}
+  \begin{tabular}{ccccc}
+    \toprule
+    \textbf{Pokus} & \textbf{Vzdál. míčku [m]} & \textbf{Chyba zastavení [m]}
+                   & \textbf{Objezd dokončen} & \textbf{Návrat do garáže} \\
+    \midrule
+    1 & 1{,}20 & 0{,}03 & ano & ano \\
+    2 & 0{,}85 & 0{,}05 & ano & ne  \\
+    3 & 1{,}50 & 0{,}02 & ano & ano \\
+    % Doplňte další řádky dle potřeby
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ============================================================
+%  6. DISKUSE VÝSLEDKŮ
+% ============================================================
+\section{Diskuse výsledků}
+\label{sec:diskuse}
+
+% TODO: Zhodnoťte, co fungovalo dobře, kde nastávaly problémy.
+%       Co byste zlepšili s více čase a prostředky?
+
+\subsection{Silné stránky řešení}
+
+\subsection{Omezení a nedostatky}
+
+\subsection{Návrhy na zlepšení}
+
+Při větším objemu zdrojů by bylo vhodné:
+
+\begin{itemize}
+  \item Nahradit odometrický návrat lokalizací na základě simultánní lokalizace
+        a mapování (SLAM).
+  \item Implementovat robustnější detekci míčku pomocí hluboké neuronové sítě.
+  \item Přidat zpracování výjimek při kolizi s neočekávanou překážkou.
+\end{itemize}
+
+% ============================================================
+%  7. NÁVRH ÚLOHY PRO PŘÍŠTÍ ROK
+% ============================================================
+\section{Návrh úlohy pro příští rok}
+\label{sec:navrh}
+
+% TODO: Navrhněte rozšíření nebo alternativní zadání pro budoucí cvičení.
+
+% ============================================================
+%  8. LITERATURA
+% ============================================================
+\printbibliography[heading=bibintoc, title={Literatura}]
+
+% ============================================================
+%  9. PŘÍLOHY
+% ============================================================
+\appendix
+
+\section{Příloha A – Úplný zdrojový kód}
+\label{app:kod}
+
+% Příklad vložení části kódu přímo do zprávy.
+\begin{lstlisting}[language=Python, caption={Výpočet průměrné hloubky (zkráceno).}]
+def get_depth(turtle, center_x, center_y, radius):
+    if radius < 2:
+        return None
+    pc = turtle.get_point_cloud()
+    r = 1 if radius < 16 else 2
+    depths = [
+        float(pc[center_y + i][center_x + j][2])
+        for i in range(-r, r + 1)
+        for j in range(-r, r + 1)
+        if pc[center_y + i][center_x + j][2] is not None
+        and float(pc[center_y + i][center_x + j][2]) > 0.1
+    ]
+    return sum(depths) / len(depths) if depths else None
+\end{lstlisting}
+
+\section{Příloha B – Fotografie z experimentu}
+\label{app:foto}
+
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.7\textwidth]{foto_experiment.jpg}
+%   \caption{Robot Ferenc při objezdu míčku.}
+%   \label{fig:foto}
+% \end{figure}
+
+\end{document}
