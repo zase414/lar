@@ -264,7 +264,7 @@ class Ferenc:
                 dist = BALL_ROTATION_CAMERA_CENTER_X - cx
                 print("measured pixel: ",cx)
 
-                if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND:
+                if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND or cx == 0:
                     break
 
                 if dist > 0:
