@@ -143,7 +143,7 @@ class Ferenc:
         if(distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT):
             space_detect_time = get_time()
             self.exit_garage(rate, space_detect_time)
-            final_ball_distance = 0.32  # 32 cm before ball stop
+            final_ball_distance = 0.31  # 31 cm before ball stop
         else:
             final_ball_distance = 0.28
             print("skipping exit garage function")
@@ -885,6 +885,10 @@ class Ferenc:
                 else:
                     turtle.cmd_velocity(0,0)
                     print("Ferenc is home :)")
+                    home_time = get_time()
+                    while not turtle.is_shutting_down() and (get_time()-home_time)<1:
+                        turtle.play_sound(2)
+                        rate.sleep()
                     break
             rate.sleep()
 
