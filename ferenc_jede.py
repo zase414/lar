@@ -5,11 +5,10 @@ from __future__ import print_function
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from math import pi, cos, sqrt, sin, atan2
 from typing import Optional, Tuple, List
-import cv2
 
 from image_proccesing import space_infront, get_depth
 from callbacks import callback_bumper_stop, callback_button0_resume
-from visuals import detect_balls, detect_rectangles
+from visuals import detect_ball
 
 BALL_DISTANCE_TO_SKIP_EXIT = 0.7
 
@@ -230,7 +229,7 @@ class Ferenc:
         rate.sleep()
 
         while not turtle.is_shutting_down():
-            (center_x, _), _ = detect_balls(turtle)
+            (center_x, _), _ = detect_ball(turtle)
 
             if self._handle_stop():
                 continue
@@ -247,7 +246,7 @@ class Ferenc:
 
             measurements = []
             for _ in range(5):
-                (cx, _), _ = detect_balls(turtle)
+                (cx, _), _ = detect_ball(turtle)
                 if cx != 0: #append only non zero values
                     print("measured pixels: ",cx)
                     measurements.append(cx)
@@ -264,7 +263,7 @@ class Ferenc:
                 break
 
             while not turtle.is_shutting_down() and not self._handle_stop():
-                (cx, _), _ = detect_balls(turtle)
+                (cx, _), _ = detect_ball(turtle)
                 dist = BALL_ROTATION_CAMERA_CENTER_X - cx
                 print("measured pixel: ",cx)
 
@@ -307,7 +306,7 @@ class Ferenc:
         rate.sleep()
 
         while not turtle.is_shutting_down():
-            (center_x, center_y), radius = detect_balls(turtle)
+            (center_x, center_y), radius = detect_ball(turtle)
             print("Objekt vidim: ", center_x, center_y, radius)
 
             if consecutive_ignores == 10:
@@ -347,7 +346,7 @@ class Ferenc:
         # reset params
         self._stop_and_wait(rate)
 
-        (center_x, center_y), radius = detect_balls(turtle)
+        (center_x, center_y), radius = detect_ball(turtle)
         dist = get_depth(turtle, center_x, center_y, radius)
         if dist is None:
             print("NO DISTANCE!!!")
@@ -558,7 +557,7 @@ class Ferenc:
         distance_sum = 0
         avg_den = 0
         for i in range(3):
-            (center_x, center_y), radius = detect_balls(turtle)
+            (center_x, center_y), radius = detect_ball(turtle)
             dist = get_depth(turtle, center_x, center_y, radius)
             if dist is None:
                 continue
