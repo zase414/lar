@@ -1,7 +1,5 @@
 from __future__ import print_function
 
-from enums import depth_ERR
-
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from scipy.io import savemat
 from typing import Optional
@@ -99,9 +97,7 @@ def get_depth(turtle, center_x, center_y, radius) -> Optional[float]:
                         val_count += 1
 
     if val_count == 0:
-        print("Objekt je příliš blízko. Žádná data.")
         return None
         
     average_depth = depth_sum / val_count
-    print(f"Objekt je daleko: {average_depth:.2f} m")
     return average_depth

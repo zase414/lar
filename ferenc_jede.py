@@ -6,9 +6,8 @@ from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from math import pi, cos, sqrt, sin, atan2
 from typing import Optional, Tuple, List
 
-from image_proccesing import space_infront, get_depth
 from callbacks import callback_bumper_stop, callback_button0_resume
-from visuals import detect_ball
+from visuals import detect_ball, space_infront, get_depth
 
 BALL_DISTANCE_TO_SKIP_EXIT = 0.7
 
@@ -146,7 +145,7 @@ class Ferenc:
             space_detect_time = get_time()
             self.exit_garage(rate, space_detect_time)
         else:
-            print("skipping exit garage function")
+            print("Přeskočení funkce povyjetí z garáže")
 
         ## find and ball turn on to it
         if not turtle.is_shutting_down():
@@ -248,7 +247,6 @@ class Ferenc:
             for _ in range(5):
                 (cx, _), _ = detect_ball(turtle)
                 if cx != 0: #append only non zero values
-                    print("measured pixels: ",cx)
                     measurements.append(cx)
 
             if not measurements:
@@ -265,7 +263,7 @@ class Ferenc:
             while not turtle.is_shutting_down() and not self._handle_stop():
                 (cx, _), _ = detect_ball(turtle)
                 dist = BALL_ROTATION_CAMERA_CENTER_X - cx
-                print("measured pixel: ",cx)
+                print("Pixel středu míčku: ",cx)
 
                 if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND or cx == 0:
                     break
@@ -378,6 +376,7 @@ class Ferenc:
             return
 
         final_dist = self.drive_closer(final_ball_dist, dist, rate)
+        print("Finální vzdálenost Ference od míčku je: ",final_dist)
 
         turtle.reset_odometry()
         rate.sleep()
