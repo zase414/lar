@@ -15,7 +15,7 @@ BALL_DISTANCE_TO_SKIP_EXIT = 0.7
 BALL_RADIUS = 0.041 # 4,1 cm
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
-BALL_ROTATION_CAMERA_CENTER_X = 332
+BALL_ROTATION_CAMERA_CENTER_X = 334
 BALL_ROTATION_ANGLE_THRESHOLD = 0.008
 
 PIXELS_TO_RAD = (29 / 320) * (pi/180)  # pixels to degrees  to radian conversion
@@ -134,6 +134,7 @@ class Ferenc:
         rate = Rate(10)
 
         # waiting for start button
+        print("Zmáčkněte tlačítko B0 pro start!")
         while not turtle.is_shutting_down() and not self.start:
             rate.sleep()
 
@@ -157,10 +158,9 @@ class Ferenc:
         distance = self.average_depth()
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.31  # 31 cm before ball stop
-
-        ## drives until ball is 54 cm infront of camera
-        if not turtle.is_shutting_down():
-            self.drive_toward_ball(rate, 0.54)
+            ## drives until ball is 54 cm infront of camera
+            if not turtle.is_shutting_down():
+                self.drive_toward_ball(rate, 0.54)
 
         if not turtle.is_shutting_down():
             self.drive_around_ball(rate, final_ball_distance)
