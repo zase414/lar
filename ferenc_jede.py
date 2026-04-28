@@ -150,7 +150,8 @@ class Ferenc:
 
         ## find and ball turn on to it
         if not turtle.is_shutting_down():
-            self.rotate_toward_ball(rate)
+            #self.rotate_toward_ball(rate)
+            self.rotate_toward_ball2(rate)
         ## drives until ball is 58 cm infront of camera
         if not turtle.is_shutting_down():
             self.drive_toward_ball(rate, 0.54)
