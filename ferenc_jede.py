@@ -208,6 +208,67 @@ class Ferenc:
 
         self._stop_and_wait(rate)
 
+    def rotate_toward_ball2(self, rate) -> None:
+        """
+        Rotate the robot until the detected ball is centered in the camera frame.
+        
+        Repeatedly detects the ball, averages several center-x readings,
+        computes the angular correction needed to center it, and applies P-regulated
+        rotation until the ball falls within the pixel tolerance band.
+        Saves the final heading as the return angle for later navigation.
+        
+        Args:
+            rate: A Rate object used to control timing.
+        """
+        turtle = self.turtle
+        turtle.reset_odometry()
+        rate.sleep()
+
+        while not turtle.is_shutting_down():
+            (center_x, _), _ = detect_balls(turtle)
+
+            if self._handle_stop():
+                continue
+
+            # sees nothing, rotate
+            if center_x == 0:
+                turtle.cmd_velocity(0, 0.5)
+                rate.sleep()
+                continue
+
+            # sees something - measure
+            turtle.cmd_velocity(0, 0)
+            rate.sleep()
+
+            measurements = []
+            for _ in range(5):
+                (cx, _), _ = detect_balls(turtle)
+                if cx != 0: #append only non zero values
+                    print("measured pixels: ",cx)
+                    measurements.append(cx)
+
+            if not measurements:
+                print("no measurement")
+                continue
+
+            while not turtle.is_shutting_down() and not self._handle_stop:
+                (cx, _), _ = detect_balls(turtle)
+                dist = BALL_ROTATION_CAMERA_CENTER_X - cx
+
+                if dist > 0:
+                    turtle.cmd_velocity(0, P_ANGULAR_MIN_SPEED)
+                else:
+                    turtle.cmd_velocity(0, -P_ANGULAR_MIN_SPEED)
+                rate.sleep()
+            
+        # reset params
+        self._stop_and_wait(rate)
+
+        # save this drive to robot
+        ball_angle = self._get_angle()
+        self.return_angle = -1*self.normalize_angle(ball_angle)
+
+
     def rotate_toward_ball(self, rate) -> None:
         """
         Rotate the robot until the detected ball is centered in the camera frame.
