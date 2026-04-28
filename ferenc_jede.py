@@ -38,6 +38,7 @@ RETURN_PID_KI = 0.0001
 RETURN_PID_KD = 0.001
 RETURN_TARGET_SCREEN_CENTER = 640 // 2
 RETURN_TARGET_DEPTH = 0.17
+RETURN_CLOSER_CONST = 0.054
 
 class Ferenc:
     
@@ -537,7 +538,7 @@ class Ferenc:
             rate.sleep()
 
         self._stop_and_wait(rate)
-        self.return_distance += starting_distance - final_distance - 0.04  # 4 cm
+        self.return_distance += starting_distance - final_distance - RETURN_CLOSER_CONST
         return final_distance
 
     def average_depth(self) -> Optional[float]:
