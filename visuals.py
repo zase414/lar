@@ -36,7 +36,7 @@ def main() -> None:
     rate = Rate(10)
 
     while True:
-        (center_x, _), _ = detect_balls(turtle=turtle)
+        (center_x, _), _ = detect_ball(turtle=turtle)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
@@ -55,7 +55,7 @@ def mouse_callback(event, x, y, flags, param) -> None:
         print(f"x:{x} y:{y} -> H:{h} S:{s} V:{v}")
 
 
-def detect_balls(turtle) -> Tuple[Tuple[int, int], int]:
+def detect_ball(turtle) -> Tuple[Tuple[int, int], int]:
     """Detects yellow/green balls in the robot's camera feed using HSV thresholding.
 
     Returns the centre pixel and radius of the most recently found circular contour.
