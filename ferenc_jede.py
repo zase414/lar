@@ -124,13 +124,6 @@ class Ferenc:
         and returning to the starting position.
         """
         turtle = self.turtle
-
-        # waiting for start button
-        while not turtle.is_shutting_down() and self.start:
-            continue
-
-        print("Ferenc jede!")
-
         turtle.wait_for_point_cloud()
 
         # initialize bumber and buttons
@@ -139,6 +132,12 @@ class Ferenc:
 
         # rate
         rate = Rate(10)
+
+        # waiting for start button
+        while not turtle.is_shutting_down() and self.start:
+            rate.sleep()
+
+        print("Ferenc jede!")
 
         # spin until robot finds garage exit
         self.find_exit(rate)
