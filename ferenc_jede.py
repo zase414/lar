@@ -537,7 +537,7 @@ class Ferenc:
             rate.sleep()
 
         self._stop_and_wait(rate)
-        self.return_distance += starting_distance - final_distance - 0.05  # 5 cm
+        self.return_distance += starting_distance - final_distance - 0.04  # 4 cm
         return final_distance
 
     def average_depth(self) -> Optional[float]:
