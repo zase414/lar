@@ -17,16 +17,16 @@ BALL_DISTANCE_TO_SKIP_EXIT = 0.7
 BALL_RADIUS = 0.041 # 4,1 cm
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
-BALL_ROTATION_CAMERA_CENTER_X = 330
-BALL_ROTATION_ANGLE_THRESHOLD = 0.01
+BALL_ROTATION_CAMERA_CENTER_X = 332
+BALL_ROTATION_ANGLE_THRESHOLD = 0.008
 
 PIXELS_TO_RAD = (29 / 320) * (pi/180)  # pixels to degrees  to radian conversion
 
 BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
 BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
 
-P_ANGULAR_MAX_SPEED = 0.7
-P_ANGULAR_MIN_SPEED = 0.075
+P_ANGULAR_MAX_SPEED = 0.6
+P_ANGULAR_MIN_SPEED = 0.085
 
 P_ANGULAR_KP = 2.25
 P_ANGULAR_KI = 0.075
@@ -238,7 +238,7 @@ class Ferenc:
 
             # sees nothing, rotate
             if center_x == 0:
-                turtle.cmd_velocity(0, 0.5)
+                turtle.cmd_velocity(0, P_ANGULAR_MAX_SPEED)
                 rate.sleep()
                 continue
 
@@ -273,9 +273,9 @@ class Ferenc:
                     break
 
                 if dist > 0:
-                    turtle.cmd_velocity(0, 2*P_ANGULAR_MIN_SPEED)
+                    turtle.cmd_velocity(0, 2.5*P_ANGULAR_MIN_SPEED)
                 else:
-                    turtle.cmd_velocity(0, -2* P_ANGULAR_MIN_SPEED)
+                    turtle.cmd_velocity(0, -2.5* P_ANGULAR_MIN_SPEED)
                 rate.sleep()
             
         # reset params
