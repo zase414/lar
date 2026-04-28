@@ -895,8 +895,8 @@ class Ferenc:
                     turtle.cmd_velocity(0,0)
                     print("Ferenc is home :)")
                     home_time = get_time()
-                    while not turtle.is_shutting_down() and (get_time()-home_time)<1:
-                        turtle.play_sound(2)
+                    while not turtle.is_shutting_down() and (get_time()-home_time)<4:
+                        turtle.play_sound(3)
                         rate.sleep()
                     break
             rate.sleep()
