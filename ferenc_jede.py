@@ -204,7 +204,7 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
-        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 2):
+        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 2.1):
             if self._handle_stop():
                 continue
             else:
