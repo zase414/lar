@@ -9,6 +9,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[czech]{babel}
+\usepackage{fontspec}
+\usepackage{icomma}
 
 % ── Písmo ────────────────────────────────────────────────────
 \usepackage{lmodern}          % Moderní Latin Modern
@@ -110,7 +112,6 @@
 
   {\Large \Ustav \par}
   \vspace{0.5cm}
-  {\large \Predmet \par}
 
   \vspace{3cm}
 
@@ -127,6 +128,9 @@
     \end{tabular}
   }
 
+  \vspace{1cm}
+  \textcolor{red}{\textbf{[NEDOSTATEK:]} Podle Wiki LAR musí být u autorů (nebo v samostatné sekci) explicitně uvedeno \textbf{rozdělení práce}. Kdo dělal detekci, kdo navigaci, kdo psal zprávu atd. Případně přidejte sloupec do tabulky nebo sekci pod autory.}
+
   \vfill
 
   {\small Zpráva vysázena pomocí \LaTeX{} na stránkách formátu A4.}
@@ -142,12 +146,11 @@
 \section{Popis řešeného problému}
 \label{sec:popis}
 
-% TODO: Stručně popište zadání úlohy. Co je cílem robota?
-%       Co musí robot detekovat, jaké úkony provést a v jakém pořadí?
-
 Robot \textit{Ferenc} má za úkol autonomně opustit garáž, lokalizovat míček
 v prostoru, objíždět jej po předdefinované trajektorii a poté se vrátit
 do výchozí pozice. Celý systém je implementován na platformě Turtlebot využitím RGB kamery a 3D hloubkového senzoru (point cloud).
+
+\textcolor{red}{\textbf{[POZNÁMKA:]} Zde je vhodné doplnit i informaci o \textbf{hardwarové konfiguraci} (např. zda jde o Turtlebot 2 nebo 3 a typ hloubkové kamery – RealSense/Kinect), což specifikace vyžaduje.}
 
 % ============================================================
 %  2. ROZBOR PROBLÉMU A NÁVRH ŘEŠENÍ (SPECIFIKACE)
@@ -156,9 +159,6 @@ do výchozí pozice. Celý systém je implementován na platformě Turtlebot vyu
 \label{sec:specifikace}
 
 \subsection{Analýza vstupů a výstupů}
-
-% TODO: Popište, jaké senzory jsou k dispozici a jaké výstupy je třeba
-%       produkovat (příkazy rychlosti, navigační rozhodnutí apod.).
 
 \subsection{Dekompozice úlohy}
 
@@ -174,32 +174,37 @@ Celou úlohu lze rozdělit do následujících kroků:
 
 \subsection{Očekávaná funkčnost}
 
-% TODO: Popište, jak by měl hotový systém fungovat za ideálních podmínek.
-
 \subsection{Matematický popis a algoritmy}
 \label{sec:matematika}
 
 \subsubsection{Detekce míčku}
 
-Detekce je prováděna v barevném prostoru HSV. Pixel $(u, v)$ je označen jako
-součást míčku, platí-li:
+Pro lokalizaci míčku je využita maska v barevném prostoru HSV, která je méně náchylná na změny intenzity osvětlení než prostor RGB. Cílem je izolovat pixely odpovídající žlutozelené barvě míčku.
 
-\begin{equation}
-  H_{\min} \le H(u,v) \le H_{\max}, \quad
-  S(u,v) \ge S_{\min}, \quad
-  V(u,v) \ge V_{\min}.
-  \label{eq:hsv_threshold}
-\end{equation}
+Algoritmus pracuje v následujících krocích:
+\begin{itemize}
+    \item \textbf{Prahování:} Obraz je transformován do binární masky na základě limitů $H \in [34, 65]$, $S \ge 50$ a $V \ge 40$.
+    \item \textbf{Morfologická filtrace:} Pro odstranění šumu (izolovaných pixelů) je aplikována operace \textit{opening} s jádrem $5\times5$.
+    \item \textbf{Geometrická filtrace:} V masce jsou nalezeny kontury. Aby byl objekt považován za míček, musí jeho plocha $A(C)$ překročit 120 px a kruhovitost $\kappa(C)$ musí být větší než 0,7.
+\end{itemize}
 
-Kruhovitost každého nalezeného konturu $C$ je definována jako:
-
+Kruhovitost je definována jako:
 \begin{equation}
   \kappa(C) = \frac{4\pi \cdot A(C)}{P(C)^2},
   \label{eq:circularity}
 \end{equation}
+kde $P(C)$ je obvod kontury. Pokud objekt podmínky splňuje, je jeho pozice v obraze určena jako střed nejmenší popsané kružnice.
 
-kde $A(C)$ je plocha a $P(C)$ obvod konturu. Kontur je přijat jako míček,
-splňuje-li $\kappa(C) > \kappa_{\min}$.
+\subsubsection{Detekce brány (nevyužito)}
+
+Původní návrh počítal s detekcí výjezdu z garáže (brány) pomocí dvou vertikálních modrých značek. Algoritmus byl navržen tak, aby identifikoval dva nejvíce vlevo umístěné objekty splňující specifické proporce.
+
+Klíčové parametry detekce:
+\begin{itemize}
+    \item \textbf{Barva:} Prahování v HSV pro modrou barvu ($H \in [110, 140]$, $S \ge 50$, $V \ge 40$).
+    \item \textbf{Tvar:} Detekované kontury musely mít plochu větší než 300 px a poměr výšky k šířce (aspect ratio) minimálně 1,5, což odpovídá vertikálně orientovanému obdélníku.
+    \item \textbf{Logika středu:} Po seřazení kandidátů podle souřadnice $x$ byl vypočten aritmetický střed mezi dvěma nejbližšími značkami, který definoval střed brány pro průjezd.
+\end{itemize}
 
 \subsubsection{Odhad vzdálenosti}
 
@@ -246,11 +251,11 @@ o poloměru $r_h = d_{\text{stop}} + r_{\text{míček}}$:
 \section{Změny specifikace v průběhu řešení}
 \label{sec:zmeny}
 
-% TODO: Uveďte, co se od původního plánu změnilo, proč a jaký to mělo dopad.
+V průběhu implementace a testování došlo k následujícím změnám oproti původnímu konceptu:
 
 \begin{itemize}
-  \item \textbf{Změna~1:} \ldots
-  \item \textbf{Změna~2:} \ldots
+  \item \textbf{Zájezd do garáže:} Přestože byl vyvinut funkční modul pro detekci fialových obdélníkových značek pomocí barevné segmentace a analýzy poměru stran, v konečné logice nebyl využit. Hlavním důvodem bylo zjištění, že pro úspěšný zájezd do garáže postačuje zapamatování odometrie. Detekce brány by byla spolehlivější, avšak musela by se vyvinout metoda jak dostat robota do osy brány garáže, aby robot nenarazil při zájezdu do bočních stěn.
+  \item \textbf{Úprava morfologie:} Původní jednoduché prahování bylo doplněno o morfologickou operaci opening, která se ukázala jako nezbytná pro stabilitu detekce míčku v prostředí s drobnými žlutými artefakty dřevotřískových stěn.
 \end{itemize}
 
 % ============================================================
@@ -269,9 +274,9 @@ Projekt je rozdělen do tří modulů:
   \item[\texttt{image\_processing.py}] Zpracování hloubkového obrazu a detekce volného prostoru.
 \end{description}
 
-\subsection{Způsob spuštění}
+\textcolor{red}{\textbf{[NEDOSTATEK:]} V této sekci chybí \textbf{popis konečného automatu (FSM)} nebo celkového toku řízení. LAR vyžaduje popsat, jak se robot přepíná mezi stavy (např. vyjíždění z garáže -> hledání -> objezd).}
 
-% TODO: Doplňte konkrétní příkazy nebo kroky pro spuštění.
+\subsection{Způsob spuštění}
 
 Robot se spustí příkazem:
 
@@ -287,9 +292,6 @@ Vyžaduje prostředí \texttt{robolab\_turtlebot}, OpenCV a NumPy.
 \section{Experimentální výsledky}
 \label{sec:vysledky}
 
-% TODO: Doplňte tabulku s výsledky pro jednotlivé pokusy / scénáře.
-%       Uveďte podmínky experimentu (osvětlení, poloha míčku apod.).
-
 \begin{table}[H]
   \centering
   \caption{Výsledky experimentů – přiblížení k míčku a objezd.}
@@ -297,24 +299,22 @@ Vyžaduje prostředí \texttt{robolab\_turtlebot}, OpenCV a NumPy.
   \begin{tabular}{ccccc}
     \toprule
     \textbf{Pokus} & \textbf{Vzdál. míčku [m]} & \textbf{Chyba zastavení [m]}
-                   & \textbf{Objezd dokončen} & \textbf{Návrat do garáže} \\
+                    & \textbf{Objezd dokončen} & \textbf{Návrat do garáže} \\
     \midrule
     1 & 1{,}20 & 0{,}03 & ano & ano \\
     2 & 0{,}85 & 0{,}05 & ano & ne  \\
     3 & 1{,}50 & 0{,}02 & ano & ano \\
-    % Doplňte další řádky dle potřeby
     \bottomrule
   \end{tabular}
 \end{table}
+
+\textcolor{red}{\textbf{[NEDOSTATEK:]} LAR vyžaduje \textbf{vizualizaci dat}. Do této sekce nebo přílohy byste měli přidat grafy (např. z odometrie) nebo snímky z kamery s vykreslenou detekcí míčku.}
 
 % ============================================================
 %  6. DISKUSE VÝSLEDKŮ
 % ============================================================
 \section{Diskuse výsledků}
 \label{sec:diskuse}
-
-% TODO: Zhodnoťte, co fungovalo dobře, kde nastávaly problémy.
-%       Co byste zlepšili s více čase a prostředky?
 
 \subsection{Silné stránky řešení}
 
@@ -337,8 +337,6 @@ Při větším objemu zdrojů by bylo vhodné:
 \section{Návrh úlohy pro příští rok}
 \label{sec:navrh}
 
-% TODO: Navrhněte rozšíření nebo alternativní zadání pro budoucí cvičení.
-
 % ============================================================
 %  8. LITERATURA
 % ============================================================
@@ -352,7 +350,6 @@ Při větším objemu zdrojů by bylo vhodné:
 \section{Příloha A – Úplný zdrojový kód}
 \label{app:kod}
 
-% Příklad vložení části kódu přímo do zprávy.
 \begin{lstlisting}[language=Python, caption={Výpočet průměrné hloubky (zkráceno).}]
 def get_depth(turtle, center_x, center_y, radius):
     if radius < 2:
@@ -371,12 +368,5 @@ def get_depth(turtle, center_x, center_y, radius):
 
 \section{Příloha B – Fotografie z experimentu}
 \label{app:foto}
-
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[width=0.7\textwidth]{foto_experiment.jpg}
-%   \caption{Robot Ferenc při objezdu míčku.}
-%   \label{fig:foto}
-% \end{figure}
 
 \end{document}
