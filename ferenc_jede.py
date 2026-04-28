@@ -10,6 +10,7 @@ from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth
 
 BALL_DISTANCE_TO_SKIP_EXIT = 0.72
+EXIT_GARAGE_DURATION = 2.67
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
@@ -157,12 +158,12 @@ class Ferenc:
         distance = self.average_depth()
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.31  # 31 cm before ball stop
-            ball_return_closer_dist = 0.04
+            ball_return_closer_dist = 0.035
             ## drives until ball is 55 cm infront of camera
             if not turtle.is_shutting_down():
                 self.drive_toward_ball(rate, 0.55)
         else:
-            ball_return_closer_dist = 0.03
+            ball_return_closer_dist = 0.025
 
         if not turtle.is_shutting_down():
             self.drive_around_ball(rate, final_ball_distance, ball_return_closer_dist)
@@ -206,7 +207,7 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
-        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < 2.4):
+        while (not turtle.is_shutting_down()) and (get_time() - space_detect_time < EXIT_GARAGE_DURATION):
             if self._handle_stop():
                 continue
             else:
