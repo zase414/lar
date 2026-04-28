@@ -216,7 +216,7 @@ class Ferenc:
         """
         Rotates the robot until the center of ball is in BALL_ROTATION_CAMERA_CENTER_X within BALL_ROTATION_TOLERANCE_PIXEL_BAND.
         
-        Rotates at constant speed while camera can't see ball. When ball is saw it constantly rotates at 2 times of our minimal angular speed
+        Rotates at constant speed while camera can't see ball. When ball is seen it constantly rotates at 2 times of our minimal angular speed
         this goes until the ball is in the right position, there is a slight chance of overshoot, due to increasing speed of rotation,
         this is quickly solved by repeated measurement.
         takes around 20-30 sec to center
