@@ -16,7 +16,7 @@ BALL_DISTANCE_TO_SKIP_EXIT = 0.7
 
 BALL_RADIUS = 0.041 # 4,1 cm
 
-BALL_ROTATION_TOLERANCE_PIXEL_BAND = 4
+BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
 BALL_ROTATION_CAMERA_CENTER_X = 330
 BALL_ROTATION_ANGLE_THRESHOLD = 0.01
 
@@ -252,11 +252,20 @@ class Ferenc:
                 print("no measurement")
                 continue
 
+            
+            avg_center = sum(measurements) / len(measurements)
+            dist = BALL_ROTATION_CAMERA_CENTER_X - avg_center
+
+            if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND:
+                break
+
             while not turtle.is_shutting_down() and not self._handle_stop():
                 (cx, _), _ = detect_balls(turtle)
                 dist = BALL_ROTATION_CAMERA_CENTER_X - cx
                 print("measured pixel: ",cx)
 
+                if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND:
+                    break
 
                 if dist > 0:
                     turtle.cmd_velocity(0, 2*P_ANGULAR_MIN_SPEED)
