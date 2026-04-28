@@ -255,11 +255,13 @@ class Ferenc:
             while not turtle.is_shutting_down() and not self._handle_stop():
                 (cx, _), _ = detect_balls(turtle)
                 dist = BALL_ROTATION_CAMERA_CENTER_X - cx
+                print("measured pixel: ",cx)
+
 
                 if dist > 0:
-                    turtle.cmd_velocity(0, P_ANGULAR_MIN_SPEED)
+                    turtle.cmd_velocity(0, 2*P_ANGULAR_MIN_SPEED)
                 else:
-                    turtle.cmd_velocity(0, -P_ANGULAR_MIN_SPEED)
+                    turtle.cmd_velocity(0, -2* P_ANGULAR_MIN_SPEED)
                 rate.sleep()
             
         # reset params
