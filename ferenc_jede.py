@@ -171,7 +171,7 @@ class Ferenc:
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
             if distance > 3:
-                ball_return_closer_dist = 0.07
+                ball_return_closer_dist = 0.058
             else:
                 ball_return_closer_dist = 0.035
             ## drives until ball is 60 cm infront of camera
