@@ -189,13 +189,14 @@ def space_infront(turtle) -> bool:
 
     # mask out floor points
     y = np.nan_to_num(pc[:, :, 1], nan=0.0, posinf=0.0, neginf=0.0)
+    z = np.nan_to_num(pc[:, :, 2], nan=0.0, posinf=0.0, neginf=0.0)
     mask = y < FLOOR_THRESHOLD
 
     # mask point too far
-    mask = np.logical_and(mask, pc[:, :, 2] < 3.5)
+    mask = np.logical_and(mask, z < 3.5)
 
-    mask = np.logical_and(mask, pc[:, :, 1] > -0.25)
-    data = np.sort(pc[:, :, 2][mask])
+    mask = np.logical_and(mask, y > -0.25)
+    data = np.sort(z[mask])
 
     # if closest SPACE_PERCENT_NEEDED percent of depth data is further than SPACE_METRES_INFRONT meters --> return True
     if data.size > SPACE_MASK_SIZE_NEEDED:
