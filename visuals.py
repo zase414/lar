@@ -188,6 +188,7 @@ def space_infront(turtle) -> bool:
         return False
 
     # mask out floor points
+    # used nan_to_num to prevent python NaN errors
     y = np.nan_to_num(pc[:, :, 1], nan=0.0, posinf=0.0, neginf=0.0)
     z = np.nan_to_num(pc[:, :, 2], nan=0.0, posinf=0.0, neginf=0.0)
     mask = y < FLOOR_THRESHOLD
