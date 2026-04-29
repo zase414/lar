@@ -149,14 +149,14 @@ class Ferenc:
 
         (cx, _), _ = detect_ball(turtle)
         rate.sleep()
-        dist = BALL_ROTATION_CAMERA_CENTER_X - cx
-        print("\n\n Vzdálenost míčku od Středu:",dist,"\nVzdálenost míčku od garáže:", cx,"\n")
+        center_dist = BALL_ROTATION_CAMERA_CENTER_X - cx
+        print("\n\n Vzdálenost míčku od Středu:",center_dist,"\nVzdálenost míčku od garáže:", distance,"\n")
         if distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             space_detect_time = get_time()
             self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION)
 
         else:
-            if abs(dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
+            if abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
                 space_detect_time = get_time()
                 print("Poloviční výjezd")
                 self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/2)
