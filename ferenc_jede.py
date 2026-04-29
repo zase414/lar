@@ -56,6 +56,7 @@ class Ferenc:
         self.return_distance = 0.0
         self.integral_error = 0.0
         self.previous_error = 0.0
+        self.distance = 0.0
 
     def _handle_stop(self) -> bool:
         """
@@ -145,13 +146,13 @@ class Ferenc:
         self.find_exit(rate)
 
         final_ball_distance = 0.28     # 28 cm before ball stop
-        distance = self.average_depth()
+        self.distance = self.average_depth()
 
         (cx, _), _ = detect_ball(turtle)
         rate.sleep()
         center_dist = BALL_ROTATION_CAMERA_CENTER_X - cx
-        print("\n\n Vzdálenost míčku od Středu:",center_dist,"\nVzdálenost míčku od garáže:", distance,"\n")
-        if distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT:
+        print("\n\n Vzdálenost míčku od Středu:",center_dist,"\nVzdálenost míčku od garáže:", self.distance,"\n")
+        if self.distance is None or self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             space_detect_time = get_time()
             self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION)
 
@@ -167,10 +168,10 @@ class Ferenc:
         if not turtle.is_shutting_down():
             self.rotate_toward_ball(rate)
 
-        distance = self.average_depth()
-        if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
+        self.distance = self.average_depth()
+        if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
-            if distance > 3:
+            if self.distance > 3:
                 ball_return_closer_dist = 0.06
             else:
                 ball_return_closer_dist = 0.035
@@ -527,6 +528,17 @@ class Ferenc:
         self._stop_and_wait(rate)
 
         if point_of_return:
+            (x, y, _) = turtle.get_odometry()
+            final_vector = (-x - self.distance, - y)
+
+            angle = math.atan2(final_vector[1], final_vector[0])
+
+            print("combinated error", x, y)
+            print("calculated final vector", final_vector)
+            print("calculated final angle", angle)
+            print("instead of angle", point[2])
+
+            #self.rotate_to_angle(angle, rate, point_of_return)
             self.rotate_to_angle(point[2], rate, point_of_return)
 
         self._stop_and_wait(rate)
