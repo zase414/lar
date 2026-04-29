@@ -18,7 +18,7 @@ EXIT_CENTER_TOLERANCE_PIXEL_BAND = 90
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
 BALL_ROTATION_CAMERA_CENTER_X = 334
-BALL_ROTATION_ANGLE_THRESHOLD = 0.007
+BALL_ROTATION_ANGLE_THRESHOLD = 0.0067
 
 PIXELS_TO_RAD = (29 / 320) * (pi/180)  # pixels to degrees  to radian conversion
 
@@ -171,7 +171,7 @@ class Ferenc:
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
             if distance > 3:
-                ball_return_closer_dist = 0.058
+                ball_return_closer_dist = 0.048
             else:
                 ball_return_closer_dist = 0.035
             ## drives until ball is 60 cm infront of camera
