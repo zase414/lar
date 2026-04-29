@@ -146,7 +146,9 @@ class Ferenc:
 
         final_ball_distance = 0.28
         distance = self.average_depth()
+
         (cx, _), _ = detect_ball(turtle)
+        rate.sleep()
         dist = BALL_ROTATION_CAMERA_CENTER_X - cx
         print("\n\n Vzdálenost míčku od Středu:",dist,"\nVzdálenost míčku od garáže:", cx,"\n")
         if distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT:
