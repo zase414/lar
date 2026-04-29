@@ -148,6 +148,7 @@ class Ferenc:
         distance = self.average_depth()
         (cx, _), _ = detect_ball(turtle)
         dist = BALL_ROTATION_CAMERA_CENTER_X - cx
+        print("\n\n Vzdálenost míčku:",dist,"\n\n")
         if distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             space_detect_time = get_time()
             self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION)
