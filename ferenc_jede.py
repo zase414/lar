@@ -9,12 +9,12 @@ from typing import Optional, Tuple, List
 from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth
 
-BALL_DISTANCE_TO_SKIP_EXIT = 0.8
+BALL_DISTANCE_TO_SKIP_EXIT = 0.82
 EXIT_GARAGE_DURATION = 2.67
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
-EXIT_CENTER_TOLERANCE_PIXEL_BAND = 100
+EXIT_CENTER_TOLERANCE_PIXEL_BAND = 120
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
 BALL_ROTATION_CAMERA_CENTER_X = 334
@@ -144,7 +144,7 @@ class Ferenc:
         # spin until robot finds garage exit
         self.find_exit(rate)
 
-        final_ball_distance = 0.282
+        final_ball_distance = 0.282     # 28,2 cm before ball stop
         distance = self.average_depth()
 
         (cx, _), _ = detect_ball(turtle)
@@ -169,7 +169,7 @@ class Ferenc:
 
         distance = self.average_depth()
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
-            final_ball_distance = 0.31  # 31 cm before ball stop
+            final_ball_distance = 0.302  # 30,2 cm before ball stop
             ball_return_closer_dist = 0.037
             ## drives until ball is 60 cm infront of camera
             if not turtle.is_shutting_down():
