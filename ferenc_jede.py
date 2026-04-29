@@ -764,8 +764,8 @@ class Ferenc:
         rate.sleep()
         TARGET_X = 640 // 2
         TARGET_DEPTH = 0.2
+        angle = self._get_angle()
         while not turtle.is_shutting_down():
-            angle = self._get_angle()
             if self._handle_stop():
                 continue
             else:
