@@ -188,8 +188,8 @@ def space_infront(turtle) -> bool:
         return False
 
     # mask out floor points
-    y = pc[:, :, 1]
-    mask = np.isfinite(y) & (y < FLOOR_THRESHOLD)
+    y = np.nan_to_num(pc[:, :, 1], nan=0.0, posinf=0.0, neginf=0.0)
+    mask = y < FLOOR_THRESHOLD
 
     # mask point too far
     mask = np.logical_and(mask, pc[:, :, 2] < 3.5)
