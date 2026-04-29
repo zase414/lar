@@ -10,7 +10,7 @@ from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth
 
 BALL_DISTANCE_TO_SKIP_EXIT = 0.82
-EXIT_GARAGE_DURATION = 2.7
+EXIT_GARAGE_DURATION = 3
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
@@ -159,7 +159,7 @@ class Ferenc:
             if abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
                 space_detect_time = get_time()
                 print("Poloviční výjezd")
-                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/1.8)
+                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/2)
             else:
                 print("Přeskočení funkce povyjetí z garáže")
 
@@ -171,9 +171,9 @@ class Ferenc:
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
             if distance > 3:
-                ball_return_closer_dist = 0.06
+                ball_return_closer_dist = 0.05
             else:
-                ball_return_closer_dist = 0.035
+                ball_return_closer_dist = 0.03
             ## drives until ball is 60 cm infront of camera
             if not turtle.is_shutting_down():
                 self.drive_toward_ball(rate, 0.58)
@@ -661,7 +661,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
         if point_of_return:
-            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.3
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.4
         else:
             threshold = BALL_ROTATION_ANGLE_THRESHOLD
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
