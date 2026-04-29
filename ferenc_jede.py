@@ -505,7 +505,7 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.5, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.2, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
