@@ -10,7 +10,7 @@ from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth
 
 BALL_DISTANCE_TO_SKIP_EXIT = 0.82
-EXIT_GARAGE_DURATION = 3
+EXIT_GARAGE_DURATION = 3.2
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
@@ -26,7 +26,7 @@ BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
 BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
 
 P_ANGULAR_MAX_SPEED = 0.6
-P_ANGULAR_MIN_SPEED = 0.065
+P_ANGULAR_MIN_SPEED = 0.06
 
 P_ANGULAR_KP = 2.25
 P_ANGULAR_KI = 0.08
@@ -661,7 +661,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
         if point_of_return:
-            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.3
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.25
         else:
             threshold = BALL_ROTATION_ANGLE_THRESHOLD
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
@@ -764,8 +764,8 @@ class Ferenc:
         rate.sleep()
         TARGET_X = 640 // 2
         TARGET_DEPTH = 0.2
-        angle = self._get_angle()
         while not turtle.is_shutting_down():
+            angle = self._get_angle()
             if self._handle_stop():
                 continue
             else:
