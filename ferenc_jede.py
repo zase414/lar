@@ -171,7 +171,7 @@ class Ferenc:
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
             if distance > 3:
-                ball_return_closer_dist = 0.055
+                ball_return_closer_dist = 0.06
             else:
                 ball_return_closer_dist = 0.035
             ## drives until ball is 60 cm infront of camera
@@ -661,7 +661,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
         if point_of_return:
-            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.5
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.3
         else:
             threshold = BALL_ROTATION_ANGLE_THRESHOLD
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
