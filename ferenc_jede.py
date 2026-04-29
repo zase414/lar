@@ -508,7 +508,7 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                self.go_forward(cur_coords[2], initial_angle, abs(d)*1.3, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], initial_angle, abs(d)*1.5, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -634,7 +634,7 @@ class Ferenc:
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.2
+        max_speed = 0.19
         Kp_lin = 0.38
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
