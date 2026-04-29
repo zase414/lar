@@ -774,7 +774,6 @@ class Ferenc:
         turtle.reset_odometry()
         rate.sleep()
         rate.sleep()
-        TARGET_X = 640 // 2
         TARGET_DEPTH = 0.2
         while not turtle.is_shutting_down():
             if self._handle_stop():
