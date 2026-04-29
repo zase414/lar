@@ -12,7 +12,6 @@ from visuals import detect_ball, space_infront, get_depth
 BALL_DISTANCE_TO_SKIP_EXIT = 0.82
 EXIT_GARAGE_DURATION = 3.2
 
-
 BALL_RADIUS = 0.041 # 4,1 cm
 EXIT_CENTER_TOLERANCE_PIXEL_BAND = 90
 
@@ -171,15 +170,15 @@ class Ferenc:
         self.distance = self.average_depth()
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
-            if distance > 3:
-                ball_return_closer_dist = 0.015
+            if self.distance > 3:
+                ball_return_closer_dist = 0.03
             else:
-                ball_return_closer_dist = 0.01
+                ball_return_closer_dist = 0.02
             ## drives until ball is 58 cm infront of camera
             if not turtle.is_shutting_down():
                 self.drive_toward_ball(rate, 0.58)
         else:
-            ball_return_closer_dist = 0.005
+            ball_return_closer_dist = 0.01
 
         if not turtle.is_shutting_down():
             self.drive_around_ball(rate, final_ball_distance, ball_return_closer_dist)
@@ -509,7 +508,7 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                self.go_forward(cur_coords[2], initial_angle, abs(d)*1.5, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], initial_angle, abs(d)*1.75, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
@@ -531,15 +530,15 @@ class Ferenc:
             (x, y, _) = turtle.get_odometry()
             final_vector = (-x - self.distance, - y)
 
-            angle = math.atan2(final_vector[1], final_vector[0])
+            angle = atan2(final_vector[1], final_vector[0])
 
             print("combinated error", x, y)
             print("calculated final vector", final_vector)
             print("calculated final angle", angle)
-            print("instead of angle", point[2])
+            print("instead of angle", self.normalize_angle(point[2]))
 
-            #self.rotate_to_angle(angle, rate, point_of_return)
-            self.rotate_to_angle(point[2], rate, point_of_return)
+            self.rotate_to_angle(angle, rate, point_of_return)
+            #self.rotate_to_angle(point[2], rate, point_of_return)
 
         self._stop_and_wait(rate)
 
