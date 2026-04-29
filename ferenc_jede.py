@@ -495,7 +495,7 @@ class Ferenc:
         angle = atan2(y, x)
 
         # while ferenc is not rotated at the calculated angle -> rotate
-        self.rotate_to_angle(angle, rate, point_of_return)
+        self.rotate_to_angle(angle, rate, point_of_return=False)
 
         # reset params
         turtle.cmd_velocity(0, 0)
