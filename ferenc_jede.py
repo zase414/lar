@@ -175,7 +175,7 @@ class Ferenc:
             if not turtle.is_shutting_down():
                 self.drive_toward_ball(rate, 0.58)
         else:
-            ball_return_closer_dist = 0.025
+            ball_return_closer_dist = 0.02
 
         if not turtle.is_shutting_down():
             self.drive_around_ball(rate, final_ball_distance, ball_return_closer_dist)
