@@ -144,7 +144,7 @@ class Ferenc:
         # spin until robot finds garage exit
         self.find_exit(rate)
 
-        final_ball_distance = 0.28
+        final_ball_distance = 0.282
         distance = self.average_depth()
 
         (cx, _), _ = detect_ball(turtle)
