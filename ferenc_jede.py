@@ -26,7 +26,7 @@ BALL_APPROACH_DISTANCE_TOLERANCE = 0.04 # 4cm
 BALL_APPROACH_CONSECUTIVE_READS_NEEDED = 2
 
 P_ANGULAR_MAX_SPEED = 0.6
-P_ANGULAR_MIN_SPEED = 0.085
+P_ANGULAR_MIN_SPEED = 0.065
 
 P_ANGULAR_KP = 2.25
 P_ANGULAR_KI = 0.08
@@ -298,9 +298,9 @@ class Ferenc:
                     consecutive_ignores = 0
 
                 if dist > 0:
-                    turtle.cmd_velocity(0, 2.5*P_ANGULAR_MIN_SPEED)
+                    turtle.cmd_velocity(0, 3*P_ANGULAR_MIN_SPEED)
                 else:
-                    turtle.cmd_velocity(0, -2.5* P_ANGULAR_MIN_SPEED)
+                    turtle.cmd_velocity(0, -3* P_ANGULAR_MIN_SPEED)
                 rate.sleep()
             
         # reset params
@@ -661,7 +661,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
         if point_of_return:
-            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.4
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.3
         else:
             threshold = BALL_ROTATION_ANGLE_THRESHOLD
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
