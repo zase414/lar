@@ -171,7 +171,7 @@ class Ferenc:
         self.distance = self.average_depth()
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
-            if distance > 3:
+            if self.distance > 3:
                 ball_return_closer_dist = 0.015
             else:
                 ball_return_closer_dist = 0.01
@@ -531,7 +531,7 @@ class Ferenc:
             (x, y, _) = turtle.get_odometry()
             final_vector = (-x - self.distance, - y)
 
-            angle = math.atan2(final_vector[1], final_vector[0])
+            angle = atan2(final_vector[1], final_vector[0])
 
             print("combinated error", x, y)
             print("calculated final vector", final_vector)
