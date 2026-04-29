@@ -10,7 +10,7 @@ from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth
 
 BALL_DISTANCE_TO_SKIP_EXIT = 0.82
-EXIT_GARAGE_DURATION = 2.67
+EXIT_GARAGE_DURATION = 2.7
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
@@ -159,7 +159,7 @@ class Ferenc:
             if abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
                 space_detect_time = get_time()
                 print("Poloviční výjezd")
-                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/2)
+                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/1.9)
             else:
                 print("Přeskočení funkce povyjetí z garáže")
 
