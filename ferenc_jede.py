@@ -18,7 +18,7 @@ EXIT_CENTER_TOLERANCE_PIXEL_BAND = 90
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
 BALL_ROTATION_CAMERA_CENTER_X = 334
-BALL_ROTATION_ANGLE_THRESHOLD = 0.004
+BALL_ROTATION_ANGLE_THRESHOLD = 0.0075
 
 PIXELS_TO_RAD = (29 / 320) * (pi/180)  # pixels to degrees  to radian conversion
 
@@ -631,7 +631,7 @@ class Ferenc:
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.21
+        max_speed = 0.2
         Kp_lin = 0.38
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
