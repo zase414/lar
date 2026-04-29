@@ -498,7 +498,7 @@ class Ferenc:
         self.rotate_to_angle(angle, rate)
 
         # reset params
-        turtle.cmd_velocity(0, 0)
+        self._stop_and_wait(rate)
 
         # while ferenc is not located at x,y coords, drive forward:
         cur_coords = turtle.get_odometry()
