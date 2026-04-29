@@ -159,9 +159,9 @@ class Ferenc:
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.31  # 31 cm before ball stop
             ball_return_closer_dist = 0.037
-            ## drives until ball is 55 cm infront of camera
+            ## drives until ball is 60 cm infront of camera
             if not turtle.is_shutting_down():
-                self.drive_toward_ball(rate, 0.58)
+                self.drive_toward_ball(rate, 0.6)
         else:
             ball_return_closer_dist = 0.027
 
@@ -186,7 +186,7 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                turtle.cmd_velocity(0, 0.37)
+                turtle.cmd_velocity(0, 0.4)
             space = space_infront(turtle=turtle)
             rate.sleep()
 
@@ -351,7 +351,7 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                self.go_forward(self._get_angle(), 0, abs(diff)*0.65, prefered_lin_vel=None)
+                self.go_forward(self._get_angle(), 0, abs(diff)*0.6, prefered_lin_vel=None)
                 rate.sleep()
 
         # reset params
@@ -619,7 +619,7 @@ class Ferenc:
         angular_velocity = Kp_ang * angle_diff
 
         # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.23
+        max_speed = 0.25
         Kp_lin = 0.38
         if dist_diff is None and prefered_lin_vel is not None:
             lin_velocity = prefered_lin_vel
