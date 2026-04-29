@@ -185,6 +185,7 @@ def space_infront(turtle) -> bool:
     pc = turtle.get_point_cloud()
     if pc is None:
         print('No point cloud')
+        return False
 
     # mask out floor points
     mask = pc[:, :, 1] < FLOOR_THRESHOLD
