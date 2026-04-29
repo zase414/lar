@@ -278,6 +278,7 @@ class Ferenc:
                     consecutive_ignores += 1
                     if consecutive_ignores == 5:
                         break
+                    continue
                 else:
                     consecutive_ignores = 0
 
