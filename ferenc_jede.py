@@ -14,7 +14,7 @@ EXIT_GARAGE_DURATION = 2.67
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
-EXIT_CENTER_TOLERANCE_PIXEL_BAND = 45
+EXIT_CENTER_TOLERANCE_PIXEL_BAND = 90
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
 BALL_ROTATION_CAMERA_CENTER_X = 334
@@ -159,7 +159,7 @@ class Ferenc:
             if abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
                 space_detect_time = get_time()
                 print("Poloviční výjezd")
-                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/2)
+                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/2.5)
             else:
                 print("Přeskočení funkce povyjetí z garáže")
 
