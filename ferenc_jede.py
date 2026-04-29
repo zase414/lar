@@ -18,7 +18,7 @@ EXIT_CENTER_TOLERANCE_PIXEL_BAND = 90
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
 BALL_ROTATION_CAMERA_CENTER_X = 334
-BALL_ROTATION_ANGLE_THRESHOLD = 0.008
+BALL_ROTATION_ANGLE_THRESHOLD = 0.004
 
 PIXELS_TO_RAD = (29 / 320) * (pi/180)  # pixels to degrees  to radian conversion
 
@@ -170,7 +170,7 @@ class Ferenc:
         distance = self.average_depth()
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.305  # 30,5 cm before ball stop
-            ball_return_closer_dist = 0.04
+            ball_return_closer_dist = 0.042
             ## drives until ball is 60 cm infront of camera
             if not turtle.is_shutting_down():
                 self.drive_toward_ball(rate, 0.58)
@@ -505,7 +505,7 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.2, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], initial_angle, abs(d)*2.1, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
