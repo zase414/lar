@@ -29,7 +29,7 @@ P_ANGULAR_MAX_SPEED = 0.6
 P_ANGULAR_MIN_SPEED = 0.085
 
 P_ANGULAR_KP = 2.25
-P_ANGULAR_KI = 0.075
+P_ANGULAR_KI = 0.08
 P_ANGULAR_KD = 0.21
 MAX_I_TERM = 0.2
 
@@ -171,7 +171,7 @@ class Ferenc:
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
             if distance > 3:
-                ball_return_closer_dist = 0.058
+                ball_return_closer_dist = 0.06
             else:
                 ball_return_closer_dist = 0.035
             ## drives until ball is 60 cm infront of camera
@@ -495,7 +495,7 @@ class Ferenc:
         angle = atan2(y, x)
 
         # while ferenc is not rotated at the calculated angle -> rotate
-        self.rotate_to_angle(angle, rate)
+        self.rotate_to_angle(angle, rate, point_of_return=False)
 
         # reset params
         self._stop_and_wait(rate)
@@ -527,7 +527,7 @@ class Ferenc:
         self._stop_and_wait(rate)
 
         if point_of_return:
-            self.rotate_to_angle(point[2], rate)
+            self.rotate_to_angle(point[2], rate, point_of_return)
 
         self._stop_and_wait(rate)
 
@@ -645,7 +645,7 @@ class Ferenc:
         lin_velocity = min(lin_velocity, max_speed)   # limit max speed
         turtle.cmd_velocity(lin_velocity, angular_velocity)
 
-    def rotate_to_angle(self, angle, rate):
+    def rotate_to_angle(self, angle, rate, point_of_return):
         """
         Rotate in place until the robot's heading matches the target angle.
         
@@ -655,11 +655,16 @@ class Ferenc:
         Args:
             angle (float): Target heading in radians.
             rate: A Rate object used to control loop timing.
+            point_of_return: If it is final point of hexagon
         """
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
-        while (not turtle.is_shutting_down()) and (abs(angle_diff) > BALL_ROTATION_ANGLE_THRESHOLD):
+        if point_of_return:
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.3
+        else:
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD
+        while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
             if self._handle_stop():
                 continue
             else:
@@ -740,7 +745,7 @@ class Ferenc:
             rate.sleep()
             # rotates back toward garage
             angle = self.return_angle
-            self.rotate_to_angle(angle, rate)
+            self.rotate_to_angle(angle, rate, point_of_return=False)
             self.go_in(rate)
 
     def go_in(self, rate):
@@ -772,7 +777,7 @@ class Ferenc:
                     turtle.cmd_velocity(0,0)
                     print("Ferenc je doma :)")
                     home_time = get_time()
-                    while not turtle.is_shutting_down() and (get_time()-home_time)<2:
+                    while not turtle.is_shutting_down() and (get_time()-home_time)<1:
                         turtle.play_sound(HOME_SOUND)
                         rate.sleep()
                     break
