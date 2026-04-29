@@ -9,7 +9,7 @@ from typing import Optional, Tuple, List
 from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth
 
-BALL_DISTANCE_TO_SKIP_EXIT = 0.72
+BALL_DISTANCE_TO_SKIP_EXIT = 0.7
 EXIT_GARAGE_DURATION = 2.67
 
 
