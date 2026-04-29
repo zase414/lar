@@ -538,8 +538,8 @@ class Ferenc:
             print("calculated final angle", angle)
             print("instead of angle", point[2])
 
-            #self.rotate_to_angle(angle, rate, point_of_return)
-            self.rotate_to_angle(point[2], rate, point_of_return)
+            self.rotate_to_angle(angle, rate, point_of_return)
+            #self.rotate_to_angle(point[2], rate, point_of_return)
 
         self._stop_and_wait(rate)
 
