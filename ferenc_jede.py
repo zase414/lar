@@ -265,13 +265,21 @@ class Ferenc:
             if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND:
                 break
 
+            consecutive_ignores = 0
             while not turtle.is_shutting_down() and not self._handle_stop():
                 (cx, _), _ = detect_ball(turtle)
                 dist = BALL_ROTATION_CAMERA_CENTER_X - cx
                 print("Pixel středu míčku: ",cx)
 
-                if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND or cx == 0:
+                if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND:
                     break
+
+                if cx == 0:
+                    consecutive_ignores += 1
+                    if consecutive_ignores == 5:
+                        break
+                else:
+                    consecutive_ignores = 0
 
                 if dist > 0:
                     turtle.cmd_velocity(0, 2.5*P_ANGULAR_MIN_SPEED)
