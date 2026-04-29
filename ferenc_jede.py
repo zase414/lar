@@ -781,7 +781,7 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                center_depth = get_depth(turtle, TARGET_X, 240, 2)
+                center_depth = get_depth(turtle, BALL_ROTATION_CAMERA_CENTER_X, 240, 2)
                 diff = center_depth - TARGET_DEPTH
                 if (diff > 0.1):
                     self.go_forward(angle, 0, dist_diff=None, prefered_lin_vel=diff*0.15)
