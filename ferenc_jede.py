@@ -159,7 +159,7 @@ class Ferenc:
             if abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
                 space_detect_time = get_time()
                 print("Poloviční výjezd")
-                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/2.5)
+                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/2)
             else:
                 print("Přeskočení funkce povyjetí z garáže")
 
