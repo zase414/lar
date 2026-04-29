@@ -96,9 +96,9 @@
 %  VLASTNÍ PŘÍKAZY – vyplňte před tiskem
 % ============================================================
 \newcommand{\NazevPrace}{Autonomní robot Ferenc}
-\newcommand{\Autorka}{Jakub Kecek}
-\newcommand{\AutorB}{Václav Kučera}
 \newcommand{\AutorC}{Ondřej Vosáhlo}
+\newcommand{\AutorB}{Václav Kučera}
+\newcommand{\Autorka}{Jakub Kecek}
 \newcommand{\DatumOdevzdani}{\today}
 \newcommand{\Ustav}{Fakulta elektrotechnická, ČVUT v Praze}
 
@@ -155,7 +155,7 @@ do výchozí pozice. Celý systém je implementován na platformě Turtlebot vyu
 % ============================================================
 %  2. ROZBOR PROBLÉMU A NÁVRH ŘEŠENÍ (SPECIFIKACE)
 % ============================================================
-\section{Rozbor problému, návrh řešení a očekávaná funkčnost}
+\section{Rozbor a řešení problému, očekávaná funkčnost}
 \label{sec:specifikace}
 
 \subsection{Analýza vstupů a výstupů}
@@ -179,7 +179,7 @@ Celou úlohu lze rozdělit do následujících kroků:
 
 \subsubsection{Detekce míčku}
 
-Pro lokalizaci míčku je využita maska v barevném prostoru HSV, která je méně náchylná na změny intenzity osvětlení než prostor RGB. Cílem je izolovat pixely odpovídající žlutozelené barvě míčku.
+Pro lokalizaci míčku je využita maska v barevném prostoru HSV, která je méně náchylná na změny intenzity osvětlení než prostor RGB. Cílem je izolovat pixely odpovídající žlutozelené barvě míčku, filtrovat shluky takovýchto pixelů a zpracovat jejich vlastnosti. Významný je pak index šířky obrazu středu míčku a jeho point-cloud vzdálenost.
 
 Algoritmus pracuje v následujících krocích:
 \begin{itemize}
@@ -254,8 +254,8 @@ o poloměru $r_h = d_{\text{stop}} + r_{\text{míček}}$:
 V průběhu implementace a testování došlo k následujícím změnám oproti původnímu konceptu:
 
 \begin{itemize}
+  \item \textbf{Detekce míčku:} Původní jednoduché prahování bylo doplněno o morfologickou operaci opening, která se ukázala jako nezbytná pro stabilitu detekce míčku v prostředí s drobnými žlutými artefakty dřevotřískových stěn. Dále bylo nutné upravovat saturaci a odstín barvy v prostoru HSV. Jako ideální se ukázaly odstíny od 110 do 140, které ignorují žlutozelený odstín jedné z bran a minimální saturace 40, která eliminuje vybledlé odstíny podlahy.
   \item \textbf{Zájezd do garáže:} Přestože byl vyvinut funkční modul pro detekci fialových obdélníkových značek pomocí barevné segmentace a analýzy poměru stran, v konečné logice nebyl využit. Hlavním důvodem bylo zjištění, že pro úspěšný zájezd do garáže postačuje zapamatování odometrie. Detekce brány by byla spolehlivější, avšak musela by se vyvinout metoda jak dostat robota do osy brány garáže, aby robot nenarazil při zájezdu do bočních stěn.
-  \item \textbf{Úprava morfologie:} Původní jednoduché prahování bylo doplněno o morfologickou operaci opening, která se ukázala jako nezbytná pro stabilitu detekce míčku v prostředí s drobnými žlutými artefakty dřevotřískových stěn.
 \end{itemize}
 
 % ============================================================
