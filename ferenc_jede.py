@@ -773,15 +773,17 @@ class Ferenc:
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
+        rate.sleep()
         TARGET_X = 640 // 2
         TARGET_DEPTH = 0.2
         while not turtle.is_shutting_down():
-            angle = self._get_angle()
             if self._handle_stop():
                 continue
             else:
                 center_depth = get_depth(turtle, BALL_ROTATION_CAMERA_CENTER_X, 240, 2)
                 diff = center_depth - TARGET_DEPTH
+
+                angle = self._get_angle()
                 if (diff > 0.1):
                     self.go_forward(angle, 0, dist_diff=None, prefered_lin_vel=diff*0.15)
                 else:
