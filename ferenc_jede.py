@@ -282,7 +282,6 @@ class Ferenc:
             while not turtle.is_shutting_down() and not self._handle_stop():
                 (cx, _), _ = detect_ball(turtle)
                 dist = BALL_ROTATION_CAMERA_CENTER_X - cx
-                print("Pixel středu míčku: ",cx)
 
                 if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND:
                     break
