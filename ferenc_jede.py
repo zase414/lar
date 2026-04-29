@@ -12,7 +12,6 @@ from visuals import detect_ball, space_infront, get_depth
 BALL_DISTANCE_TO_SKIP_EXIT = 0.82
 EXIT_GARAGE_DURATION = 3.2
 
-
 BALL_RADIUS = 0.041 # 4,1 cm
 EXIT_CENTER_TOLERANCE_PIXEL_BAND = 90
 
@@ -509,7 +508,7 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                self.go_forward(cur_coords[2], initial_angle, abs(d)*1.5, prefered_lin_vel=None)
+                self.go_forward(cur_coords[2], initial_angle, abs(d)*1.75, prefered_lin_vel=None)
 
             cur_coords = turtle.get_odometry()
             x = point[0] - cur_coords[0]
