@@ -14,7 +14,7 @@ EXIT_GARAGE_DURATION = 2.67
 
 
 BALL_RADIUS = 0.041 # 4,1 cm
-EXIT_CENTER_TOLERANCE_PIXEL_BAND = 25
+EXIT_CENTER_TOLERANCE_PIXEL_BAND = 10
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
 BALL_ROTATION_CAMERA_CENTER_X = 334
@@ -148,7 +148,7 @@ class Ferenc:
         distance = self.average_depth()
         (cx, _), _ = detect_ball(turtle)
         dist = BALL_ROTATION_CAMERA_CENTER_X - cx
-        print("\n\n Vzdálenost míčku:",dist,"\n\n")
+        print("\n\n Vzdálenost míčku od Středu:",dist,"\nVzdálenost míčku od garáže:", cx,"\n")
         if distance is None or distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             space_detect_time = get_time()
             self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION)
