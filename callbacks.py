@@ -9,8 +9,6 @@ def callback_button0_resume(ferenc, msg):
 
     button_state = msg.state
     button = msg.button
-    print('{} button {}'.format(button, button_state))
-    print('Stopped? ', ferenc.stop)
 
 def callback_bumper_stop(ferenc, msg):
     """Bumber callback."""
@@ -21,6 +19,3 @@ def callback_bumper_stop(ferenc, msg):
 
     bumper_state = msg.state
     bumper = msg.bumper
-
-    print('{} bumper {}'.format(bumper, bumper_state))
-    print('Stopped? ', ferenc.stop)
