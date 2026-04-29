@@ -144,7 +144,7 @@ class Ferenc:
         # spin until robot finds garage exit
         self.find_exit(rate)
 
-        final_ball_distance = 0.282     # 28,2 cm before ball stop
+        final_ball_distance = 0.28     # 28 cm before ball stop
         distance = self.average_depth()
 
         (cx, _), _ = detect_ball(turtle)
@@ -159,7 +159,7 @@ class Ferenc:
             if abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
                 space_detect_time = get_time()
                 print("Poloviční výjezd")
-                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/1.9)
+                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/1.8)
             else:
                 print("Přeskočení funkce povyjetí z garáže")
 
@@ -169,7 +169,7 @@ class Ferenc:
 
         distance = self.average_depth()
         if distance >= BALL_DISTANCE_TO_SKIP_EXIT:
-            final_ball_distance = 0.302  # 30,2 cm before ball stop
+            final_ball_distance = 0.305  # 30,5 cm before ball stop
             ball_return_closer_dist = 0.037
             ## drives until ball is 60 cm infront of camera
             if not turtle.is_shutting_down():
