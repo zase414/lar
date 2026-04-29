@@ -172,14 +172,14 @@ class Ferenc:
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
             if self.distance > 3:
-                ball_return_closer_dist = 0.015
+                ball_return_closer_dist = 0.03
             else:
-                ball_return_closer_dist = 0.01
+                ball_return_closer_dist = 0.02
             ## drives until ball is 58 cm infront of camera
             if not turtle.is_shutting_down():
                 self.drive_toward_ball(rate, 0.58)
         else:
-            ball_return_closer_dist = 0.005
+            ball_return_closer_dist = 0.01
 
         if not turtle.is_shutting_down():
             self.drive_around_ball(rate, final_ball_distance, ball_return_closer_dist)
