@@ -337,6 +337,59 @@ Při větším objemu zdrojů by bylo vhodné:
 \section{Návrh úlohy pro příští rok}
 \label{sec:navrh}
 
+
+\section{Natočení k míčku}
+\label{sec:alignment_ball}
+
+Po výjezdu z garáže se robot pomocí kamery snaží detekovat míček. Pokud jej ihned nevidí, začne se otáčet konstantní úhlovou rychlostí, dokud se míček neobjeví v zorném poli kamery. Jakmile je míček detekován, následuje fáze přesného natočení robota tak, aby byl míček přímo před ním.
+
+Použitý algoritmus detekce vrací souřadnice středu míčku $(x, y)$ v obraze a jeho průměr. Experimentálně bylo zjištěno, že optická osa kamery není přesně shodná s podélnou osou robota. Proto bylo nutné zavést korekci, která určuje, na kterém pixelu se nachází bod odpovídající směru „přímo před robotem“.
+
+Byly otestovány dva přístupy k natočení:
+
+\begin{enumerate}
+\item \textbf{Iterativní otáčení:} Robot se pomalu otáčí konstantní rychlostí a průběžně kontroluje, zda se střed míčku nachází na požadované horizontální pozici v obraze. Tento přístup je jednoduchý a robustní, ale pomalejší. Experimentálně bylo zjištěno, že dosažení správného natočení trvá přibližně 20 sekund.
+
+```
+\item \textbf{Výpočet úhlu natočení:} Úhel natočení je odhadnut z horizontální pozice míčku v obraze na základě přibližného zorného pole kamery (FOV). Robot se následně natočí o vypočtený úhel pomocí odometrie a PID regulátoru:
+
+\begin{equation}
+    \alpha = k \cdot (x_{\text{target}} - x_{\text{ball}})
+\end{equation}
+
+kde $k = \frac{34^\circ}{320 \,\text{px}} \cdot \frac{\pi}{180}$ je převodní konstanta z pixelů na radiány, $x_{\text{target}} = 334$ je pixel odpovídající směru přímo před robotem a $x_{\text{ball}}$ je aktuální horizontální pozice středu míčku.
+
+Tento přístup byl v praxi výrazně pomalejší — průměrná doba natočení byla přibližně 80 sekund.
+```
+
+\end{enumerate}
+
+Druhý přístup se ukázal jako méně spolehlivý. Problémy byly způsobeny zejména nepřesností odhadu zorného pole kamery, chybami v odometrii a nepřesným převodem mezi pixely a úhlem. Další nevýhodou byla nízká přesnost při velmi malých úhlech natočení, které nebyl použitý PID regulátor schopen spolehlivě realizovat. V důsledku těchto faktorů docházelo k oscilacím nebo zacyklení regulační smyčky.
+
+\section{Přiblížení k míči}
+\label{sec:approach_ball}
+
+Přiblížení k míči je realizováno ve dvou na sebe navazujících fázích. První fáze slouží k rychlému přiblížení z větší vzdálenosti, zatímco druhá fáze zajišťuje přesné zastavení u míčku s využitím odometrie.
+
+V první fázi je vzdálenost k míčku odhadována pomocí hloubkové kamery. Na základě této informace je řízena rychlost robota pomocí proporcionálního (P) regulátoru. Nastavení regulátoru bylo voleno experimentálně jako kompromis mezi rychlostí přiblížení a přesností zastavení, s cílem minimalizovat překmit (přejetí cílové pozice). Tento přístup umožňuje efektivní a relativně stabilní přiblížení k míčku z větší vzdálenosti.
+
+\section{Návrat do garáže}
+\label{sec:return_to_garage}
+
+Návrat do garáže je realizován pomocí odometrie. Během výjezdu z garáže a následného přiblížení k míčku si robot ukládá ujetou vzdálenost a úhel natočení. Tyto hodnoty jsou následně využity pro návrat – robot se snaží vykonat inverzní pohyb, tedy natočit se zpět o původní úhel a ujet odpovídající vzdálenost zpět do garáže.
+
+Tento přístup je funkční zejména na kratší vzdálenosti, nicméně při delších trajektoriích se začínají výrazně projevovat kumulované chyby odometrie. Tyto chyby vznikají například prokluzem kol nebo nepřesností měření, což vede k tomu, že návrat do garáže není dostatečně přesný a robot nemusí správně zajet do požadované pozice.
+
+
+TOHLE JE PRO TEBE ONDRO, je to pro ten dopocitany uhel na velke vzdalenosti.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{schema_korekce_prijezdu.png}
+    \caption{Enter Caption}
+    \label{fig:placeholder}
+\end{figure}
+
+
 % ============================================================
 %  8. LITERATURA
 % ============================================================
