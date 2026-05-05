@@ -187,8 +187,8 @@ class Ferenc:
         # pokud je Ferenc od míče hodně daleko, tak ještě popojede dopředu a pak k němu přijede
         if not turtle.is_shutting_down() and ball_is_far:
             self.rotate_to_angle(0, rate, point_of_return = False)
-            obstacle_dist = get_depth(ferenc, 320, 240, 100)
-            if obstacle_dist > 0.4:
+            obstacle_dist = get_depth(turtle, 320, 240, 100)
+            if obstacle_dist is None or obstacle_dist > 0.4:
                 space_detect_time = get_time()
                 self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION)
             self.rotate_toward_ball(rate)
