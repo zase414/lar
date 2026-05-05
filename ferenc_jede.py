@@ -773,7 +773,7 @@ class Ferenc:
             rate.sleep()
             # rotates back toward garage
             angle = self.return_angle
-            self.rotate_to_angle(angle, rate, point_of_return=False)
+            self.rotate_to_angle(angle, rate, point_of_return=True)
             if gohome_mode:
                 self.go_home(rate)
             else:
