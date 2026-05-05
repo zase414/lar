@@ -212,7 +212,7 @@ class Ferenc:
         """
         turtle = self.turtle
         space = space_infront(turtle=turtle)
-        while (not turtle.is_shutting_down()) and (not space):
+        while (not turtle.is_shutting_down()) and not space:
             if self._handle_stop():
                 continue
             else:
