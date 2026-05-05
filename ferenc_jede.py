@@ -172,7 +172,7 @@ class Ferenc:
         print("Vzdálenost míčku od garáže po výjezdu ",self.distance)
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.31  # 31 cm before ball stop
-            if self.distance > 3:
+            if self.distance > 2.5:
                 ball_is_far = True
                 ball_return_closer_dist = 0.03
             else:
