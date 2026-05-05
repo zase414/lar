@@ -169,6 +169,7 @@ class Ferenc:
             self.rotate_toward_ball(rate)
 
         self.distance = self.average_depth()
+        print("Vzdálenost míčku od garáže po výjezdu ",self.distance)
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.31  # 31 cm before ball stop
             if self.distance > 3:
