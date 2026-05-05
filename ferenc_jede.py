@@ -170,7 +170,7 @@ class Ferenc:
 
         self.distance = self.average_depth()
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
-            final_ball_distance = 0.30  # 30 cm before ball stop
+            final_ball_distance = 0.31  # 31 cm before ball stop
             if self.distance > 3:
                 ball_is_far = True
                 ball_return_closer_dist = 0.03
