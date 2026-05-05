@@ -175,7 +175,7 @@ class Ferenc:
             final_ball_distance = 0.31  # 31 cm before ball stop
             if self.distance > 1.6:
                 ball_is_far = True
-                ball_return_closer_dist = 0.03
+                ball_return_closer_dist = 0.025
             else:
                 ball_return_closer_dist = 0.02
             ## drives until ball is 58 cm infront of camera
