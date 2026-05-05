@@ -160,7 +160,7 @@ class Ferenc:
             self.exit_garage(rate, EXIT_GARAGE_DURATION)
         #ball is in FOV near center drives forward for half duration
         elif abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
-            self.exit_garage(rate, EXIT_GARAGE_DURATION/2)
+            self.exit_garage(rate, EXIT_GARAGE_DURATION/1.9)
 
         ## find and ball turn on to it
         if not turtle.is_shutting_down():
