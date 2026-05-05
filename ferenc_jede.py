@@ -11,7 +11,7 @@ from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth, detect_rectangles
 
 BALL_DISTANCE_TO_SKIP_EXIT = 0.82
-EXIT_GARAGE_DURATION = 3.2
+EXIT_GARAGE_DURATION = 3.25
 
 BALL_RADIUS = 0.041 # 4,1 cm
 EXIT_CENTER_TOLERANCE_PIXEL_BAND = 90
@@ -177,12 +177,12 @@ class Ferenc:
                 ball_is_far = True
                 ball_return_closer_dist = 0.025
             else:
-                ball_return_closer_dist = 0.0125
+                ball_return_closer_dist = 0.013
             ## drives until ball is 58 cm infront of camera
             if not turtle.is_shutting_down() and not ball_is_far:
                 self.drive_toward_ball(rate, 0.58)
         else:
-            ball_return_closer_dist = 0.01
+            ball_return_closer_dist = 0.012
 
         # pokud je Ferenc od míče hodně daleko, tak ještě popojede dopředu a pak k němu přijede
         if not turtle.is_shutting_down() and ball_is_far:
