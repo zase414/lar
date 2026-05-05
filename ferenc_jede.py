@@ -177,7 +177,7 @@ class Ferenc:
                 ball_is_far = True
                 ball_return_closer_dist = 0.025
             else:
-                ball_return_closer_dist = 0.015
+                ball_return_closer_dist = 0.012
             ## drives until ball is 58 cm infront of camera
             if not turtle.is_shutting_down() and not ball_is_far:
                 self.drive_toward_ball(rate, 0.58)
@@ -392,7 +392,6 @@ class Ferenc:
         if dist is None:
             print("NO DISTANCE!!!")
             dist = 0
-        diff = dist - final_dist
         #save this drive to robot
         distance_of_ball = self._get_x()
         self.return_distance += distance_of_ball
@@ -416,18 +415,16 @@ class Ferenc:
         rate.sleep()
 
         dist = self.average_depth()
-        print("Vzdálenost po příjezdu přes kameru: ", dist)
         if dist is None:
             print("Object not seen")
             return
 
         final_dist = self.drive_closer(final_ball_dist, dist, rate, ball_return_closer_dist)
-        print("Finální vzdálenost Ference od míčku je: ",final_dist)
 
         turtle.reset_odometry()
         rate.sleep()
         current_coords = turtle.get_odometry()
-        # hexagon trajectory
+        # calculate hexagon trajectory
         points = self.calculate_points(final_dist, current_coords)
 
         # go from point to point for each point of the hexagon
