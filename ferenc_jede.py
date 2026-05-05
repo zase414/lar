@@ -146,6 +146,7 @@ class Ferenc:
 
         final_ball_distance = 0.28     # 28 cm before ball stop
         self.distance = self.average_depth()
+        ball_is_far = False
 
         (cx, _), _ = detect_ball(turtle)
         rate.sleep()
@@ -171,17 +172,27 @@ class Ferenc:
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.30  # 30 cm before ball stop
             if self.distance > 3:
-                ball_return_closer_dist = 0.02
+                ball_is_far = True
+                ball_return_closer_dist = 0.03
             else:
                 ball_return_closer_dist = 0.015
             ## drives until ball is 58 cm infront of camera
-            if not turtle.is_shutting_down():
+            if not turtle.is_shutting_down() and not ball_is_far:
                 self.drive_toward_ball(rate, 0.58)
         else:
             ball_return_closer_dist = 0.01
 
+        # pokud je Ferenc od míče hodně daleko, tak ještě popojede dopředu a pak k němu přijede
+        if not turtle.is_shutting_down() and ball_is_far:
+            self.rotate_to_angle(0, rate, point_of_return = False)
+            space_detect_time = get_time()
+            self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION)
+            self.rotate_toward_ball(rate)
+            self.drive_toward_ball(rate, 0.58)
+
         if not turtle.is_shutting_down():
             self.drive_around_ball(rate, final_ball_distance, ball_return_closer_dist)
+
         if not turtle.is_shutting_down():
             self.return_to_garage_from_odometry(rate)
 
@@ -207,7 +218,7 @@ class Ferenc:
 
         self._stop_and_wait(rate)
 
-    def exit_garage(self, rate, space_detect_time, exit_time) -> None:
+    def  exit_garage(self, rate, space_detect_time, exit_time) -> None:
         """
         Drive forward out of the garage for a fixed time after exit detection.
         
