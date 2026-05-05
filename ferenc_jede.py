@@ -689,7 +689,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
         if point_of_return:
-            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.3
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.4
         else:
             threshold = BALL_ROTATION_ANGLE_THRESHOLD
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
@@ -773,7 +773,7 @@ class Ferenc:
             rate.sleep()
             # rotates back toward garage
             angle = self.return_angle
-            self.rotate_to_angle(angle, rate, point_of_return=True)
+            self.rotate_to_angle(angle, rate, point_of_return=False)
             if gohome_mode:
                 self.go_home(rate)
             else:
