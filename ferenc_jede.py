@@ -5,6 +5,7 @@ from __future__ import print_function
 from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from math import pi, cos, sqrt, sin, atan2
 from typing import Optional, Tuple, List
+import cv2
 
 from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth, detect_rectangles
@@ -685,7 +686,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
         if point_of_return:
-            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.27
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.35
         else:
             threshold = BALL_ROTATION_ANGLE_THRESHOLD
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
