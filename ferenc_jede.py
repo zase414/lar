@@ -177,7 +177,7 @@ class Ferenc:
                 ball_is_far = True
                 ball_return_closer_dist = 0.025
             else:
-                ball_return_closer_dist = 0.02
+                ball_return_closer_dist = 0.015
             ## drives until ball is 58 cm infront of camera
             if not turtle.is_shutting_down() and not ball_is_far:
                 self.drive_toward_ball(rate, 0.58)
