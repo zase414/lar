@@ -813,7 +813,7 @@ class Ferenc:
             left_x, left_y = left
             right_x, right_y = right
 
-            error = RETURN_TARGET_SCREEN_CENTER - center_x
+            error = BALL_ROTATION_CAMERA_CENTER_X - center_x
 
             proportional = RETURN_PID_KP * error
             integral += error * dt
@@ -829,7 +829,7 @@ class Ferenc:
             if not gate_detected:
               turtle.cmd_velocity(linear=0.0, angular=0.5)
             elif not self.stop:
-              center_depth = get_depth(turtle, RETURN_TARGET_SCREEN_CENTER, 240, 2)
+              center_depth = get_depth(turtle, BALL_ROTATION_CAMERA_CENTER_X, 240, 2)
               diferenc = center_depth - RETURN_TARGET_DEPTH
               if (diferenc > 0.1):
                 turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
