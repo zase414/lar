@@ -831,9 +831,9 @@ class Ferenc:
               turtle.cmd_velocity(linear=0.0, angular=0.5)
             elif not self.stop:
               center_depth = get_depth(turtle, BALL_ROTATION_CAMERA_CENTER_X, 240, 2)
-              diferenc = center_depth - RETURN_TARGET_DEPTH
-              if (diferenc > 0.1):
-                turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
+              diff = center_depth - RETURN_TARGET_DEPTH
+              if (diff > 0.1):
+                turtle.cmd_velocity(linear=diff*0.15, angular=0.0)
               else:
                 turtle.cmd_velocity(0, 0)
                 print("Ferenc je doma :)")
