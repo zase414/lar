@@ -18,7 +18,7 @@ EXIT_CENTER_TOLERANCE_PIXEL_BAND = 90
 
 BALL_ROTATION_TOLERANCE_PIXEL_BAND = 2
 BALL_ROTATION_CAMERA_CENTER_X = 334
-BALL_ROTATION_ANGLE_THRESHOLD = 0.007
+BALL_ROTATION_ANGLE_THRESHOLD = 0.0075
 
 PIXELS_TO_RAD = (29 / 320) * (pi/180)  # pixels to degrees  to radian conversion
 
@@ -175,7 +175,7 @@ class Ferenc:
             final_ball_distance = 0.31  # 31 cm before ball stop
             if self.distance > 1.6:
                 ball_is_far = True
-                ball_return_closer_dist = 0.04
+                ball_return_closer_dist = 0.03
             else:
                 ball_return_closer_dist = 0.02
             ## drives until ball is 58 cm infront of camera
@@ -834,9 +834,13 @@ class Ferenc:
               diferenc = center_depth - RETURN_TARGET_DEPTH
               if (diferenc > 0.1):
                 turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
-              else: 
-                turtle.cmd_velocity(0,0)
-                print("Ferenc is home :)")
+              else:
+                turtle.cmd_velocity(0, 0)
+                print("Ferenc je doma :)")
+                home_time = get_time()
+                while not turtle.is_shutting_down() and (get_time() - home_time) < 1:
+                    turtle.play_sound(HOME_SOUND)
+                    rate.sleep()
                 break
             else:
               turtle.cmd_velocity(linear=0.0, angular=0.0)
