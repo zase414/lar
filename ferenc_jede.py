@@ -771,6 +771,81 @@ class Ferenc:
             self.rotate_to_angle(angle, rate, point_of_return=False)
             self.go_in(rate)
 
+    def go_home(self, rate):
+        """
+        Navigate back to the garage using visual detection of the gate markers.
+        
+        Applies a PID controller on the horizontal error between the detected
+        gate centre marker and the screen centre to steer toward the garage.
+        Rotates in place if the gate is not yet visible. Once the gate fills
+        the frame, switches to depth-based forward control to complete parking.
+        
+        Args:
+            rate: A Rate object used to control loop timing.
+        """
+        turtle = self.turtle
+
+        integral = 0
+        prev_error = 0
+        prev_time = get_time()
+
+
+        gate_detected = False
+
+        while not turtle.is_shutting_down():
+          if self._handle_stop():
+              continue
+          rectangles = detect_rectangles(turtle)
+
+          current_time = get_time()
+          dt = current_time - prev_time
+
+          if rectangles and len(rectangles) == 3 and dt > 0 and not self.stop:
+            gate_detected = True
+
+            left, right, center = rectangles
+
+            center_x, center_y = center
+            left_x, left_y = left
+            right_x, right_y = right
+
+            error = RETURN_TARGET_SCREEN_CENTER - center_x
+
+            proportional = RETURN_PID_KP * error
+            integral += error * dt
+            derivative = (error - prev_error) / dt
+
+            pid_output = proportional + (RETURN_PID_KI * integral) + (RETURN_PID_KD * derivative)
+
+            turtle.cmd_velocity(linear=0.24, angular=pid_output)
+
+            prev_error = error
+            prev_time = current_time
+          else:
+            if not gate_detected:
+              turtle.cmd_velocity(linear=0.0, angular=0.5)
+            elif not self.stop:
+              center_depth = get_depth(turtle, RETURN_TARGET_SCREEN_CENTER, 240, 2)
+              diferenc = center_depth - RETURN_TARGET_DEPTH
+              if (diferenc > 0.1):
+                turtle.cmd_velocity(linear=diferenc*0.15, angular=0.0)
+              else: 
+                turtle.cmd_velocity(0,0)
+                print("Ferenc is home :)")
+                break
+            else:
+              turtle.cmd_velocity(linear=0.0, angular=0.0)
+            integral = 0
+            prev_time = current_time
+
+          if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+          rate.sleep()
+
+        self._stop_and_wait(rate)
+        cv2.destroyAllWindows()
+        
     def go_in(self, rate):
         """
         Drive forward into the garage until the robot reaches the target depth.
