@@ -7,6 +7,7 @@ def callback_button0_resume(ferenc, msg):
         ferenc.stop = False
         ferenc.start = True
 
+    # usable for prints
     button_state = msg.state
     button = msg.button
 
@@ -17,5 +18,6 @@ def callback_bumper_stop(ferenc, msg):
         ferenc.turtle.cmd_velocity(0, 0)
         ferenc.stop = True
 
+    # usable for prints
     bumper_state = msg.state
     bumper = msg.bumper

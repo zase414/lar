@@ -91,6 +91,7 @@ class Ferenc:
             float: The x coordinate
         """
         return self._get_coords()[0]
+
     def _get_y(self) -> float:
         """
         Retrieve the robot's current odometry y coordinate.
@@ -99,6 +100,7 @@ class Ferenc:
             float: The y coordinate
         """
         return self._get_coords()[1]
+
     def _get_angle(self) -> float:
         """
         Retrieve the robot's current odometry angle.
@@ -117,6 +119,18 @@ class Ferenc:
         """
         self.turtle.cmd_velocity(0, 0)
         rate.sleep()
+
+    def _normalize_angle(self, angle) -> float:
+        """
+        Wrap an angle into the range (-pi, pi].
+
+        Args:
+            angle (float): Angle in radians.
+
+        Returns:
+            float: Equivalent angle in (-pi, pi].
+        """
+        return (angle + pi) % (2 * pi) - pi
 
     def main(self):
         """
@@ -196,116 +210,6 @@ class Ferenc:
         if not turtle.is_shutting_down():
             self.return_to_garage_from_odometry(rate, ball_is_far)
 
-    def go_forward(self, current_angle, needed_angle, dist_diff, prefered_lin_vel):
-        """
-        Apply P-regulated forward motion with heading correction.
-
-        Computes angular velocity to correct heading error and linear velocity
-        either from a P-controller on dist_diff or from a preferred constant
-        speed, capping both at their respective maximum.
-
-        Args:
-            current_angle (float): Robot's current heading in radians.
-            needed_angle (float): Desired heading in radians.
-            dist_diff (float or None): Remaining distance to target; if None,
-                prefered_lin_vel is used instead.
-            prefered_lin_vel (float or None): Constant linear speed override;
-                used when dist_diff is None.
-        """
-        turtle = self.turtle
-        angle_diff = self.normalize_angle(needed_angle - current_angle)
-
-        # based on how off course is our robot rotated >>> steer it to go straight
-        Kp_ang = 0.8
-        angular_velocity = Kp_ang * angle_diff
-
-        # speed dependent on how far from desired destination is ferenc located
-        max_speed = 0.19
-        Kp_lin = 0.38
-        if dist_diff is None and prefered_lin_vel is not None:
-            lin_velocity = prefered_lin_vel
-        elif dist_diff is None and prefered_lin_vel is None:
-            lin_velocity = max_speed
-        else:
-            lin_velocity = Kp_lin * abs(dist_diff)
-        lin_velocity = min(lin_velocity, max_speed)  # limit max speed
-        turtle.cmd_velocity(lin_velocity, angular_velocity)
-
-    def rotate_to_angle(self, angle, rate, point_of_return):
-        """
-        Rotate in place until the robot's heading matches the target angle.
-
-        Uses PID-regulated angular velocity and stops when the heading error
-        falls within BALL_ROTATION_ANGLE_THRESHOLD.
-
-        Args:
-            angle (float): Target heading in radians.
-            rate: A Rate object used to control loop timing.
-            point_of_return: If it is final point of hexagon
-        """
-        turtle = self.turtle
-        cur_coords = turtle.get_odometry()
-        angle_diff = self.normalize_angle(angle - cur_coords[2])
-        if point_of_return:
-            threshold = BALL_ROTATION_ANGLE_THRESHOLD * 0.4
-        else:
-            threshold = BALL_ROTATION_ANGLE_THRESHOLD
-        while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
-            if self._handle_stop():
-                continue
-            else:
-                self.angular_PID_reg(angle_diff, 0.1)
-
-            cur_coords = turtle.get_odometry()
-            angle_diff = self.normalize_angle(angle - cur_coords[2])
-
-            rate.sleep()
-        self.integral_error = 0.0
-        self.previous_error = 0.0
-
-    def angular_PID_reg(self, angle_diff, dt):
-        """
-        PID-regulated angular velocity rotation.
-
-        Args:
-        angle_diff (float): Signed angular error in radians.
-        dt (float): Delta time (seconds) since the last control loop.
-        """
-        turtle = self.turtle
-
-        # --- P ---
-        p_action = P_ANGULAR_KP * angle_diff
-
-        # --- I ---
-        self.integral_error += (angle_diff * dt)
-        max_i_accumulated = MAX_I_TERM / (P_ANGULAR_KI if P_ANGULAR_KI > 0 else 1)  # Prevent div by zero
-        self.integral_error = max(min(self.integral_error, max_i_accumulated), -max_i_accumulated)
-        i_action = P_ANGULAR_KI * self.integral_error
-
-        # --- D ---
-        if dt > 0:
-            derivative = (angle_diff - self.previous_error) / dt
-        else:
-            derivative = 0.0
-
-        d_action = P_ANGULAR_KD * derivative
-
-        # Update previous error for the NEXT loop
-        self.previous_error = angle_diff
-
-        # --- Combine PID ---
-        ang_vel = p_action + i_action + d_action
-
-        # --- Output limitation ---
-        if 0 < ang_vel < P_ANGULAR_MIN_SPEED:
-            ang_vel = P_ANGULAR_MIN_SPEED
-        elif 0 > ang_vel > -P_ANGULAR_MIN_SPEED:
-            ang_vel = -P_ANGULAR_MIN_SPEED
-        else:
-            ang_vel = max(min(ang_vel, P_ANGULAR_MAX_SPEED), -P_ANGULAR_MAX_SPEED)
-
-        turtle.cmd_velocity(0, ang_vel)
-
     def find_exit(self, rate) -> None:
         """
         Spin in place until an open space is detected in front of the robot.
@@ -351,6 +255,41 @@ class Ferenc:
                 rate.sleep()
 
         self._stop_and_wait(rate)
+
+    def go_forward(self, current_angle, needed_angle, dist_diff, prefered_lin_vel):
+        """
+        Apply P-regulated forward motion with heading correction.
+
+        Computes angular velocity to correct heading error and linear velocity
+        either from a P-controller on dist_diff or from a preferred constant
+        speed, capping both at their respective maximum.
+
+        Args:
+            current_angle (float): Robot's current heading in radians.
+            needed_angle (float): Desired heading in radians.
+            dist_diff (float or None): Remaining distance to target; if None,
+                prefered_lin_vel is used instead.
+            prefered_lin_vel (float or None): Constant linear speed override;
+                used when dist_diff is None.
+        """
+        turtle = self.turtle
+        angle_diff = self._normalize_angle(needed_angle - current_angle)
+
+        # based on how off course is our robot rotated >>> steer it to go straight
+        Kp_ang = 0.8
+        angular_velocity = Kp_ang * angle_diff
+
+        # speed dependent on how far from desired destination is ferenc located
+        max_speed = 0.19
+        Kp_lin = 0.38
+        if dist_diff is None and prefered_lin_vel is not None:
+            lin_velocity = prefered_lin_vel
+        elif dist_diff is None and prefered_lin_vel is None:
+            lin_velocity = max_speed
+        else:
+            lin_velocity = Kp_lin * abs(dist_diff)
+        lin_velocity = min(lin_velocity, max_speed)  # limit max speed
+        turtle.cmd_velocity(lin_velocity, angular_velocity)
 
     def rotate_toward_ball(self, rate) -> None:
         """
@@ -428,7 +367,7 @@ class Ferenc:
 
         # save this drive to robot
         ball_angle = self._get_angle()
-        self.return_angle = -1*self.normalize_angle(ball_angle)
+        self.return_angle = -1*self._normalize_angle(ball_angle)
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """
@@ -653,18 +592,6 @@ class Ferenc:
 
         return points
 
-    def normalize_angle(self, angle) -> float:
-        """
-        Wrap an angle into the range (-pi, pi].
-
-        Args:
-            angle (float): Angle in radians.
-
-        Returns:
-            float: Equivalent angle in (-pi, pi].
-        """
-        return (angle + pi) % (2 * pi) - pi
-
     def go_ptp(self, point, rate, point_of_return = False):
         """
         Navigate to a single waypoint using rotate-then-drive control.
@@ -730,6 +657,82 @@ class Ferenc:
             self.rotate_to_angle(angle, rate, point_of_return)
 
         self._stop_and_wait(rate)
+
+
+    def rotate_to_angle(self, angle, rate, point_of_return):
+        """
+        Rotate in place until the robot's heading matches the target angle.
+
+        Uses PID-regulated angular velocity and stops when the heading error
+        falls within BALL_ROTATION_ANGLE_THRESHOLD.
+
+        Args:
+            angle (float): Target heading in radians.
+            rate: A Rate object used to control loop timing.
+            point_of_return: If it is final point of hexagon
+        """
+        turtle = self.turtle
+        cur_coords = turtle.get_odometry()
+        angle_diff = self._normalize_angle(angle - cur_coords[2])
+        if point_of_return:
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD * 0.4
+        else:
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD
+        while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
+            if self._handle_stop():
+                continue
+            else:
+                self.angular_PID_reg(angle_diff, 0.1)
+
+            cur_coords = turtle.get_odometry()
+            angle_diff = self._normalize_angle(angle - cur_coords[2])
+
+            rate.sleep()
+        self.integral_error = 0.0
+        self.previous_error = 0.0
+
+    def angular_PID_reg(self, angle_diff, dt):
+        """
+        PID-regulated angular velocity rotation.
+
+        Args:
+        angle_diff (float): Signed angular error in radians.
+        dt (float): Delta time (seconds) since the last control loop.
+        """
+        turtle = self.turtle
+
+        # --- P ---
+        p_action = P_ANGULAR_KP * angle_diff
+
+        # --- I ---
+        self.integral_error += (angle_diff * dt)
+        max_i_accumulated = MAX_I_TERM / (P_ANGULAR_KI if P_ANGULAR_KI > 0 else 1)  # Prevent div by zero
+        self.integral_error = max(min(self.integral_error, max_i_accumulated), -max_i_accumulated)
+        i_action = P_ANGULAR_KI * self.integral_error
+
+        # --- D ---
+        if dt > 0:
+            derivative = (angle_diff - self.previous_error) / dt
+        else:
+            derivative = 0.0
+
+        d_action = P_ANGULAR_KD * derivative
+
+        # Update previous error for the NEXT loop
+        self.previous_error = angle_diff
+
+        # --- Combine PID ---
+        ang_vel = p_action + i_action + d_action
+
+        # --- Output limitation ---
+        if 0 < ang_vel < P_ANGULAR_MIN_SPEED:
+            ang_vel = P_ANGULAR_MIN_SPEED
+        elif 0 > ang_vel > -P_ANGULAR_MIN_SPEED:
+            ang_vel = -P_ANGULAR_MIN_SPEED
+        else:
+            ang_vel = max(min(ang_vel, P_ANGULAR_MAX_SPEED), -P_ANGULAR_MAX_SPEED)
+
+        turtle.cmd_velocity(0, ang_vel)
 
     def return_to_garage_from_odometry(self, rate, gohome_mode = False):
         """
@@ -831,8 +834,6 @@ class Ferenc:
             left, right, center = rectangles
 
             center_x, center_y = center
-            left_x, left_y = left
-            right_x, right_y = right
 
             error = BALL_ROTATION_CAMERA_CENTER_X - center_x
 
@@ -850,17 +851,6 @@ class Ferenc:
             if not gate_detected:
               turtle.cmd_velocity(linear=0.0, angular=0.5)
             elif not self.stop:
-              center_depth = get_depth(turtle, BALL_ROTATION_CAMERA_CENTER_X, 240, 2)
-              diff = center_depth - RETURN_TARGET_DEPTH
-              if (diff > 0.1):
-                turtle.cmd_velocity(linear=diff*0.15, angular=0.0)
-              else:
-                turtle.cmd_velocity(0, 0)
-                print("Ferenc je doma :)")
-                home_time = get_time()
-                while not turtle.is_shutting_down() and (get_time() - home_time) < 1:
-                    turtle.play_sound(HOME_SOUND)
-                    rate.sleep()
                 break
             else:
               turtle.cmd_velocity(linear=0.0, angular=0.0)
@@ -871,6 +861,8 @@ class Ferenc:
             break
 
           rate.sleep()
+
+        self.go_in(rate)
 
         self._stop_and_wait(rate)
         cv2.destroyAllWindows()
