@@ -7,7 +7,7 @@ from math import pi, cos, sqrt, sin, atan2
 from typing import Optional, Tuple, List
 
 from callbacks import callback_bumper_stop, callback_button0_resume
-from visuals import detect_ball, space_infront, get_depth
+from visuals import detect_ball, space_infront, get_depth, detect_rectangles
 
 BALL_DISTANCE_TO_SKIP_EXIT = 0.82
 EXIT_GARAGE_DURATION = 3.2
@@ -172,7 +172,7 @@ class Ferenc:
         print("Vzdálenost míčku od garáže po výjezdu ",self.distance)
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.31  # 31 cm before ball stop
-            if self.distance > 2:
+            if self.distance > 1.6:
                 ball_is_far = True
                 ball_return_closer_dist = 0.04
             else:
