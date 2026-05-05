@@ -145,7 +145,7 @@ class Ferenc:
         # spin until robot finds garage exit
         self.find_exit(rate)
 
-        final_ball_distance = 0.28     # 28 cm before ball stop
+        final_ball_distance = 0.29     # 29 cm before ball stop
         self.distance = self.average_depth()
         ball_is_far = False
 
@@ -687,7 +687,7 @@ class Ferenc:
         cur_coords = turtle.get_odometry()
         angle_diff = self.normalize_angle(angle - cur_coords[2])
         if point_of_return:
-            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.28
+            threshold = BALL_ROTATION_ANGLE_THRESHOLD*0.3
         else:
             threshold = BALL_ROTATION_ANGLE_THRESHOLD
         while (not turtle.is_shutting_down()) and (abs(angle_diff) > threshold):
