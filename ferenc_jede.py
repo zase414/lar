@@ -195,7 +195,7 @@ class Ferenc:
             self.drive_around_ball(rate, final_ball_distance, ball_return_closer_dist)
 
         if not turtle.is_shutting_down():
-            self.return_to_garage_from_odometry(rate)
+            self.return_to_garage_from_odometry(rate, ball_is_far)
 
     def find_exit(self, rate) -> None:
         """
@@ -746,7 +746,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, ang_vel)
 
-    def return_to_garage_from_odometry(self, rate):
+    def return_to_garage_from_odometry(self, rate, gohome_mode = False):
         """
         Return the robot to its garage starting position using dead reckoning.
         
@@ -770,7 +770,10 @@ class Ferenc:
             # rotates back toward garage
             angle = self.return_angle
             self.rotate_to_angle(angle, rate, point_of_return=False)
-            self.go_in(rate)
+            if gohome_mode:
+                self.go_home(rate)
+            else:
+                self.go_in(rate)
 
     def go_home(self, rate):
         """
