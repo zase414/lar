@@ -145,7 +145,7 @@ class Ferenc:
         # spin until robot finds garage exit
         self.find_exit(rate)
 
-        final_ball_distance = 0.29     # 29 cm before ball stop
+        final_ball_distance = 0.292     # 29 cm before ball stop with certainty
         self.distance = self.average_depth()
         ball_is_far = False
 
@@ -172,7 +172,7 @@ class Ferenc:
         self.distance = self.average_depth()
         print("Vzdálenost míčku od garáže po výjezdu ",self.distance)
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
-            final_ball_distance = 0.31  # 31 cm before ball stop
+            final_ball_distance = 0.312  # 31 cm before ball stop with certainty
             if self.distance > 1.5:
                 ball_is_far = True
                 ball_return_closer_dist = 0.025
@@ -184,7 +184,7 @@ class Ferenc:
         else:
             ball_return_closer_dist = 0.012
 
-        # pokud je Ferenc od míče hodně daleko, tak ještě popojede dopředu a pak k němu přijede
+        # if Ferenc is far from ball even when exiting garaga, then go forward again and go home by camera
         if not turtle.is_shutting_down() and ball_is_far:
             self.rotate_to_angle(0, rate, point_of_return = False)
             obstacle_dist = get_depth(turtle, 320, 240, 100)
@@ -825,7 +825,7 @@ class Ferenc:
 
             pid_output = proportional + (RETURN_PID_KI * integral) + (RETURN_PID_KD * derivative)
 
-            turtle.cmd_velocity(linear=0.18, angular=pid_output)
+            turtle.cmd_velocity(linear=0.16, angular=pid_output)
 
             prev_error = error
             prev_time = current_time
