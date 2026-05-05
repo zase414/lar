@@ -544,14 +544,14 @@ class Ferenc:
 
         if point_of_return:
             (x, y, _) = turtle.get_odometry()
-            final_vector = (-x - self.distance, - y)
+            final_vector = (-x - self.return_distance, - y)
 
             angle = atan2(final_vector[1], final_vector[0])
 
             print("combinated error", x, y)
             print("calculated final vector", final_vector)
             print("calculated final angle", angle)
-            print("meassured previous distance", self.distance)
+            print("meassured previous distance", self.return_distance)
             print("meassured distancewith error", sqrt(final_vector[0]^2 + final_vector[1]^2))
             print("instead of angle", self.normalize_angle(point[2]))
 
