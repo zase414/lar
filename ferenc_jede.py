@@ -267,7 +267,7 @@ class Ferenc:
                 continue
 
             # sees nothing(or its far away), rotate
-            if abs(center_x-BALL_ROTATION_CAMERA_CENTER_X) >= 200:
+            if abs(center_x-BALL_ROTATION_CAMERA_CENTER_X) >= 130:
                 turtle.cmd_velocity(0, P_ANGULAR_MAX_SPEED)
                 rate.sleep()
                 continue
