@@ -149,21 +149,18 @@ class Ferenc:
         self.distance = self.average_depth()
         ball_is_far = False
 
+        #
         (cx, _), _ = detect_ball(turtle)
         rate.sleep()
         center_dist = BALL_ROTATION_CAMERA_CENTER_X - cx
-        print("\n\n Vzdálenost míčku od Středu:",center_dist,"\nVzdálenost míčku od garáže:", self.distance,"\n")
-        if self.distance is None or self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
-            space_detect_time = get_time()
-            self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION)
 
-        else:
-            if abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
-                space_detect_time = get_time()
-                print("Poloviční výjezd")
-                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION/2)
-            else:
-                print("Přeskočení funkce povyjetí z garáže")
+        print("\n\n Vzdálenost míčku od Středu:",center_dist,"\nVzdálenost míčku od garáže:", self.distance,"\n")
+        #if doesn't see ball or ball is far enough to drives forward for full duration
+        if self.distance is None or self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
+            self.exit_garage(rate, EXIT_GARAGE_DURATION)
+        #ball is in FOV near center drives forward for half duration
+        elif abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
+            self.exit_garage(rate, EXIT_GARAGE_DURATION/2)
 
         ## find and ball turn on to it
         if not turtle.is_shutting_down():
@@ -189,8 +186,7 @@ class Ferenc:
             self.rotate_to_angle(0, rate, point_of_return = False)
             obstacle_dist = get_depth(turtle, 320, 240, 100)
             if obstacle_dist is None or obstacle_dist > 0.4:
-                space_detect_time = get_time()
-                self.exit_garage(rate, space_detect_time, EXIT_GARAGE_DURATION)
+                self.exit_garage(rate, EXIT_GARAGE_DURATION)
             self.rotate_toward_ball(rate)
             self.drive_toward_ball(rate, 0.58)
 
@@ -222,7 +218,7 @@ class Ferenc:
 
         self._stop_and_wait(rate)
 
-    def  exit_garage(self, rate, space_detect_time, exit_time) -> None:
+    def  exit_garage(self, rate, exit_time) -> None:
         """
         Drive forward out of the garage for a fixed time after exit detection.
         
@@ -231,10 +227,9 @@ class Ferenc:
         
         Args:
             rate: A Rate object used to control timing.
-            space_detect_time (float): Timestamp (from get_time()) at which
-                the open space was first detected.
             exit_time: How long should ferenc drive from the garage
         """
+        space_detect_time = get_time()
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
