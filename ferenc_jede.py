@@ -551,6 +551,8 @@ class Ferenc:
             print("combinated error", x, y)
             print("calculated final vector", final_vector)
             print("calculated final angle", angle)
+            print("meassured previous distance", self.distance)
+            print("meassured distancewith error", sqrt(final_vector[0]^2 + final_vector[1]^2))
             print("instead of angle", self.normalize_angle(point[2]))
 
             self.rotate_to_angle(angle, rate, point_of_return)
