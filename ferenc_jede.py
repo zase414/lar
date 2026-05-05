@@ -173,16 +173,16 @@ class Ferenc:
         print("Vzdálenost míčku od garáže po výjezdu ",self.distance)
         if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
             final_ball_distance = 0.31  # 31 cm before ball stop
-            if self.distance > 1.6:
+            if self.distance > 1.5:
                 ball_is_far = True
                 ball_return_closer_dist = 0.025
             else:
-                ball_return_closer_dist = 0.01
+                ball_return_closer_dist = 0.015
             ## drives until ball is 58 cm infront of camera
             if not turtle.is_shutting_down() and not ball_is_far:
                 self.drive_toward_ball(rate, 0.58)
         else:
-            ball_return_closer_dist = 0.01
+            ball_return_closer_dist = 0.012
 
         # pokud je Ferenc od míče hodně daleko, tak ještě popojede dopředu a pak k němu přijede
         if not turtle.is_shutting_down() and ball_is_far:
