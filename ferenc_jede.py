@@ -822,7 +822,7 @@ class Ferenc:
 
             pid_output = proportional + (RETURN_PID_KI * integral) + (RETURN_PID_KD * derivative)
 
-            turtle.cmd_velocity(linear=0.24, angular=pid_output)
+            turtle.cmd_velocity(linear=0.18, angular=pid_output)
 
             prev_error = error
             prev_time = current_time
