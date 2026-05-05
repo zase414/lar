@@ -145,11 +145,9 @@ class Ferenc:
         # spin until robot finds garage exit
         self.find_exit(rate)
 
-        final_ball_distance = 0.292     # 29 cm before ball stop with certainty
-        self.distance = self.average_depth()
-        ball_is_far = False
 
-        #
+        #measure distance to ball and its location with camera
+        self.distance = self.average_depth()
         (cx, _), _ = detect_ball(turtle)
         rate.sleep()
         center_dist = BALL_ROTATION_CAMERA_CENTER_X - cx
@@ -162,34 +160,35 @@ class Ferenc:
         elif abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
             self.exit_garage(rate, EXIT_GARAGE_DURATION/2)
 
-        ## find and ball turn on to it
+        #rotate towards ball
         if not turtle.is_shutting_down():
             self.rotate_toward_ball(rate)
 
+        #measure distance after it exits garage
         self.distance = self.average_depth()
-        print("Vzdálenost míčku od garáže po výjezdu ",self.distance)
-        if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
-            final_ball_distance = 0.312  # 31 cm before ball stop with certainty
-            if self.distance > 1.5:
-                ball_is_far = True
-                ball_return_closer_dist = 0.025
-            else:
-                ball_return_closer_dist = 0.015
-            ## drives until ball is 58 cm infront of camera
-            if not turtle.is_shutting_down() and not ball_is_far:
-                self.drive_toward_ball(rate, 0.58)
-        else:
-            ball_return_closer_dist = 0.012
 
-        # if Ferenc is far from ball even when exiting garaga, then go forward again and go home by camera
+        print("Vzdálenost míčku od garáže po výjezdu ",self.distance)
+
+        ball_is_far = self.distance > 1.5
+        ball_return_closer_dist = 0.025 if self.distance > 1.5 else 0.012
+        final_ball_distance = 0.312 if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT else 0.292  # 31 cm or 29 cm before ball stop with certainty
+
+        # if Ferenc is far from ball drive forward from garage and only then drive toward ball 
         if not turtle.is_shutting_down() and ball_is_far:
+            #rotates back
             self.rotate_to_angle(0, rate, point_of_return = False)
             obstacle_dist = get_depth(turtle, 320, 240, 100)
+            #no distance in front of robot, drive a bit forward again
             if obstacle_dist is None or obstacle_dist > 0.4:
                 self.exit_garage(rate, EXIT_GARAGE_DURATION)
+
             self.rotate_toward_ball(rate)
             self.drive_toward_ball(rate, 0.58)
 
+        #ball is not that far and not that close goes toward ball
+        elif not turtle.is_shutting_down() and self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
+            self.drive_toward_ball(rate, 0.58)
+        
         if not turtle.is_shutting_down():
             self.drive_around_ball(rate, final_ball_distance, ball_return_closer_dist)
 
