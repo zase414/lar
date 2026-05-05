@@ -47,7 +47,7 @@ class Ferenc:
         Initialize the Ferenc robot controller.
         
         Sets up the Turtlebot with RGB and point cloud sensors, initializes
-        the stop flag, and sets return navigation parameters to zero.
+        the stop flag, and sets return navigation and distance parameters to zero.
         """
         self.turtle = Turtlebot(rgb=True, pc=True)
         self.stop = False
@@ -73,31 +73,32 @@ class Ferenc:
             return True
         return False
 
-    def _get_pose(self) -> Tuple[float,float,float]:
+    def _get_coords(self) -> Tuple[float,float,float]:
         """
-        Retrieve the robot's current odometry pose.
+        Retrieve the robot's current odometry coords.
         
         Returns:
-            tuple[float, float, float]: The (x, y, theta) position and heading.
+            tuple[float, float, float]: The (x, y, theta) position and angle.
         """
         x, y, theta = self.turtle.get_odometry()
         return x, y, theta
+
     def _get_x(self) -> float:
         """
-        Retrieve the robot's current odometry x position.
+        Retrieve the robot's current odometry x coordinate.
         
         Returns:
             float: The x coordinate
         """
-        return self._get_pose()[0]
+        return self._get_coords()[0]
     def _get_y(self) -> float:
         """
-        Retrieve the robot's current odometry y position.
+        Retrieve the robot's current odometry y coordinate.
         
         Returns:
             float: The y coordinate
         """
-        return self._get_pose()[1]
+        return self._get_coords()[1]
     def _get_angle(self) -> float:
         """
         Retrieve the robot's current odometry angle.
@@ -105,7 +106,7 @@ class Ferenc:
         Returns:
             float: The angle
         """
-        return self._get_pose()[2]
+        return self._get_coords()[2]
 
     def _stop_and_wait(self, rate):
         """
@@ -122,7 +123,7 @@ class Ferenc:
         Execute the full sequence.
         
         Initializes sensors and callbacks, then runs the robot through its
-        complete mission: exiting the garage, locating and circling the ball,
+        complete mission: exiting the garage, locating and driving around the ball
         and returning to the starting position.
         """
         turtle = self.turtle
@@ -200,8 +201,8 @@ class Ferenc:
         """
         Spin in place until an open space is detected in front of the robot.
         
-        Rotates continuously at a fixed angular velocity, polling the point
-        cloud on each cycle, and stops as soon as a clear path is found.
+        Rotates continuously at a fixed angular velocity, getting point
+        cloud data on each cycle, and stops as soon as a clear path is found.
         
         Args:
             rate: A Rate object used to control timing.
@@ -222,8 +223,8 @@ class Ferenc:
         """
         Drive forward out of the garage for a fixed time after exit detection.
         
-        Resets odometry, then moves forward with a small angular offset for
-        2 seconds to clear the garage entrance cleanly.
+        Resets odometry, then moves forward for
+        fixed time with given speed to exit the garage.
         
         Args:
             rate: A Rate object used to control timing.
@@ -322,13 +323,13 @@ class Ferenc:
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """
-        Drive forward until the ball is approximately final_dist metres away.
+        Drive forward until the ball is approximately final_dist away.
         
         Uses depth readings from the point cloud to measure distance to the
-        ball and applies P-regulated linear velocity. Falls back to
-        rotate_toward_ball if the ball is lost for too many consecutive frames.
+        ball and applies P-regulated linear velocity.
         Accumulates the distance driven into self.return_distance.
-        
+        If the ball is not seen for few consecutive times, then it aborts.
+
         Args:
             rate: A Rate object used to control timing.
             final_dist (float): Target stopping distance from the ball in metres.
