@@ -401,6 +401,7 @@ class Ferenc:
         rate.sleep()
 
         dist = self.average_depth()
+        print("Vzdálenost po příjezdu přes kameru: ", dist)
         if dist is None:
             print("Object not seen")
             return
