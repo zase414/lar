@@ -540,13 +540,6 @@ class Ferenc:
 
             angle = atan2(final_vector[1], final_vector[0])
 
-            print("combinated error", x, y)
-            print("calculated final vector", final_vector)
-            print("calculated final angle", angle)
-            print("meassured previous distance", self.return_distance)
-            print("meassured distancewith error", sqrt(final_vector[0]**2 + final_vector[1]**2))
-            print("instead of angle", self.normalize_angle(point[2]))
-
             self.rotate_to_angle(angle, rate, point_of_return)
 
         self._stop_and_wait(rate)
@@ -578,7 +571,6 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                # dist_diff = wanted_distance - final_distance
                 self.go_forward(cur_coords[2], 0, dist_diff = None , prefered_lin_vel = 0.08)
 
             cur_coords = turtle.get_odometry()
@@ -707,32 +699,30 @@ class Ferenc:
         """
         turtle = self.turtle
 
-        # --- P Term ---
-        p_term = P_ANGULAR_KP * angle_diff
+        # --- P ---
+        p_action = P_ANGULAR_KP * angle_diff
 
-        # --- I Term ---
+        # --- I ---
         self.integral_error += (angle_diff * dt)
         max_i_accumulated = MAX_I_TERM / (P_ANGULAR_KI if P_ANGULAR_KI > 0 else 1)  # Prevent div by zero
         self.integral_error = max(min(self.integral_error, max_i_accumulated), -max_i_accumulated)
-        i_term = P_ANGULAR_KI * self.integral_error
+        i_action = P_ANGULAR_KI * self.integral_error
 
-        # --- D Term ---
-        # 2. Calculate the rate of change of the error
+        # --- D ---
         if dt > 0:
             derivative = (angle_diff - self.previous_error) / dt
         else:
             derivative = 0.0
 
-        d_term = P_ANGULAR_KD * derivative
+        d_action = P_ANGULAR_KD * derivative
 
-        # 3. Update previous error for the NEXT loop
+        # Update previous error for the NEXT loop
         self.previous_error = angle_diff
 
         # --- Combine PID ---
-        # 4. Add all three terms together
-        ang_vel = p_term + i_term + d_term
+        ang_vel = p_action + i_action + d_action
 
-        # --- Output Clamping ---
+        # --- Output limitation ---
         if 0 < ang_vel < P_ANGULAR_MIN_SPEED:
             ang_vel = P_ANGULAR_MIN_SPEED
         elif 0 > ang_vel > -P_ANGULAR_MIN_SPEED:
@@ -751,11 +741,12 @@ class Ferenc:
         
         Args:
             rate: A Rate object used to control loop timing.
+            gohome_mode: True if robot should return to garage by camera
         """
         turtle = self.turtle
         turtle.reset_odometry()
         rate.sleep()
-        #drives back the distance
+        # drives back the distance it drove
         dist = self.return_distance
         if not turtle.is_shutting_down():
             self.go_ptp([dist,0,0], rate)
