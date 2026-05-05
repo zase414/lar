@@ -135,9 +135,9 @@ class Ferenc:
         rate = Rate(10)
 
         # waiting for start button
-        print("Zmáčkněte tlačítko B0 pro start!")
-        while not turtle.is_shutting_down() and not self.start:
-            rate.sleep()
+        #print("Zmáčkněte tlačítko B0 pro start!")
+        #while not turtle.is_shutting_down() and not self.start:
+        #    rate.sleep()
 
         print("Ferenc jede!")
 
