@@ -386,7 +386,6 @@ class Ferenc:
         dist = get_depth(turtle, center_x, center_y, radius)
         if dist is None:
             print("NO DISTANCE!!!")
-            dist = 0
         #save this drive to robot
         distance_of_ball = self._get_x()
         self.return_distance += distance_of_ball
@@ -397,7 +396,8 @@ class Ferenc:
         Drive around the ball along a hexagonal path.
         
         Measures the current distance to the ball, drives to the desired
-        stand-off distance, computes hexagon waypoints centred on the ball,
+        close distance (ferenc does not see the ball any longer),
+        computes hexagon waypoints centred on the ball,
         and visits each waypoint in sequence using go_ptp.
         
         Args:
@@ -485,7 +485,7 @@ class Ferenc:
         Args:
             point (list[float]): Target waypoint as [x, y, angle].
             rate: A Rate object used to control loop timing.
-            point_of_return (bool): If True, rotate to point[2] after arriving.
+            point_of_return (bool): If True, calculate angle to garage return point after arriving.
         """
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
@@ -557,7 +557,7 @@ class Ferenc:
             wanted_distance (float): Desired final stand-off distance in metres.
             starting_distance (float): Measured distance to the ball before closing.
             rate: A Rate object used to control loop timing.
-            ball_return_closer_dist: how far from garage return point ferenc should stop
+            ball_return_closer_dist: ow far from garage return point should ferenc stop
         Returns:
             float: The final computed distance to the ball after closing.
         """
@@ -628,7 +628,7 @@ class Ferenc:
         
         Computes angular velocity to correct heading error and linear velocity
         either from a P-controller on dist_diff or from a preferred constant
-        speed, capping both at their respective maxima.
+        speed, capping both at their respective maximum.
         
         Args:
             current_angle (float): Robot's current heading in radians.
