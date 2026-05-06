@@ -104,8 +104,8 @@ def detect_ball(turtle) -> Tuple[Tuple[int, int], int]:
             if circularity > BALL_CIRCULARITY_THRESH:
                 (x, y), radius = cv2.minEnclosingCircle(c)
                 center = (int(x), int(y))
-                cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
-                cv2.circle(filtered, center, 2, (0, 0, 255), 3)
+                # cv2.circle(filtered, center, int(radius), (0, 255, 0), 2)
+                # cv2.circle(filtered, center, 2, (0, 0, 255), 3)
 
     #cv2.imshow("CONTOURS", filtered)
     #cv2.imshow("IMAGE", im)
@@ -160,10 +160,10 @@ def detect_rectangles(turtle) -> Optional[List[Vec2Int]]:
 
     ret: List[Vec2Int] = []
     for (x, y, w, h) in vertical_rects[:2]:
-        cv2.rectangle(filtered, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # cv2.rectangle(filtered, (x, y), (x + w, y + h), (0, 255, 0), 2)
         center_x = x + w // 2
         center_y = y + h // 2
-        cv2.circle(filtered, (center_x, center_y), 2, (255, 0, 0), 3)
+        # cv2.circle(filtered, (center_x, center_y), 2, (255, 0, 0), 3)
         ret.append((center_x, center_y))
 
     avg_x = (ret[0][0] + ret[1][0]) // 2
