@@ -2,7 +2,7 @@ from typing import List
 from math import pi, cos, sqrt, sin, atan2
 
 
-def _normalize_angle(angle) -> float:
+def normalize_angle(angle) -> float:
     """
     Wrap an angle into the range (-pi, pi].
 
