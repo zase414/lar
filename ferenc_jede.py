@@ -330,6 +330,7 @@ class Ferenc:
             consecutive_ignores = 0
             while not turtle.is_shutting_down() and not self._handle_stop():
                 (cx, _), _ = detect_ball(turtle)
+                print("center found on", cx)
                 dist = BALL_ROTATION_CAMERA_CENTER_X - cx
 
                 if abs(dist) <= BALL_ROTATION_TOLERANCE_PIXEL_BAND:
@@ -343,6 +344,7 @@ class Ferenc:
                 else:
                     consecutive_ignores = 0
 
+                print("im turning now")
                 if dist > 0:
                     turtle.cmd_velocity(0, 3.2*P_ANGULAR_MIN_SPEED)
                 else:
