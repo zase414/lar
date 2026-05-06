@@ -1,3 +1,7 @@
+from typing import List
+from math import pi, cos, sqrt, sin, atan2
+
+
 def _normalize_angle(angle) -> float:
     """
     Wrap an angle into the range (-pi, pi].
@@ -10,7 +14,7 @@ def _normalize_angle(angle) -> float:
     """
     return (angle + pi) % (2 * pi) - pi
 
-def calculate_points(dist, coords) -> List[List[float]]:
+def calculate_points(dist, coords, ball_radius) -> List[List[float]]:
     """
     Compute the waypoints of a hexagon encircling the ball (counterclockwise).
     
@@ -31,22 +35,22 @@ def calculate_points(dist, coords) -> List[List[float]]:
         angle = i * (pi / 3)
         if i == 0:
             # pythagoras theorem
-            y = -(cos(pi / 6) * (dist + BALL_RADIUS))
-            x = sqrt(((dist + BALL_RADIUS) ** 2) - (y ** 2))
+            y = -(cos(pi / 6) * (dist + ball_radius))
+            x = sqrt(((dist + ball_radius) ** 2) - (y ** 2))
 
         if i == 1:
-            x += dist + BALL_RADIUS
+            x += dist + ball_radius
 
         if i == 2:
             y = coords[1]
-            x += sin(pi / 6) * (dist + BALL_RADIUS)
+            x += sin(pi / 6) * (dist + ball_radius)
 
         if i == 3:
-            y = cos(pi / 6) * (dist + BALL_RADIUS)
-            x -= sin(pi / 6) * (dist + BALL_RADIUS)
+            y = cos(pi / 6) * (dist + ball_radius)
+            x -= sin(pi / 6) * (dist + ball_radius)
 
         if i == 4:
-            x -= dist + BALL_RADIUS
+            x -= dist + ball_radius
             angle = -2 * (pi / 3)
 
         points.append([x, y, angle])

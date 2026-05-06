@@ -456,7 +456,7 @@ class Ferenc:
         rate.sleep()
         current_coords = turtle.get_odometry()
         # calculate hexagon trajectory
-        points = calculate_points(final_dist, current_coords)
+        points = calculate_points(final_dist, current_coords, BALL_RADIUS)
 
         # go from point to point for each point of the hexagon
         p_num = 0
