@@ -6,6 +6,7 @@ from robolab_turtlebot import Turtlebot, Rate, get_time, sleep
 from math import pi, cos, sqrt, sin, atan2
 from typing import Optional, Tuple, List
 import cv2
+import numpy as np
 
 from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth, detect_rectangles
