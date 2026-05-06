@@ -173,7 +173,8 @@ class Ferenc:
         print("Vzdálenost míčku od garáže po výjezdu ",self.distance_to_ball)
 
         ball_is_far = self.distance_to_ball > 1
-        ball_return_closer_dist = 0.025 if self.distance_to_ball > 1 else -0.01
+        ball_return_closer_dist = 0.025 if self.distance_to_ball > 1 else np.sign (self.return_angle) * -0.01
+        print("ball closer is", ball_return_closer_dist)
         final_ball_distance = 0.312 if self.distance_to_ball >= BALL_DISTANCE_TO_SKIP_EXIT else 0.292  # 31 cm or 29 cm before ball stop with certainty
 
         # if Ferenc is far from ball drive forward from garage and only then drive toward ball 
