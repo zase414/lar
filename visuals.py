@@ -132,7 +132,7 @@ def detect_rectangles(turtle) -> Optional[List[Vec2Int]]:
     if im is None:
         return None
 
-    cv2.imshow("IMAGE", im)
+    # cv2.imshow("IMAGE", im)
     hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
 
     lower_bound = np.array([RECT_HUE_LOW,   RECT_SAT_MIN,   RECT_VALUE_MIN])
@@ -170,7 +170,7 @@ def detect_rectangles(turtle) -> Optional[List[Vec2Int]]:
     avg_y = (ret[0][1] + ret[1][1]) // 2
     ret.append((avg_x, avg_y))
     cv2.circle(filtered, (avg_x, avg_y), 2, (0, 255, 0), 3)
-    cv2.imshow("contours", filtered)
+    # cv2.imshow("contours", filtered)
 
     return ret
 
