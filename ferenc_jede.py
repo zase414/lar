@@ -9,6 +9,7 @@ import cv2
 
 from callbacks import callback_bumper_stop, callback_button0_resume
 from visuals import detect_ball, space_infront, get_depth, detect_rectangles
+from utils import normalize_angle, calculate_points
 
 BALL_DISTANCE_TO_SKIP_EXIT = 0.82
 EXIT_GARAGE_DURATION = 3.25
@@ -56,7 +57,7 @@ class Ferenc:
         self.return_distance = 0.0
         self.integral_error = 0.0
         self.previous_error = 0.0
-        self.distance = 0.0
+        self.distance_to_ball = 0.0
 
     def _handle_stop(self) -> bool:
         """
@@ -120,17 +121,18 @@ class Ferenc:
         self.turtle.cmd_velocity(0, 0)
         rate.sleep()
 
-    def _normalize_angle(self, angle) -> float:
-        """
-        Wrap an angle into the range (-pi, pi].
-
-        Args:
-            angle (float): Angle in radians.
-
-        Returns:
-            float: Equivalent angle in (-pi, pi].
-        """
-        return (angle + pi) % (2 * pi) - pi
+    def initialize_turtle_and_wait(self, rate) -> Turtlebot:
+        turtle = self.turtle
+        turtle.wait_for_point_cloud()
+        # initialize bumber and buttons
+        turtle.register_bumper_event_cb(lambda msge : callback_bumper_stop(self, msge))
+        turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
+         # start on button press
+        print("Zmáčkněte tlačítko B0 pro start!")
+        while not turtle.is_shutting_down() and not self.start:
+           rate.sleep()
+        print("Ferenc jede!")
+        return turtle
 
     def main(self):
         """
@@ -140,36 +142,22 @@ class Ferenc:
         complete mission: exiting the garage, locating and driving around the ball
         and returning to the starting position.
         """
-        turtle = self.turtle
-        turtle.wait_for_point_cloud()
 
-        # initialize bumber and buttons
-        turtle.register_bumper_event_cb(lambda msge : callback_bumper_stop(self, msge))
-        turtle.register_button_event_cb(lambda msge : callback_button0_resume(self, msge))
-
-        # rate
         rate = Rate(10)
-
-        # waiting for start button
-        #print("Zmáčkněte tlačítko B0 pro start!")
-        #while not turtle.is_shutting_down() and not self.start:
-        #    rate.sleep()
-
-        print("Ferenc jede!")
+        turtle = self.initialize_turtle_and_wait(rate)
 
         # spin until robot finds garage exit
         self.find_exit(rate)
 
-
         #measure distance to ball and its location with camera
-        self.distance = self.average_depth()
+        self.distance_to_ball = self.get_average_ball_depth(3)
         (cx, _), _ = detect_ball(turtle)
         rate.sleep()
         center_dist = BALL_ROTATION_CAMERA_CENTER_X - cx
 
-        print("\n\n Vzdálenost míčku od Středu:",center_dist,"\nVzdálenost míčku od garáže:", self.distance,"\n")
+        print("\n\n Vzdálenost míčku od středu:",center_dist,"\nVzdálenost míčku od garáže:", self.distance_to_ball,"\n")
         #if doesn't see ball or ball is far enough to drives forward for full duration
-        if self.distance is None or self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
+        if self.distance_to_ball is None or self.distance_to_ball >= BALL_DISTANCE_TO_SKIP_EXIT:
             self.exit_garage(rate, EXIT_GARAGE_DURATION)
         #ball is in FOV near center drives forward for half duration
         elif abs(center_dist) > EXIT_CENTER_TOLERANCE_PIXEL_BAND:
@@ -180,13 +168,13 @@ class Ferenc:
             self.rotate_toward_ball(rate)
 
         #measure distance after it exits garage
-        self.distance = self.average_depth()
+        self.distance_to_ball = self.get_average_ball_depth(3)
 
-        print("Vzdálenost míčku od garáže po výjezdu ",self.distance)
+        print("Vzdálenost míčku od garáže po výjezdu ",self.distance_to_ball)
 
-        ball_is_far = self.distance > 1.5
-        ball_return_closer_dist = 0.025 if self.distance > 1.5 else 0.01
-        final_ball_distance = 0.312 if self.distance >= BALL_DISTANCE_TO_SKIP_EXIT else 0.292  # 31 cm or 29 cm before ball stop with certainty
+        ball_is_far = self.distance_to_ball > 1.5
+        ball_return_closer_dist = 0.025 if self.distance_to_ball > 1.5 else 0
+        final_ball_distance = 0.312 if self.distance_to_ball >= BALL_DISTANCE_TO_SKIP_EXIT else 0.292  # 31 cm or 29 cm before ball stop with certainty
 
         # if Ferenc is far from ball drive forward from garage and only then drive toward ball 
         if not turtle.is_shutting_down() and ball_is_far:
@@ -201,7 +189,7 @@ class Ferenc:
             self.drive_toward_ball(rate, 0.58)
 
         #ball is not that far and not that close goes toward ball
-        elif not turtle.is_shutting_down() and self.distance >= BALL_DISTANCE_TO_SKIP_EXIT:
+        elif not turtle.is_shutting_down() and self.distance_to_ball >= BALL_DISTANCE_TO_SKIP_EXIT:
             self.drive_toward_ball(rate, 0.58)
         
         if not turtle.is_shutting_down():
@@ -232,7 +220,7 @@ class Ferenc:
 
         self._stop_and_wait(rate)
 
-    def  exit_garage(self, rate, exit_time) -> None:
+    def exit_garage(self, rate, exit_time) -> None:
         """
         Drive forward out of the garage for a fixed time after exit detection.
         
@@ -273,7 +261,7 @@ class Ferenc:
                 used when dist_diff is None.
         """
         turtle = self.turtle
-        angle_diff = self._normalize_angle(needed_angle - current_angle)
+        angle_diff = normalize_angle(needed_angle - current_angle)
 
         # based on how off course is our robot rotated >>> steer it to go straight
         Kp_ang = 0.8
@@ -320,8 +308,7 @@ class Ferenc:
                 continue
 
             # sees something - measure
-            turtle.cmd_velocity(0, 0)
-            rate.sleep()
+            self._stop_and_wait(rate)
 
             measurements = []
             for _ in range(5):
@@ -367,7 +354,7 @@ class Ferenc:
 
         # save this drive to robot
         ball_angle = self._get_angle()
-        self.return_angle = -1*self._normalize_angle(ball_angle)
+        self.return_angle = -1 * normalize_angle(ball_angle)
 
     def drive_toward_ball(self, rate, final_dist) -> None:
         """
@@ -458,7 +445,7 @@ class Ferenc:
         rate.sleep()
         rate.sleep()
 
-        dist = self.average_depth()
+        dist = self.get_average_ball_depth(3)
         if dist is None:
             print("Object not seen")
             return
@@ -469,7 +456,7 @@ class Ferenc:
         rate.sleep()
         current_coords = turtle.get_odometry()
         # calculate hexagon trajectory
-        points = self.calculate_points(final_dist, current_coords)
+        points = calculate_points(final_dist, current_coords)
 
         # go from point to point for each point of the hexagon
         p_num = 0
@@ -480,7 +467,7 @@ class Ferenc:
                 point_of_return = True
             self.go_ptp(point, rate, point_of_return)
 
-    def average_depth(self) -> Optional[float]:
+    def get_average_ball_depth(self, samples: int) -> Optional[float]:
         """
         Compute an averaged depth reading to the ball over three samples.
 
@@ -494,7 +481,7 @@ class Ferenc:
         turtle = self.turtle
         distance_sum = 0
         avg_den = 0
-        for i in range(3):
+        for i in range(samples):
             (center_x, center_y), radius = detect_ball(turtle)
             dist = get_depth(turtle, center_x, center_y, radius)
             if dist is None:
@@ -544,53 +531,6 @@ class Ferenc:
         self._stop_and_wait(rate)
         self.return_distance += starting_distance - final_distance - ball_return_closer_dist
         return final_distance
-
-    def calculate_points(self, dist, coords) -> List[List[float]]:
-        """
-        Compute the waypoints of a hexagon encircling the ball (counterclockwise).
-        
-        Args:
-            dist (float): Stand-off distance from the ball centre to the robot.
-            coords (tuple): Current odometry pose (x, y, theta).
-        
-        Returns:
-            list[list[float]]: A list of [x, y, angle] waypoints.
-        """
-        points = []
-
-        # make all the points of a hexagon
-        x = 0
-        y = 0
-
-        for i in range(5):
-            angle = i * (pi / 3)
-            if i == 0:
-                # pythagoras theorem
-                y = -(cos(pi / 6) * (dist + BALL_RADIUS))
-                x = sqrt(((dist + BALL_RADIUS) ** 2) - (y ** 2))
-
-            if i == 1:
-                x += dist + BALL_RADIUS
-
-            if i == 2:
-                y = coords[1]
-                x += sin(pi / 6) * (dist + BALL_RADIUS)
-
-            if i == 3:
-                y = cos(pi / 6) * (dist + BALL_RADIUS)
-                x -= sin(pi / 6) * (dist + BALL_RADIUS)
-
-            if i == 4:
-                x -= dist + BALL_RADIUS
-                angle = -2 * (pi / 3)
-
-            points.append([x, y, angle])
-
-        # point of return
-        # starting point, but ferenc is looking the other way
-        points.append([coords[0], coords[1], coords[2] + pi])
-
-        return points
 
     def go_ptp(self, point, rate, point_of_return = False):
         """
@@ -673,7 +613,7 @@ class Ferenc:
         """
         turtle = self.turtle
         cur_coords = turtle.get_odometry()
-        angle_diff = self._normalize_angle(angle - cur_coords[2])
+        angle_diff = normalize_angle(angle - cur_coords[2])
         if point_of_return:
             threshold = BALL_ROTATION_ANGLE_THRESHOLD * 0.4
         else:
@@ -685,7 +625,7 @@ class Ferenc:
                 self.angular_PID_reg(angle_diff, 0.1)
 
             cur_coords = turtle.get_odometry()
-            angle_diff = self._normalize_angle(angle - cur_coords[2])
+            angle_diff = normalize_angle(angle - cur_coords[2])
 
             rate.sleep()
         self.integral_error = 0.0
@@ -721,10 +661,10 @@ class Ferenc:
         # Update previous error for the NEXT loop
         self.previous_error = angle_diff
 
-        # --- Combine PID ---
+        # --- PID ---
         ang_vel = p_action + i_action + d_action
 
-        # --- Output limitation ---
+        # --- Limits ---
         if 0 < ang_vel < P_ANGULAR_MIN_SPEED:
             ang_vel = P_ANGULAR_MIN_SPEED
         elif 0 > ang_vel > -P_ANGULAR_MIN_SPEED:
@@ -864,7 +804,6 @@ class Ferenc:
 
         self._stop_and_wait(rate)
         cv2.destroyAllWindows()
-
 
 if __name__ == "__main__":
     ferenc = Ferenc()
