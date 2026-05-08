@@ -11,3 +11,11 @@ robolab_turtlebot bringup_realsense_D435.launch
 
 ### 2nd console: run python:
 python3 /opt/ros/lar/share/robolab_turtlebot/scripts/bumper_test.py
+
+
+
+
+
+
+#Buildeni
+sphinx-build -b html docs/ docs/_build/html
