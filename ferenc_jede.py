@@ -123,6 +123,15 @@ class Ferenc:
         rate.sleep()
 
     def initialize_turtle_and_wait(self, rate) -> Turtlebot:
+        """
+            Initializes the turtle's point cloud, sets up callbacks and waits for the
+            B0 button.
+
+            Args:
+                rate (Rate): The robolab turtlebot Rate object.
+            Returns:
+                Turtlebot
+        """
         turtle = self.turtle
         turtle.wait_for_point_cloud()
         # initialize bumber and buttons
@@ -135,13 +144,12 @@ class Ferenc:
         print("Ferenc jede!")
         return turtle
 
-    def main(self):
+    def main(self) -> None:
         """
         Execute the full sequence.
         
         Initializes sensors and callbacks, then runs the robot through its
-        complete mission: exiting the garage, locating and driving around the ball
-        and returning to the starting position.
+        complete mission.
         """
 
         rate = Rate(10)
@@ -536,7 +544,7 @@ class Ferenc:
         self.return_distance += starting_distance - final_distance - ball_return_closer_dist
         return final_distance
 
-    def go_ptp(self, point, rate, point_of_return = False):
+    def go_ptp(self, point, rate, point_of_return = False) -> None:
         """
         Navigate to a single waypoint using rotate-then-drive control.
         
@@ -603,7 +611,7 @@ class Ferenc:
         self._stop_and_wait(rate)
 
 
-    def rotate_to_angle(self, angle, rate, point_of_return):
+    def rotate_to_angle(self, angle, rate, point_of_return) -> None:
         """
         Rotate in place until the robot's heading matches the target angle.
 
@@ -635,7 +643,7 @@ class Ferenc:
         self.integral_error = 0.0
         self.previous_error = 0.0
 
-    def angular_PID_reg(self, angle_diff, dt):
+    def angular_PID_reg(self, angle_diff, dt) -> None:
         """
         PID-regulated angular velocity rotation.
 
@@ -678,7 +686,7 @@ class Ferenc:
 
         turtle.cmd_velocity(0, ang_vel)
 
-    def return_to_garage_from_odometry(self, rate, gohome_mode = False):
+    def return_to_garage_from_odometry(self, rate, gohome_mode = False) -> None:
         """
         Return the robot to its garage starting position.
         
@@ -708,7 +716,7 @@ class Ferenc:
             else:
                 self.go_in(rate)
 
-    def go_in(self, rate):
+    def go_in(self, rate) -> None:
         """
         Drive forward into the garage until the robot reaches the target depth.
 
@@ -743,14 +751,13 @@ class Ferenc:
                     break
             rate.sleep()
 
-    def go_home(self, rate):
+    def go_home(self, rate) -> None:
         """
         Navigate back to the garage using visual detection of the gate markers.
         
         Applies a PID controller on the horizontal error between the detected
         gate centre marker and the screen centre to steer toward the garage.
-        Rotates in place if the gate is not yet visible. Once the gate fills
-        the frame, switches to depth-based forward control to complete parking.
+        Rotates in place if the gate is not yet visible.
         
         Args:
             rate: A Rate object used to control loop timing.

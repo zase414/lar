@@ -36,18 +36,18 @@ SPACE_METRES_INFRONT = 0.6
 SPACE_MASK_SIZE_NEEDED = 50
 
 
-def main() -> None:
-    """Entry point. Initialises the robot and runs the ball-detection loop."""
-    turtle = Turtlebot(rgb=True, pc=True)
-    sleep(2)
-    rate = Rate(10)
+# def main() -> None:
+#     """Entry point. Initialises the robot and runs the ball-detection loop."""
+#     turtle = Turtlebot(rgb=True, pc=True)
+#     sleep(2)
+#     rate = Rate(10)
 
-    while True:
-        (center_x, _), _ = detect_ball(turtle=turtle)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+#     while True:
+#         (center_x, _), _ = detect_ball(turtle=turtle)
+#         if cv2.waitKey(1) & 0xFF == ord('q'):
+#             break
 
-    cv2.destroyAllWindows()
+#     cv2.destroyAllWindows()
 
 
 def mouse_callback(event, x, y, flags, param) -> None:
@@ -269,5 +269,5 @@ def get_depth(turtle, center_x, center_y, radius) -> Optional[float]:
     return average_depth
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
