@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>lar documentation &#8212; lar 8.5.2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=0188d8a5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="lar-documentation">
+<h1>lar documentation<a class="headerlink" href="#lar-documentation" title="Link to this heading">¶</a></h1>
+<p>Add your content using <code class="docutils literal notranslate"><span class="pre">reStructuredText</span></code> syntax. See the
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html">reStructuredText</a>
+documentation for details.</p>
+<div class="toctree-wrapper compound">
+</div>
+<dl class="py class" id="module-ferenc_jede">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ferenc_jede.</span></span><span class="sig-name descname"><span class="pre">Ferenc</span></span><a class="headerlink" href="#ferenc_jede.Ferenc" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.angular_PID_reg">
+<span class="sig-name descname"><span class="pre">angular_PID_reg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle_diff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.angular_PID_reg" title="Link to this definition">¶</a></dt>
+<dd><p>PID-regulated angular velocity rotation.</p>
+<p>Args:
+angle_diff (float): Signed angular error in radians.
+dt (float): Delta time (seconds) since the last control loop.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.drive_around_ball">
+<span class="sig-name descname"><span class="pre">drive_around_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_ball_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ball_return_closer_dist</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.drive_around_ball" title="Link to this definition">¶</a></dt>
+<dd><p>Drive around the ball along a hexagonal path.</p>
+<p>Measures the current distance to the ball, drives to the desired
+close distance (ferenc does not see the ball any longer),
+computes hexagon waypoints centred on the ball,
+and visits each waypoint in sequence using go_ptp.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rate: A Rate object used to control timing.
+final_ball_dist: Distance in front of the ball
+ball_return_closer_dist: how far from garage return point ferenc should stop</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.drive_closer">
+<span class="sig-name descname"><span class="pre">drive_closer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wanted_distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ball_return_closer_dist</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.drive_closer" title="Link to this definition">¶</a></dt>
+<dd><p>Drive forward until the robot is wanted_distance from the ball.</p>
+<p>Uses odometry to infer remaining distance when the ball may be too
+close for reliable depth sensing. Accumulates the distance driven into
+self.return_distance.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>wanted_distance (float): Desired final stand-off distance in metres.
+starting_distance (float): Measured distance to the ball before closing.
+rate: A Rate object used to control loop timing.
+ball_return_closer_dist: ow far from garage return point should ferenc stop</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: The final computed distance to the ball after closing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.drive_toward_ball">
+<span class="sig-name descname"><span class="pre">drive_toward_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_dist</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.drive_toward_ball" title="Link to this definition">¶</a></dt>
+<dd><p>Drive forward until the ball is approximately final_dist away.</p>
+<p>Uses depth readings from the point cloud to measure distance to the
+ball and applies P-regulated linear velocity.
+Accumulates the distance driven into self.return_distance.
+If the ball is not seen for few consecutive times, then it aborts.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rate: A Rate object used to control timing.
+final_dist (float): Target stopping distance from the ball in metres.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.exit_garage">
+<span class="sig-name descname"><span class="pre">exit_garage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_time</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.exit_garage" title="Link to this definition">¶</a></dt>
+<dd><p>Drive forward out of the garage for a fixed time after exit detection.</p>
+<p>Resets odometry, then moves forward for
+fixed time with given speed to exit the garage.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rate: A Rate object used to control timing.
+exit_time: How long should ferenc drive from the garage</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.find_exit">
+<span class="sig-name descname"><span class="pre">find_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.find_exit" title="Link to this definition">¶</a></dt>
+<dd><p>Spin in place until an open space is detected in front of the robot.</p>
+<p>Rotates continuously at a fixed angular velocity, getting point
+cloud data on each cycle, and stops as soon as a clear path is found.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rate: A Rate object used to control timing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.get_average_ball_depth">
+<span class="sig-name descname"><span class="pre">get_average_ball_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.get_average_ball_depth" title="Link to this definition">¶</a></dt>
+<dd><p>Compute an averaged depth reading to the ball over three samples.</p>
+<p>Ignores frames where the ball is not detected. Returns None if no
+valid depth reading is obtained.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>float or None: Average distance to the ball in metres, or None</dt><dd><p>if the ball could not be seen in any sample.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.go_forward">
+<span class="sig-name descname"><span class="pre">go_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needed_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist_diff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefered_lin_vel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ferenc_jede.Ferenc.go_forward" title="Link to this definition">¶</a></dt>
+<dd><p>Apply P-regulated forward motion with heading correction.</p>
+<p>Computes angular velocity to correct heading error and linear velocity
+either from a P-controller on dist_diff or from a preferred constant
+speed, capping both at their respective maximum.</p>
+<dl>
+<dt>Args:</dt><dd><p>current_angle (float): Robot’s current heading in radians.
+needed_angle (float): Desired heading in radians.
+dist_diff (float or None): Remaining distance to target; if None,</p>
+<blockquote>
+<div><p>prefered_lin_vel is used instead.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>prefered_lin_vel (float or None): Constant linear speed override;</dt><dd><p>used when dist_diff is None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.go_home">
+<span class="sig-name descname"><span class="pre">go_home</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.go_home" title="Link to this definition">¶</a></dt>
+<dd><p>Navigate back to the garage using visual detection of the gate markers.</p>
+<p>Applies a PID controller on the horizontal error between the detected
+gate centre marker and the screen centre to steer toward the garage.
+Rotates in place if the gate is not yet visible.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rate: A Rate object used to control loop timing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.go_in">
+<span class="sig-name descname"><span class="pre">go_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.go_in" title="Link to this definition">¶</a></dt>
+<dd><p>Drive forward into the garage until the robot reaches the target depth.</p>
+<p>Uses a centre-screen depth reading to compute remaining distance and
+applies proportional linear velocity until the robot is within
+TARGET_DEPTH of the back wall.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rate: A Rate object used to control loop timing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.go_ptp">
+<span class="sig-name descname"><span class="pre">go_ptp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_of_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.go_ptp" title="Link to this definition">¶</a></dt>
+<dd><p>Navigate to a single waypoint using rotate-then-drive control.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>point (list[float]): Target waypoint as [x, y, angle].
+rate: A Rate object used to control loop timing.
+point_of_return (bool): If True, calculate angle to garage return point after arriving.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.initialize_turtle_and_wait">
+<span class="sig-name descname"><span class="pre">initialize_turtle_and_wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">robolab_turtlebot.Turtlebot</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.initialize_turtle_and_wait" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes the turtle’s point cloud, sets up callbacks and waits for the
+B0 button.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rate (Rate): The robolab turtlebot Rate object.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Turtlebot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.main" title="Link to this definition">¶</a></dt>
+<dd><p>Execute the full sequence.</p>
+<p>Initializes sensors and callbacks, then runs the robot through its
+complete mission.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.return_to_garage_from_odometry">
+<span class="sig-name descname"><span class="pre">return_to_garage_from_odometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gohome_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.return_to_garage_from_odometry" title="Link to this definition">¶</a></dt>
+<dd><p>Return the robot to its garage starting position.</p>
+<p>Drives back the accumulated return_distance along the x-axis, then
+rotates to the saved return_angle and calls go_in or gohome_mode to complete parking.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rate: A Rate object used to control loop timing.
+gohome_mode: True if robot should return to garage by camera</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.rotate_to_angle">
+<span class="sig-name descname"><span class="pre">rotate_to_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_of_return</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.rotate_to_angle" title="Link to this definition">¶</a></dt>
+<dd><p>Rotate in place until the robot’s heading matches the target angle.</p>
+<p>Uses PID-regulated angular velocity and stops when the heading error
+falls within BALL_ROTATION_ANGLE_THRESHOLD.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>angle (float): Target heading in radians.
+rate: A Rate object used to control loop timing.
+point_of_return: If it is final point of hexagon</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ferenc_jede.Ferenc.rotate_toward_ball">
+<span class="sig-name descname"><span class="pre">rotate_toward_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ferenc_jede.Ferenc.rotate_toward_ball" title="Link to this definition">¶</a></dt>
+<dd><p>Rotates the robot until the center of ball is in BALL_ROTATION_CAMERA_CENTER_X within BALL_ROTATION_TOLERANCE_PIXEL_BAND.</p>
+<p>Rotates at constant speed while camera can’t see ball. When ball is seen it constantly rotates at 2 times of our minimal angular speed
+this goes until the ball is in the right position, there is a slight chance of overshoot, due to increasing speed of rotation,
+this is quickly solved by repeated measurement.
+takes around 20-30 sec to center</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rate: A Rate object used to control timing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function" id="module-utils">
+<dt class="sig sig-object py" id="utils.calculate_points">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">calculate_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ball_radius</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#utils.calculate_points" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the waypoints of a hexagon encircling the ball (counterclockwise).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dist (float): Stand-off distance from the ball centre to the robot.
+coords (tuple): Current odometry pose (x, y, theta).</p>
+</dd>
+<dt>Returns:</dt><dd><p>list[list[float]]: A list of [x, y, angle] waypoints.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.normalize_angle">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">normalize_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#utils.normalize_angle" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap an angle into the range (-pi, pi].</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>angle (float): Angle in radians.</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: Equivalent angle in (-pi, pi].</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function" id="module-visuals">
+<dt class="sig sig-object py" id="visuals.detect_ball">
+<span class="sig-prename descclassname"><span class="pre">visuals.</span></span><span class="sig-name descname"><span class="pre">detect_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turtle</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#visuals.detect_ball" title="Link to this definition">¶</a></dt>
+<dd><p>Detects yellow/green balls in the robot’s camera feed using HSV thresholding.</p>
+<p>Returns the centre pixel and radius of the most recently found circular contour.
+Returns ((0, 0), 0) when no qualifying contour is found.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>turtle: Turtlebot instance with an active RGB camera.</p>
+</dd>
+<dt>Returns:</dt><dd><p>A tuple of (center, radius) where center is (x, y) in pixel coordinates
+and radius is in pixels. Returns ((0, 0), 0) if no frame is available
+or no ball is detected.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If the camera returns None unexpectedly after initialisation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="visuals.detect_rectangles">
+<span class="sig-prename descclassname"><span class="pre">visuals.</span></span><span class="sig-name descname"><span class="pre">detect_rectangles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turtle</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#visuals.detect_rectangles" title="Link to this definition">¶</a></dt>
+<dd><p>Detects a pair of blue vertical rectangles and returns their centres plus midpoint.</p>
+<p>Looks for the two leftmost qualifying contours, sorts them left-to-right,
+and appends their average centre as a third entry.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>turtle: Turtlebot instance with an active RGB camera.</p>
+</dd>
+<dt>Returns:</dt><dd><p>A list of three (x, y) pixel coordinates: [left_centre, right_centre, midpoint],
+or None if the camera returns no frame or fewer than two rectangles are found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="visuals.get_depth">
+<span class="sig-prename descclassname"><span class="pre">visuals.</span></span><span class="sig-name descname"><span class="pre">get_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turtle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#visuals.get_depth" title="Link to this definition">¶</a></dt>
+<dd><p>Estimate the depth to a detected object using a small grid sample from the point cloud.</p>
+<p>Samples a 3x3 or 5x5 grid of points centred on (center_x, center_y),
+depending on the apparent radius of the detected object. Points closer
+than 0.1 m are discarded as noise. Returns the mean depth of the
+remaining valid readings.</p>
+<dl>
+<dt>Args:</dt><dd><p>turtle: The Turtlebot instance used to retrieve the point cloud.
+center_x (int): Horizontal pixel coordinate of the object centre.
+center_y (int): Vertical pixel coordinate of the object centre.
+radius (float): Detected pixel radius of the object. Values below 2</p>
+<blockquote>
+<div><p>are treated as unreliable and cause an early None return.
+Other values below 16 will be averaged over a 3x3 pattern
+and values higher than that will be averaged over a 5x5 pattern.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>float or None: Average depth in metres, or None if the object radius</dt><dd><p>is too small, no point cloud is available, or all sampled points
+are closer than 0.1 m (object too close to sensor).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="visuals.mouse_callback">
+<span class="sig-prename descclassname"><span class="pre">visuals.</span></span><span class="sig-name descname"><span class="pre">mouse_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#visuals.mouse_callback" title="Link to this definition">¶</a></dt>
+<dd><p>OpenCV mouse callback that prints HSV values at the cursor position.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>param: HSV image array passed via cv2.setMouseCallback.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="visuals.space_infront">
+<span class="sig-prename descclassname"><span class="pre">visuals.</span></span><span class="sig-name descname"><span class="pre">space_infront</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turtle</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#visuals.space_infront" title="Link to this definition">¶</a></dt>
+<dd><p>Return whether the robot has space in front of it.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>bool: True when there is space in front of the robot.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">lar</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Ondřej Vosáhlo, Václav Kučera, Jakub Kecek.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
