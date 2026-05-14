@@ -170,7 +170,7 @@ def detect_rectangles(turtle) -> Optional[List[Vec2Int]]:
     avg_y = (ret[0][1] + ret[1][1]) // 2
     ret.append((avg_x, avg_y))
     cv2.circle(filtered, (avg_x, avg_y), 2, (0, 255, 0), 3)
-    # cv2.imshow("contours", filtered)
+    cv2.imshow("contours", filtered)
 
     return ret
 
