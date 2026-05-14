@@ -224,7 +224,7 @@ class Ferenc:
             if self._handle_stop():
                 continue
             else:
-                turtle.cmd_velocity(0, 0.37)
+                turtle.cmd_velocity(0, 0.34)
             space = space_infront(turtle=turtle)
             rate.sleep()
 
